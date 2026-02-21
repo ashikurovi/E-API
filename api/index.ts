@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getApp } from '../src/get-app';
+// Use compiled Nest output so require() paths resolve correctly on Vercel
+import { getApp } from '../dist/src/get-app';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 🔥 FORCE CORS HEADERS (this is the fix)
