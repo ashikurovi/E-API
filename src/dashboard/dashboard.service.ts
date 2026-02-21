@@ -1051,10 +1051,10 @@ export class DashboardService {
      * Summarizes dashboard data into an executive report.
      */
     async getAiDailyReport(companyId: string): Promise<{ report: string; generatedAt: string }> {
-        const groqApiKey = "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";
+        const groqApiKey = process.env.AIDAILYREPORT ?? '';
         if (!groqApiKey) {
             return {
-                report: 'AI report is not configured. Please add GROQ_API_KEY to your environment variables. Get a free API key at https://console.groq.com',
+                report: 'AI report is not configured. Please add AIDAILYREPORT to your environment variables. Get a free API key at https://console.groq.com',
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -1117,7 +1117,7 @@ Generate a brief daily report with: 1) Executive summary, 2) Key highlights, 3) 
             const errMsg = error?.response?.data?.error?.message || error?.message || 'Unknown error';
             console.error('AI report generation failed:', errMsg);
             return {
-                report: `AI report generation failed: ${errMsg}. Please ensure GROQ_API_KEY is valid. Get a free key at https://console.groq.com`,
+                report: `AI report generation failed: ${errMsg}. Please ensure AIDAILYREPORT is valid. Get a free key at https://console.groq.com`,
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -1128,10 +1128,10 @@ Generate a brief daily report with: 1) Executive summary, 2) Key highlights, 3) 
      * Returns short bullet-point messages for ticker/feed display.
      */
     async getAiLiveMessages(companyId: string): Promise<{ messages: Array<{ text: string; type: string; timestamp: string }>; generatedAt: string }> {
-        const groqApiKey = "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";
+        const groqApiKey = process.env.AINESSAGE ?? '';
         if (!groqApiKey) {
             return {
-                messages: [{ text: 'AI messages require GROQ_API_KEY. Get a free key at console.groq.com', type: 'info', timestamp: new Date().toISOString() }],
+                messages: [{ text: 'AI messages require AINESSAGE in your environment. Get a free key at console.groq.com', type: 'info', timestamp: new Date().toISOString() }],
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -1197,7 +1197,7 @@ Best sellers: ${JSON.stringify(bestSellers)}`;
         }
     }
 
-    /**
+    /**ggggg
      * Get AI sales-based direction to help the store owner.
      * Returns actionable recommendations based on sales data.
      */
@@ -1205,10 +1205,10 @@ Best sellers: ${JSON.stringify(bestSellers)}`;
         directions: Array<{ title: string; action: string; priority: string }>;
         generatedAt: string;
     }> {
-        const groqApiKey = "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";
+        const groqApiKey = process.env.AISALE ?? '';
         if (!groqApiKey) {
             return {
-                directions: [{ title: 'Configure AI', action: 'Add GROQ_API_KEY to enable sales direction. Get free key at console.groq.com', priority: 'info' }],
+                directions: [{ title: 'Configure AI', action: 'Add AISALE to your environment to enable sales direction. Get free key at console.groq.com', priority: 'info' }],
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -1287,7 +1287,7 @@ Recent orders: ${JSON.stringify(recentOrders.slice(0, 3))}`;
         companyId: string,
         body: { context?: string; type?: string; title?: string; lang?: string },
     ): Promise<{ suggestion: string; generatedAt: string }> {
-        const groqApiKey = "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";
+        const groqApiKey = process.env.GROQ_API_KEY ?? process.env.AISALE ?? '';
         if (!groqApiKey) {
             return {
                 suggestion: '',
@@ -1367,7 +1367,7 @@ Return ONLY the description text, no quotes or extra formatting.`;
         companyId: string,
         body: { text?: string; targetLang?: string },
     ): Promise<{ translatedText: string; generatedAt: string }> {
-        const groqApiKey = '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';
+        const groqApiKey = process.env.GROQ_API_KEY ?? process.env.AISALE ?? '';
         const { text = '', targetLang = 'en' } = body;
 
         if (!text?.trim()) {
