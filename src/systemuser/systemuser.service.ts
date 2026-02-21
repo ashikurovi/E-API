@@ -895,6 +895,49 @@ export class SystemuserService {
     return { accessToken, refreshToken, user: safe };
   }
 
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+    const payload = this.jwtService.verify<{ sub: number; userId: number }>(refreshToken);
+    const userId = payload?.sub ?? payload?.userId;
+    if (!userId) {
+      throw new BadRequestException('Invalid refresh token');
+    }
+    const user = await this.systemUserRepo.findOne({
+      where: { id: userId },
+      relations: ['package', 'theme', 'invoices'],
+    });
+    if (!user || !user.isActive) {
+      throw new BadRequestException('User not found or inactive');
+    }
+    const tokenPayload = {
+      sub: user.id,
+      userId: user.id,
+      email: user.email,
+      companyId: user.companyId,
+      paymentInfo: user.paymentInfo ?? null,
+      packageId: user.packageId ?? null,
+      package: user.package ?? null,
+      themeId: user.themeId ?? null,
+      theme: user.theme ?? null,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isActive: user.isActive,
+      companyName: user.companyName,
+      companyLogo: user.companyLogo,
+      phone: user.phone,
+      branchLocation: user.branchLocation,
+      name: user.name,
+      invoices: user.invoices ?? null,
+      permissions: user.permissions || [],
+      role: user.role || SystemUserRole.EMPLOYEE,
+    };
+    const accessToken = this.jwtService.sign(tokenPayload, { expiresIn: '24d' });
+    const newRefreshToken = this.jwtService.sign(
+      { sub: user.id, userId: user.id },
+      { expiresIn: '24d' },
+    );
+    return { accessToken, refreshToken: newRefreshToken };
+  }
+
   async forgotPassword(dto: ForgotPasswordDto) {
     const user = await this.systemUserRepo.findOne({ 
       where: { email: dto.email }
