@@ -1,8 +1,29 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import path from 'path';
 
-// Load Nest app from compiled dist at runtime so require() paths resolve correctly.
-// Dynamic require prevents the bundler from pulling in src/ (which has wrong paths on Vercel).
+// On Vercel, code may still require('src/...'). Patch Node so that resolves to dist/src/...
+(function patchSrcRequire() {
+  if (typeof process === 'undefined' || !process.env.VERCEL) return;
+  const Module = require('module');
+  const path = require('path');
+  const projectRoot = path.join(__dirname, '..');
+  const distSrc = path.join(projectRoot, 'dist', 'src');
+  const orig = Module._resolveFilename;
+  Module._resolveFilename = function (request: string, parent: any, isMain: boolean) {
+    if (typeof request === 'string' && request.startsWith('src/')) {
+      const sub = request.slice(4);
+      const candidate = path.join(distSrc, sub);
+      try {
+        return orig.call(this, candidate, parent, isMain);
+      } catch {
+        return orig.call(this, request, parent, isMain);
+      }
+    }
+    return orig.call(this, request, parent, isMain);
+  };
+})();
+
+// Load app from dist (built by buildCommand). Patch above makes any require('src/...') resolve to dist.
 const getApp = (() => {
   const distPath = path.join(__dirname, '..', 'dist', 'src', 'get-app');
   return require(distPath).getApp as () => Promise<import('@nestjs/platform-express').NestExpressApplication>;
