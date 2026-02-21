@@ -129,8 +129,8 @@ import { CacheModule } from '@nestjs/cache-manager';
           port: 587,
           secure: false,
           auth: {
-            user: 'squadcarthq@gmail.com',
-            pass: 'fnav excc ajks urrx',
+            user: 'xinzo.shop@gmail.com',
+            pass: 'htqs fjsp ybgz lukl',
           },
           tls: {
             rejectUnauthorized: false,
