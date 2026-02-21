@@ -1,9 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-// Use compiled Nest output so require() paths resolve correctly on Vercel
-import { getApp } from '../dist/src/get-app';
+import path from 'path';
+
+// Load Nest app from compiled dist at runtime so require() paths resolve correctly.
+// Dynamic require prevents the bundler from pulling in src/ (which has wrong paths on Vercel).
+const getApp = (() => {
+  const distPath = path.join(__dirname, '..', 'dist', 'src', 'get-app');
+  return require(distPath).getApp as () => Promise<import('@nestjs/platform-express').NestExpressApplication>;
+})();
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // 🔥 FORCE CORS HEADERS (this is the fix)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   res.setHeader(
@@ -11,7 +16,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'Content-Type, Authorization',
   );
 
-  // Preflight
   if (req.method === 'OPTIONS') {
     res.status(204).end();
     return;
