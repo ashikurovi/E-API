@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import * as compression from 'compression';
+import compression from 'compression';
 
 let appPromise: Promise<NestExpressApplication> | null = null;
 
