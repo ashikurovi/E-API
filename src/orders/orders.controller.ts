@@ -1,10 +1,10 @@
 import { Controller, Post, Body, Get, Param, ParseIntPipe, Patch, Delete, UseGuards, Query, Req, BadRequestException } from "@nestjs/common";
 import { OrderService } from "./orders.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { CompanyIdGuard } from 'src/common/guards/company-id.guard';
-import { CompanyId } from 'src/common/decorators/company-id.decorator';
-import { UserId } from 'src/common/decorators/user-id.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CompanyIdGuard } from '../common/guards/company-id.guard';
+import { CompanyId } from '../common/decorators/company-id.decorator';
+import { UserId } from '../common/decorators/user-id.decorator';
 
 @Controller("orders")
 @UseGuards(JwtAuthGuard, CompanyIdGuard)

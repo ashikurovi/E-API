@@ -13,7 +13,7 @@ import {
 import { ThemeService } from './theme.service';
 import { CreateThemeDto } from './dto/create-theme.dto';
 import { UpdateThemeDto } from './dto/update-theme.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 
 @Controller('theme')
 @UseGuards(JwtAuthGuard)

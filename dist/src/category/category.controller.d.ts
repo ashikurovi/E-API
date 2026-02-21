@@ -2,7 +2,7 @@ import { HttpStatus } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { DashboardService } from 'src/dashboard/dashboard.service';
+import { DashboardService } from '../dashboard/dashboard.service';
 export declare class CategoryController {
     private readonly categoryService;
     private readonly dashboardService;

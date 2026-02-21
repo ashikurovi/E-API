@@ -7,7 +7,7 @@ import { Repository, QueryFailedError, DataSource } from 'typeorm';
 import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class UsersService {

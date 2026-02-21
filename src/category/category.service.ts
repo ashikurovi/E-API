@@ -5,8 +5,8 @@ import { DataSource, IsNull, Repository } from "typeorm";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { CategoryEntity } from "./entities/category.entity";
-import { ActivityLogService } from "src/systemuser/activity-log.service";
-import { ActivityAction, ActivityEntity } from "src/systemuser/entities/activity-log.entity";
+import { ActivityLogService } from "../systemuser/activity-log.service";
+import { ActivityAction, ActivityEntity } from "../systemuser/entities/activity-log.entity";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
 

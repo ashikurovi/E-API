@@ -1,9 +1,9 @@
 import { Repository } from 'typeorm';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { BroadcastEmailDto } from './dto/broadcast-email.dto';
 import { BroadcastSmsDto } from './dto/broadcast-sms.dto';
 import { HttpService } from '@nestjs/axios';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { RequestContextService } from '../common/services/request-context.service';
 import { Notification, NotificationType } from './entities/notification.entity';
 type NotificationChannelType = 'email' | 'sms';
 export declare class NotificationsService {

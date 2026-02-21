@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from "@nestjs/common";
 import { TrackingService } from "./tracking.service";
-import { Public } from "src/common/decorators/public.decorator";
+import { Public } from "../common/decorators/public.decorator";
 
 /**
  * Unified order tracking API.

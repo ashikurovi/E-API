@@ -2,11 +2,11 @@ import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, HttpStat
 import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { CompanyId } from 'src/common/decorators/company-id.decorator';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { CompanyIdGuard } from 'src/common/guards/company-id.guard';
-import { DashboardService } from 'src/dashboard/dashboard.service';
-import { Public } from 'src/common/decorators/public.decorator';
+import { CompanyId } from '../common/decorators/company-id.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CompanyIdGuard } from '../common/guards/company-id.guard';
+import { DashboardService } from '../dashboard/dashboard.service';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller("categories")
 @UseGuards(JwtAuthGuard, CompanyIdGuard)

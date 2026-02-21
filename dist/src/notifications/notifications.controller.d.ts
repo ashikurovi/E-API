@@ -3,7 +3,7 @@ import { NotificationsService } from './notifications.service';
 import { BroadcastEmailDto } from './dto/broadcast-email.dto';
 import { BroadcastSmsDto } from './dto/broadcast-sms.dto';
 import { NotificationType } from './entities/notification.entity';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { RequestContextService } from '../common/services/request-context.service';
 export declare class NotificationsController {
     private readonly notificationsService;
     private readonly requestContextService;

@@ -1,4 +1,4 @@
-import { CategoryEntity } from "src/category/entities/category.entity";
+import { CategoryEntity } from "../../category/entities/category.entity";
 export declare class ProductEntity {
     id: number;
     name: string;

@@ -3,7 +3,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository, DataSource } from 'typeorm';
 import { User } from './entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 export declare class UsersService {
     private readonly userRepo;
     private readonly dataSource;

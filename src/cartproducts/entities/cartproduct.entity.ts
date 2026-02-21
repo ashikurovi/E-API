@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Unique } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { ProductEntity } from 'src/products/entities/product.entity';
+import { User } from '../../users/entities/user.entity';
+import { ProductEntity } from '../../products/entities/product.entity';
 
 @Entity('tbl_cart_products')
 // @Unique(['user', 'product']) // Removed strict DB constraint to handle nullable user/sessionId via app logic

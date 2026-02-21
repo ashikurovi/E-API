@@ -1,11 +1,11 @@
 import { Repository } from "typeorm";
-import { ProductEntity } from "src/products/entities/product.entity";
-import { CreateProductDto } from "src/products/dto/create-product.dto";
-import { UpdateProductDto } from "src/products/dto/update-product.dto";
-import { CategoryEntity } from "src/category/entities/category.entity";
-import { Order } from "src/orders/entities/order.entity";
-import { ActivityLogService } from "src/systemuser/activity-log.service";
-import { NotificationsService } from "src/notifications/notifications.service";
+import { ProductEntity } from "./entities/product.entity";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { CategoryEntity } from "../category/entities/category.entity";
+import { Order } from "../orders/entities/order.entity";
+import { ActivityLogService } from "../systemuser/activity-log.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { Cache } from "cache-manager";
 export declare class ProductService {
     private productRepository;

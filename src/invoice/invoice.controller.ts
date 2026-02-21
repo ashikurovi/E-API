@@ -18,8 +18,8 @@ import { InitiateBkashPaymentDto } from './dto/initiate-bkash-payment.dto';
 import { BkashCallbackDto } from './dto/bkash-callback.dto';
 import { BankPaymentDto } from './dto/bank-payment.dto';
 import { RejectBankPaymentDto } from './dto/reject-bank-payment.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('invoice')
 @UseGuards(JwtAuthGuard)

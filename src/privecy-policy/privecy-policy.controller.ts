@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntP
 import { PrivecyPolicyService } from './privecy-policy.service';
 import { CreatePrivecyPolicyDto } from './dto/create-privecy-policy.dto';
 import { UpdatePrivecyPolicyDto } from './dto/update-privecy-policy.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { CompanyIdGuard } from 'src/common/guards/company-id.guard';
-import { CompanyId } from 'src/common/decorators/company-id.decorator';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CompanyIdGuard } from '../common/guards/company-id.guard';
+import { CompanyId } from '../common/decorators/company-id.decorator';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('privecy-policy')
 @UseGuards(JwtAuthGuard, CompanyIdGuard)

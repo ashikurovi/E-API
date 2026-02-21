@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException, ServiceUnavailableException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { BroadcastEmailDto } from './dto/broadcast-email.dto';
 import { BroadcastSmsDto } from './dto/broadcast-sms.dto';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { RequestContextService } from '../common/services/request-context.service';
 import { Notification, NotificationType, NotificationChannel } from './entities/notification.entity';
 
 type NotificationChannelType = 'email' | 'sms';

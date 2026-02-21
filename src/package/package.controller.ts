@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('package')
 @UseGuards(JwtAuthGuard)

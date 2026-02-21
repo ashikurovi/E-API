@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from "@nestjs/common";
 import { OrderService } from "./orders.service";
-import { Public } from "src/common/decorators/public.decorator";
+import { Public } from "../common/decorators/public.decorator";
 
 /**
  * Public order tracking API.

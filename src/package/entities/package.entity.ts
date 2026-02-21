@@ -1,6 +1,6 @@
-import { SystemUser } from "src/systemuser/entities/systemuser.entity";
-import { Theme } from "src/theme/entities/theme.entity";
-import { FeaturePermission } from "src/systemuser/feature-permission.enum";
+import { SystemUser } from "../../systemuser/entities/systemuser.entity";
+import { Theme } from "../../theme/entities/theme.entity";
+import { FeaturePermission } from "../../systemuser/feature-permission.enum";
 import { Column, DeleteDateColumn, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('packages')

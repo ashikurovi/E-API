@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFraudcheckerDto } from './dto/create-fraudchecker.dto';
 import { UpdateFraudcheckerDto } from './dto/update-fraudchecker.dto';
 import { UsersService } from '../users/users.service';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { RequestContextService } from '../common/services/request-context.service';
 
 @Injectable()
 export class FraudcheckerService {

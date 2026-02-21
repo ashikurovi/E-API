@@ -21,13 +21,13 @@ import { ProductService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FlashSellDto } from './dto/flash-sell.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { PermissionGuard } from 'src/common/guards/permission.guard';
-import { CompanyIdGuard } from 'src/common/guards/company-id.guard';
-import { CompanyId } from 'src/common/decorators/company-id.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { PermissionGuard } from '../common/guards/permission.guard';
+import { CompanyIdGuard } from '../common/guards/company-id.guard';
+import { CompanyId } from '../common/decorators/company-id.decorator';
 import * as XLSX from 'xlsx';
-import { DashboardService } from 'src/dashboard/dashboard.service';
-import { Public } from 'src/common/decorators/public.decorator';
+import { DashboardService } from '../dashboard/dashboard.service';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, CompanyIdGuard)

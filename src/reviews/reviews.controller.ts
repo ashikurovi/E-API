@@ -3,11 +3,11 @@ import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReplyReviewDto } from './dto/reply-review.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { CompanyIdGuard } from 'src/common/guards/company-id.guard';
-import { CompanyId } from 'src/common/decorators/company-id.decorator';
-import { UserId } from 'src/common/decorators/user-id.decorator';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CompanyIdGuard } from '../common/guards/company-id.guard';
+import { CompanyId } from '../common/decorators/company-id.decorator';
+import { UserId } from '../common/decorators/user-id.decorator';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('reviews')
 export class ReviewsController {

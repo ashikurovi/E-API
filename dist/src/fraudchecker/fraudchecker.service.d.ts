@@ -1,5 +1,5 @@
 import { UsersService } from '../users/users.service';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { RequestContextService } from '../common/services/request-context.service';
 export declare class FraudcheckerService {
     private readonly usersService;
     private readonly requestContextService;

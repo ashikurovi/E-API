@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Get, Query, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { SslInitiateDto } from './dto/ssl-initiate.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('payments')
 @UseGuards(JwtAuthGuard)

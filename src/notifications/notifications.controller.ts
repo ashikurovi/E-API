@@ -3,8 +3,8 @@ import { NotificationsService } from './notifications.service';
 import { BroadcastEmailDto } from './dto/broadcast-email.dto';
 import { BroadcastSmsDto } from './dto/broadcast-sms.dto';
 import { NotificationType } from './entities/notification.entity';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RequestContextService } from '../common/services/request-context.service';
 
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)

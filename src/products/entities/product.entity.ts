@@ -1,4 +1,4 @@
-import { CategoryEntity } from "src/category/entities/category.entity";
+import { CategoryEntity } from "../../category/entities/category.entity";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
 
 

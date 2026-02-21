@@ -3,8 +3,8 @@ import { FraudcheckerService } from './fraudchecker.service';
 import { CreateFraudcheckerDto } from './dto/create-fraudchecker.dto';
 import { UpdateFraudcheckerDto } from './dto/update-fraudchecker.dto';
 import { BanUserDto } from '../users/dto/ban-user.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { CompanyIdGuard } from 'src/common/guards/company-id.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CompanyIdGuard } from '../common/guards/company-id.guard';
 
 @Controller('fraudchecker')
 @UseGuards(JwtAuthGuard, CompanyIdGuard)

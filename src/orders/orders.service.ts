@@ -5,20 +5,20 @@ import { randomBytes } from "crypto";
 import { Order } from "./entities/order.entity";
 import { OrderStatusHistory } from "./entities/order-status-history.entity";
 import { CreateOrderDto } from "./dto/create-order.dto";
-import { ProductEntity } from "src/products/entities/product.entity";
-import { User } from "src/users/entities/user.entity";
-import { PaymentsService } from "src/payments/payments.service";
+import { ProductEntity } from "../products/entities/product.entity";
+import { User } from "../users/entities/user.entity";
+import { PaymentsService } from "../payments/payments.service";
 import { Inject } from "@nestjs/common";
-import { NotificationsService } from "src/notifications/notifications.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import {
   generateOrderPlacedEmail,
   generateOrderProcessingEmail,
   generateOrderShippedEmail,
   generateOrderDeliveredEmail,
-} from "src/common/templates/order-status-email.templates";
-import { ActivityLogService } from "src/systemuser/activity-log.service";
-import { ActivityAction, ActivityEntity } from "src/systemuser/entities/activity-log.entity";
-import { SystemuserService } from "src/systemuser/systemuser.service";
+} from "../common/templates/order-status-email.templates";
+import { ActivityLogService } from "../systemuser/activity-log.service";
+import { ActivityAction, ActivityEntity } from "../systemuser/entities/activity-log.entity";
+import { SystemuserService } from "../systemuser/systemuser.service";
 
 
 @Injectable()

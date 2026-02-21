@@ -5,13 +5,13 @@ import { CreateSystemuserDto } from './dto/create-systemuser.dto';
 import { UpdateSystemuserDto } from './dto/update-systemuser.dto';
 import { LoginDto } from './dto/login.dto';
 import { AssignPermissionsDto } from './dto/assign-permissions.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { Permission } from 'src/common/decorators/permission.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Permission } from '../common/decorators/permission.decorator';
 import { FeaturePermission } from './feature-permission.enum';
-import { CompanyId } from 'src/common/decorators/company-id.decorator';
+import { CompanyId } from '../common/decorators/company-id.decorator';
 import { SystemUserRole } from './system-user-role.enum';
 import { ActivityAction, ActivityEntity } from './entities/activity-log.entity';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../common/decorators/public.decorator';
 
 
 @Controller('systemuser')

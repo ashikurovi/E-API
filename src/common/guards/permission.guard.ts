@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSION_KEY } from '../decorators/permission.decorator';
-import { FeaturePermission } from 'src/systemuser/feature-permission.enum';
-import { SystemUserRole } from 'src/systemuser/system-user-role.enum';
+import { FeaturePermission } from '../../systemuser/feature-permission.enum';
+import { SystemUserRole } from '../../systemuser/system-user-role.enum';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {

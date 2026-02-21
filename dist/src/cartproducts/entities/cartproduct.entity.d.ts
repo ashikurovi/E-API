@@ -1,5 +1,5 @@
-import { User } from 'src/users/entities/user.entity';
-import { ProductEntity } from 'src/products/entities/product.entity';
+import { User } from '../../users/entities/user.entity';
+import { ProductEntity } from '../../products/entities/product.entity';
 export declare class Cartproduct {
     id: number;
     user: User;

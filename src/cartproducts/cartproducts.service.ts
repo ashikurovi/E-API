@@ -4,10 +4,10 @@ import { UpdateCartproductDto } from './dto/update-cartproduct.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { Cartproduct } from './entities/cartproduct.entity';
-import { ProductEntity } from 'src/products/entities/product.entity';
-import { User } from 'src/users/entities/user.entity';
-import { OrderService } from 'src/orders/orders.service';
-import { RequestContextService } from 'src/common/services/request-context.service';
+import { ProductEntity } from '../products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
+import { OrderService } from '../orders/orders.service';
+import { RequestContextService } from '../common/services/request-context.service';
 
 @Injectable()
 export class CartproductsService {

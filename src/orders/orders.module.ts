@@ -6,10 +6,10 @@ import { PaymentsModule } from '../payments/payments.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
-import { ProductEntity } from 'src/products/entities/product.entity';
-import { User } from 'src/users/entities/user.entity';
+import { ProductEntity } from '../products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { SystemuserModule } from 'src/systemuser/systemuser.module';
+import { SystemuserModule } from '../systemuser/systemuser.module';
 
 @Module({
   imports: [

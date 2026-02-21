@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { FeaturePermission } from 'src/systemuser/feature-permission.enum';
+import { FeaturePermission } from '../../systemuser/feature-permission.enum';
 
 export const PERMISSION_KEY = 'permission';
 

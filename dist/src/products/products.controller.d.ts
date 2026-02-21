@@ -3,7 +3,7 @@ import { ProductService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FlashSellDto } from './dto/flash-sell.dto';
-import { DashboardService } from 'src/dashboard/dashboard.service';
+import { DashboardService } from '../dashboard/dashboard.service';
 export declare class ProductController {
     private readonly productService;
     private readonly dashboardService;
