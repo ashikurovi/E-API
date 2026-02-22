@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "framework": null,
-  "buildCommand": "npm run vercel-build",
   "builds": [
-    { "src": "api/index.ts", "use": "@vercel/node" }
-  ],
-  "functions": {
-    "api/index.ts": {
-      "includeFiles": "api/dist/**"
+    {
+      "src": "api/index.ts",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
-    { "src": "/(.*)", "dest": "api/index.ts", "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] }
+    {
+      "src": "/(.*)",
+      "dest": "api/index.ts",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+    }
   ]
 }
