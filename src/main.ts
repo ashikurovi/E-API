@@ -9,15 +9,13 @@ import * as compression from 'compression';
 import { join } from 'path';
 
 
+
 // --- VERCEL HANDLER & CACHING LOGIC ---
 
 // Cache the initialized NestJS application instance
 let cachedApp: NestExpressApplication;
 
 async function bootstrap(): Promise<NestExpressApplication> {
-
-
-
     if (!cachedApp) {
         // 1. Create the NestJS application
         const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -28,13 +26,13 @@ async function bootstrap(): Promise<NestExpressApplication> {
   credentials: false, // optional: cookie/credential নেই
 });
 
-  app.use(compression());
-  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
-  app.useWebSocketAdapter(new IoAdapter(app));
 
 
         // 3. Initialize the app to finalize middleware and routing
         await app.init();
+        app.use(compression());
+        app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
+        app.useWebSocketAdapter(new IoAdapter(app));
         cachedApp = app;
     }
     return cachedApp;

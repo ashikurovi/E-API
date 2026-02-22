@@ -1,22 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as compression from 'compression';
 
 let cachedApp: NestExpressApplication;
 
-export async function getApp(): Promise<NestExpressApplication> {
+export async function getApp() {
   if (!cachedApp) {
-    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-      logger: ['error', 'warn'],
-    });
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-    app.enableCors({
-      origin: true,
-      credentials: true,
-    });
+app.enableCors({
+  origin: true, // ✅ সব domain allow
+  credentials: false, // optional: cookie/credential নেই
+});
 
-    app.use(compression());
+
+
     await app.init();
     cachedApp = app;
   }

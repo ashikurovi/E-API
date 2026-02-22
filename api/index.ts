@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { join } from 'path';
+import { getApp } from '../src/get-app';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 🔥 FORCE CORS HEADERS (this is the fix)
@@ -16,8 +16,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Load Nest app from api/dist (copied during vercel-build so it's bundled with the function)
-  const { getApp } = require(join(__dirname, 'dist', 'get-app.js'));
   const app = await getApp();
   const server = app.getHttpAdapter().getInstance();
   return server(req, res);
