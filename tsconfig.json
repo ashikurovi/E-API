@@ -3,14 +3,12 @@
     "module": "commonjs",
     "target": "ES2021",
     "outDir": "./dist",
-    "baseUrl": "./", 
-    "rootDir": "./",
-    "paths": {
-      "src/*": ["src/*"]
-    },
+    "baseUrl": ".",
+    "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*", "api/**/*"]
 }
