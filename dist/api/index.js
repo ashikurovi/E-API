@@ -10,7 +10,7 @@ async function handler(req, res) {
         res.status(204).end();
         return;
     }
-    const distPath = (0, path_1.join)(__dirname, '..', 'dist');
+    const distPath = (0, path_1.join)(process.cwd(), 'dist');
     const { getApp } = require((0, path_1.join)(distPath, 'get-app.js'));
     const app = await getApp();
     const server = app.getHttpAdapter().getInstance();
