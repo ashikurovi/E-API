@@ -16,9 +16,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // Load Nest app from Nest-built dist (avoids "Cannot find module src/common/..." on Vercel)
-  const distPath = join(process.cwd(), 'dist');
-  const { getApp } = require(join(distPath, 'get-app.js'));
+  // Load Nest app from api/dist (copied during vercel-build so it's bundled with the function)
+  const { getApp } = require(join(__dirname, 'dist', 'get-app.js'));
   const app = await getApp();
   const server = app.getHttpAdapter().getInstance();
   return server(req, res);
