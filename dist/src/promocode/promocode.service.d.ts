@@ -7,6 +7,7 @@ export declare class PromocodeService {
     constructor(promoRepo: Repository<PromocodeEntity>);
     create(dto: CreatePromocodeDto, companyId: string): Promise<PromocodeEntity>;
     findAll(companyId: string): Promise<PromocodeEntity[]>;
+    findPublic(companyId: string): Promise<PromocodeEntity[]>;
     findOne(id: number, companyId: string): Promise<PromocodeEntity>;
     update(id: number, dto: UpdatePromocodeDto, companyId: string): Promise<PromocodeEntity>;
     remove(id: number, companyId: string): Promise<void>;

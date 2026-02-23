@@ -33,6 +33,7 @@ export declare class ProductEntity {
     width?: number;
     unit?: string;
     companyId: string;
+    resellerId?: number;
     category: CategoryEntity;
     createdAt: Date;
     updatedAt: Date;

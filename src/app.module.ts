@@ -44,6 +44,7 @@ import { SuperadminModule } from './superadmin/superadmin.module';
 import { SaleInvoiceModule } from './sale-invoice/sale-invoice.module';
 import { CreditNoteModule } from './credit-note/credit-note.module';
 import { MediaModule } from './media/media.module';
+import { ResellerModule } from './reseller/reseller.module';
 import { CacheModule } from '@nestjs/cache-manager';
 
 @Global()
@@ -114,6 +115,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     SaleInvoiceModule,
     CreditNoteModule,
     MediaModule,
+    ResellerModule,
 
   ],
   controllers: [AppController],

@@ -52,6 +52,19 @@ export class PromocodeService {
     });
   }
 
+  async findPublic(companyId: string) {
+    const now = new Date();
+    return this.promoRepo
+      .createQueryBuilder('p')
+      .where('p.companyId = :companyId', { companyId })
+      .andWhere('p.isActive = true')
+      .andWhere('(p.startsAt IS NULL OR p.startsAt <= :now)', { now })
+      .andWhere('(p.expiresAt IS NULL OR p.expiresAt >= :now)', { now })
+      .andWhere('(p.maxUses IS NULL OR p.currentUses < p.maxUses)')
+      .orderBy('p.id', 'DESC')
+      .getMany();
+  }
+
   async findOne(id: number, companyId: string) {
     const promo = await this.promoRepo.findOne({ where: { id, companyId } });
     if (!promo) throw new NotFoundException('Promocode not found');

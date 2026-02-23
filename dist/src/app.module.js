@@ -46,6 +46,7 @@ const superadmin_module_1 = require("./superadmin/superadmin.module");
 const sale_invoice_module_1 = require("./sale-invoice/sale-invoice.module");
 const credit_note_module_1 = require("./credit-note/credit-note.module");
 const media_module_1 = require("./media/media.module");
+const reseller_module_1 = require("./reseller/reseller.module");
 const cache_manager_1 = require("@nestjs/cache-manager");
 let AppModule = class AppModule {
     configure(consumer) {
@@ -107,6 +108,7 @@ exports.AppModule = AppModule = __decorate([
             sale_invoice_module_1.SaleInvoiceModule,
             credit_note_module_1.CreditNoteModule,
             media_module_1.MediaModule,
+            reseller_module_1.ResellerModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

@@ -89,6 +89,9 @@ export class ProductEntity {
   @Column({ nullable: false })
   companyId: string;
 
+  @Column({ nullable: true })
+  resellerId?: number;
+
   @ManyToOne(() => CategoryEntity, { nullable: false })
   category: CategoryEntity;
 
