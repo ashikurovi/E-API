@@ -22,7 +22,8 @@ async function bootstrap(): Promise<NestExpressApplication> {
             logger: ['error', 'warn'], // Optimize logging for production
         });
   app.enableCors({
-  origin: true, // ✅ সব domain allow
+  origin: ['http://localhost:5173', 'https://e-landing-dusky.vercel.app', 'https://e-console-87n5.vercel.app', ], // ✅ সব domain allow
+
   credentials: false, // optional: cookie/credential নেই
 });
 

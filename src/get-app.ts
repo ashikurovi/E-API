@@ -9,7 +9,7 @@ export async function getApp() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
 app.enableCors({
-  origin: true, // ✅ সব domain allow
+  origin: ['http://localhost:5173', 'https://e-landing-dusky.vercel.app', 'https://e-console-87n5.vercel.app', ],
   credentials: false, // optional: cookie/credential নেই
 });
 
