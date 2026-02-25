@@ -107,6 +107,7 @@ export class OrderService {
 
       const items: Array<{
         productId: number;
+        resellerId?: number;
         product?: {
           id: number;
           name: string;
@@ -143,6 +144,7 @@ export class OrderService {
 
         const itemData = {
           productId: product.id,
+          resellerId: product.resellerId ?? undefined,
           product: {
             id: product.id,
             name: product.name,
@@ -276,14 +278,34 @@ export class OrderService {
     }
   }
 
-  async findAll(companyId: string) {
-    return this.orderRepo.find({ 
-      where: { 
+  async findAll(companyId: string, resellerId?: number) {
+    const orders = await this.orderRepo.find({
+      where: {
         companyId,
-        deletedAt: IsNull() // Only get non-deleted orders
+        deletedAt: IsNull(), // Only get non-deleted orders
       },
-      relations: ["customer"] 
+      relations: ["customer"],
+      order: { createdAt: 'DESC' },
     });
+
+    if (!resellerId) {
+      return orders;
+    }
+
+    // For reseller view: only show orders that contain at least one of their products,
+    // and within those orders, only expose their own line items.
+    return orders
+      .map((o) => {
+        const ownItems = (o.items || []).filter(
+          (it) => it.resellerId === resellerId,
+        );
+        if (ownItems.length === 0) return null;
+
+        const clone = { ...o };
+        clone.items = ownItems;
+        return clone;
+      })
+      .filter(Boolean) as Order[];
   }
 
   async getStats(companyId: string) {
@@ -999,10 +1021,28 @@ export class OrderService {
             storeName,
           );
           break;
-        case "processing":
+        case "processing": {
           subject = `Order #${order.id} is now being processed`;
-          html = generateOrderProcessingEmail(customerName, order.id, storeName);
+
+          // Build public tracking URL for customer email (frontend URL comes from env)
+          const frontendBase ='https://xinzo.shop ';
+          const trackingId = order.shippingTrackingId ?? undefined;
+          const trackingUrl =
+            frontendBase && trackingId
+              ? `${frontendBase.replace(/\/+$/, "")}/order-tracking?trackingId=${encodeURIComponent(
+                  trackingId,
+                )}`
+              : undefined;
+
+          html = generateOrderProcessingEmail(
+            customerName,
+            order.id,
+            storeName,
+            trackingUrl,
+            trackingId,
+          );
           break;
+        }
         case "shipped":
           subject = `Order #${order.id} has been shipped`;
           html = generateOrderShippedEmail(

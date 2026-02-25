@@ -39,13 +39,14 @@ let CategoryService = class CategoryService {
     generateSlug(name) {
         return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     }
-    async create(createDto, companyId, performedByUserId) {
+    async create(createDto, companyId, performedByUserId, resellerId) {
         const category = this.categoryRepository.create({
             name: createDto.name,
             slug: this.generateSlug(createDto.name),
             isActive: createDto.isActive ?? true,
             photo: createDto.photo,
             companyId,
+            resellerId,
         });
         if (createDto.parentId) {
             const parent = await this.categoryRepository.findOne({
@@ -76,8 +77,8 @@ let CategoryService = class CategoryService {
         await this.clearCache(companyId);
         return saved;
     }
-    async findAll(companyId) {
-        const cacheKey = `categories:company_${companyId}`;
+    async findAll(companyId, resellerId) {
+        const cacheKey = `categories:company_${companyId}:${resellerId ?? 'all'}`;
         try {
             const cached = await this.cacheManager.get(cacheKey);
             if (cached)
@@ -86,8 +87,12 @@ let CategoryService = class CategoryService {
         catch (e) {
             console.error('Cache get error:', e);
         }
+        const where = { deletedAt: (0, typeorm_2.IsNull)(), companyId };
+        if (resellerId) {
+            where.resellerId = resellerId;
+        }
         const categories = await this.categoryRepository.find({
-            where: { deletedAt: (0, typeorm_2.IsNull)(), companyId },
+            where,
             relations: ["parent", "children"],
         });
         const result = categories.map(cat => ({

@@ -28,6 +28,7 @@ export declare class SystemuserService {
     findOneByCompanyId(companyId: string): Promise<SystemUser | null>;
     private hashPassword;
     private sendUpdateEmail;
+    private notifyAdminNewReseller;
     private sendWelcomeEmail;
     sendInvoicePaidStoreReadyEmail(userId: number): Promise<void>;
     private slugifyForSubdomain;
@@ -103,6 +104,7 @@ export declare class SystemuserService {
         };
         permissions: string[];
         role: SystemUserRole;
+        resellerCommissionRate?: number | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt?: Date;

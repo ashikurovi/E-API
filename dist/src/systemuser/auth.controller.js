@@ -20,6 +20,7 @@ const login_dto_1 = require("./dto/login.dto");
 const login_dto_2 = require("../superadmin/dto/login.dto");
 const forgot_password_dto_1 = require("./dto/forgot-password.dto");
 const reset_password_dto_1 = require("./dto/reset-password.dto");
+const update_systemuser_dto_1 = require("./dto/update-systemuser.dto");
 const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
 const public_decorator_1 = require("../common/decorators/public.decorator");
 let AuthController = class AuthController {
@@ -54,6 +55,20 @@ let AuthController = class AuthController {
         return {
             success: true,
             data: user,
+        };
+    }
+    async updateCurrentUser(req, dto) {
+        const userId = req.user?.userId || req.user?.sub;
+        if (!userId || isNaN(Number(userId))) {
+            return {
+                success: false,
+                message: 'User not found - invalid user ID',
+            };
+        }
+        const updated = await this.systemuserService.update(Number(userId), dto);
+        return {
+            success: true,
+            data: updated,
         };
     }
     forgotPassword(dto) {
@@ -109,6 +124,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getCurrentUser", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('me'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, update_systemuser_dto_1.UpdateSystemuserDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "updateCurrentUser", null);
 __decorate([
     (0, common_1.Post)('forget-password'),
     (0, public_decorator_1.Public)(),

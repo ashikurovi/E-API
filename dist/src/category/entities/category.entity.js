@@ -39,6 +39,10 @@ __decorate([
     __metadata("design:type", String)
 ], CategoryEntity.prototype, "companyId", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], CategoryEntity.prototype, "resellerId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => CategoryEntity, (cat) => cat.children, { nullable: true }),
     __metadata("design:type", CategoryEntity)
 ], CategoryEntity.prototype, "parent", void 0);

@@ -39,6 +39,9 @@ export class ResellerPayout {
   })
   status: ResellerPayoutStatus;
 
+  @Column({ type: 'text', nullable: true })
+  paymentDetails?: string;
+
   @Column({ type: 'timestamp', nullable: true })
   paidAt?: Date;
 

@@ -83,6 +83,7 @@ __decorate([
 ], PackageController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -91,6 +92,7 @@ __decorate([
 ], PackageController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),

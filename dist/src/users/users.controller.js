@@ -28,8 +28,9 @@ let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    async register(body) {
-        const { companyId, ...createUserDto } = body;
+    async register(body, companyIdFromQuery) {
+        const companyId = body.companyId || companyIdFromQuery;
+        const { companyId: _ignored, ...createUserDto } = body;
         if (!companyId) {
             throw new common_1.BadRequestException('CompanyId is required');
         }
@@ -43,8 +44,9 @@ let UsersController = class UsersController {
         const { accessToken, user } = await this.usersService.login(loginDto.email, loginDto.password, loginDto.companyId);
         return { statusCode: common_1.HttpStatus.OK, message: 'Login successful', accessToken, user };
     }
-    async create(body) {
-        const { companyId, ...createUserDto } = body;
+    async create(body, companyIdFromQuery) {
+        const companyId = body.companyId || companyIdFromQuery;
+        const { companyId: _ignored, ...createUserDto } = body;
         if (!companyId) {
             throw new common_1.BadRequestException('CompanyId is required');
         }
@@ -99,8 +101,9 @@ __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Query)('companyId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "register", null);
 __decorate([
@@ -116,8 +119,9 @@ __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Query)('companyId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "create", null);
 __decorate([

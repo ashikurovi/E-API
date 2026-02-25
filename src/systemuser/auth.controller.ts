@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, UseGuards, Request, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  UseGuards,
+  Request,
+  Param,
+} from '@nestjs/common';
 import { SystemuserService } from './systemuser.service';
 import { SuperadminService } from '../superadmin/superadmin.service';
 import { LoginDto } from './dto/login.dto';
 import { SuperadminLoginDto } from '../superadmin/dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateSystemuserDto } from './dto/update-systemuser.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
 
@@ -58,6 +68,29 @@ export class AuthController {
     return {
       success: true,
       data: user,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async updateCurrentUser(
+    @Request() req,
+    @Body() dto: UpdateSystemuserDto,
+  ) {
+    const userId = req.user?.userId || req.user?.sub;
+
+    if (!userId || isNaN(Number(userId))) {
+      return {
+        success: false,
+        message: 'User not found - invalid user ID',
+      };
+    }
+
+    const updated = await this.systemuserService.update(Number(userId), dto);
+
+    return {
+      success: true,
+      data: updated,
     };
   }
 

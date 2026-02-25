@@ -11,6 +11,7 @@ export declare class ResellerPayout {
     periodStart?: Date;
     periodEnd?: Date;
     status: ResellerPayoutStatus;
+    paymentDetails?: string;
     paidAt?: Date;
     invoiceNumber?: string;
     createdAt: Date;

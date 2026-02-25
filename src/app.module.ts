@@ -46,6 +46,7 @@ import { CreditNoteModule } from './credit-note/credit-note.module';
 import { MediaModule } from './media/media.module';
 import { ResellerModule } from './reseller/reseller.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { TopProductsModule } from './top-products/top-products.module';
 
 @Global()
 @Module({
@@ -116,6 +117,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     CreditNoteModule,
     MediaModule,
     ResellerModule,
+    TopProductsModule,
 
   ],
   controllers: [AppController],

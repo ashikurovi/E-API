@@ -21,7 +21,7 @@ export declare class OrderController {
         message: string;
         data: import("./entities/order.entity").Order[];
     }>;
-    findAll(companyId: string): Promise<{
+    findAll(companyId: string, resellerIdFromQuery?: string, req?: any): Promise<{
         statusCode: number;
         data: import("./entities/order.entity").Order[];
     }>;

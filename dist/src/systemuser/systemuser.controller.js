@@ -21,8 +21,6 @@ const update_systemuser_dto_1 = require("./dto/update-systemuser.dto");
 const login_dto_1 = require("./dto/login.dto");
 const assign_permissions_dto_1 = require("./dto/assign-permissions.dto");
 const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
-const permission_decorator_1 = require("../common/decorators/permission.decorator");
-const feature_permission_enum_1 = require("./feature-permission.enum");
 const company_id_decorator_1 = require("../common/decorators/company-id.decorator");
 const system_user_role_enum_1 = require("./system-user-role.enum");
 const activity_log_entity_1 = require("./entities/activity-log.entity");
@@ -167,8 +165,7 @@ __decorate([
 ], SystemuserController.prototype, "createSystemOwner", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, permission_decorator_1.Permission)(feature_permission_enum_1.FeaturePermission.STAFF),
+    (0, public_decorator_1.Public)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, company_id_decorator_1.CompanyId)()),
     __param(2, (0, common_1.Req)()),
@@ -221,7 +218,7 @@ __decorate([
 ], SystemuserController.prototype, "getActivityLogById", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, public_decorator_1.Public)(),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, company_id_decorator_1.CompanyId)()),
     __param(2, (0, common_1.Req)()),
@@ -241,7 +238,7 @@ __decorate([
 ], SystemuserController.prototype, "revertPackage", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, public_decorator_1.Public)(),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, company_id_decorator_1.CompanyId)()),

@@ -10,7 +10,7 @@ export declare class UsersController {
     constructor(usersService: UsersService);
     register(body: CreateUserDto & {
         companyId?: string;
-    }): Promise<{
+    }, companyIdFromQuery?: string): Promise<{
         statusCode: HttpStatus;
         message: string;
         data: import("./entities/user.entity").User;
@@ -23,7 +23,7 @@ export declare class UsersController {
     }>;
     create(body: CreateUserDto & {
         companyId?: string;
-    }): Promise<{
+    }, companyIdFromQuery?: string): Promise<{
         statusCode: HttpStatus;
         message: string;
         data: import("./entities/user.entity").User;

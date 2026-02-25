@@ -77,7 +77,18 @@ function generateOrderPlacedEmail(customerName, orderId, totalAmount, productLis
 </body>
 </html>`;
 }
-function generateOrderProcessingEmail(customerName, orderId, storeName) {
+function generateOrderProcessingEmail(customerName, orderId, storeName, trackingUrl, trackingId) {
+    const trackingCta = trackingUrl
+        ? `<table cellpadding="0" cellspacing="0" style="margin-top: 16px;">
+        <tr>
+          <td>
+            <a href="${trackingUrl}" style="display: inline-block; padding: 10px 18px; border-radius: 999px; background: linear-gradient(to right, #22c55e, #22d3ee); color: #0f172a; font-size: 13px; font-weight: 600; text-decoration: none;">
+              Track your order${trackingId ? ` (#${trackingId})` : ""}
+            </a>
+          </td>
+        </tr>
+      </table>`
+        : "";
     return `
 <!DOCTYPE html>
 <html>
@@ -108,6 +119,8 @@ function generateOrderProcessingEmail(customerName, orderId, storeName) {
                 We’ll send you another email with tracking details as soon as your package is on the way.
               </p>
             </div>
+
+            ${trackingCta}
 
             <p style="margin: 18px 0 0; font-size: 12px; color: #6b7280;">
               Thank you for your patience.

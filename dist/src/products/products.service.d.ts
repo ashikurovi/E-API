@@ -16,10 +16,11 @@ export declare class ProductService {
     private cacheManager;
     constructor(productRepository: Repository<ProductEntity>, categoryRepository: Repository<CategoryEntity>, orderRepository: Repository<Order>, activityLogService: ActivityLogService, notificationsService: NotificationsService, cacheManager: Cache);
     private clearCache;
-    create(createDto: CreateProductDto, companyId: string, performedByUserId?: number): Promise<ProductEntity>;
+    create(createDto: CreateProductDto, companyId: string, performedByUserId?: number, resellerId?: number): Promise<ProductEntity>;
     findAll(companyId: string, options?: {
         relations?: string[];
         status?: 'draft' | 'published' | 'trashed';
+        resellerId?: number;
     }): Promise<ProductEntity[]>;
     findPublic(companyId: string, options?: {
         categorySlug?: string;
@@ -41,8 +42,8 @@ export declare class ProductService {
     }): Promise<ProductEntity>;
     update(id: number, updateDto: UpdateProductDto, companyId: string, performedByUserId?: number): Promise<ProductEntity>;
     softDelete(id: number, companyId: string, performedByUserId?: number): Promise<void>;
-    getTrashedProducts(companyId: string): Promise<ProductEntity[]>;
-    getDraftProducts(companyId: string): Promise<ProductEntity[]>;
+    getTrashedProducts(companyId: string, resellerId?: number): Promise<ProductEntity[]>;
+    getDraftProducts(companyId: string, resellerId?: number): Promise<ProductEntity[]>;
     recoverFromTrash(id: number, companyId: string): Promise<ProductEntity>;
     permanentDelete(id: number, companyId: string, performedByUserId?: number): Promise<void>;
     autoDeleteOldTrash(): Promise<number>;

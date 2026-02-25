@@ -33,13 +33,19 @@ export class CategoryService {
     return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
   }
 
-  async create(createDto: CreateCategoryDto, companyId: string, performedByUserId?: number): Promise<CategoryEntity> {
+  async create(
+    createDto: CreateCategoryDto,
+    companyId: string,
+    performedByUserId?: number,
+    resellerId?: number,
+  ): Promise<CategoryEntity> {
     const category = this.categoryRepository.create({
       name: createDto.name,
       slug: this.generateSlug(createDto.name),
       isActive: createDto.isActive ?? true,
       photo: createDto.photo,
       companyId,
+      resellerId,
     });
 
 
@@ -72,8 +78,8 @@ export class CategoryService {
     return saved;
   }
 
-  async findAll(companyId: string): Promise<CategoryEntity[]> {
-    const cacheKey = `categories:company_${companyId}`;
+  async findAll(companyId: string, resellerId?: number): Promise<CategoryEntity[]> {
+    const cacheKey = `categories:company_${companyId}:${resellerId ?? 'all'}`;
     try {
       const cached = await this.cacheManager.get<CategoryEntity[]>(cacheKey);
       if (cached) return cached;
@@ -81,8 +87,13 @@ export class CategoryService {
       console.error('Cache get error:', e);
     }
 
+    const where: any = { deletedAt: IsNull(), companyId }; // only non-deleted
+    if (resellerId) {
+      where.resellerId = resellerId;
+    }
+
     const categories = await this.categoryRepository.find({
-      where: { deletedAt: IsNull(), companyId }, // only non-deleted
+      where,
       relations: ["parent", "children"],
     });
 

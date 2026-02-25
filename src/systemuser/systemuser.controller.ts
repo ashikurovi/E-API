@@ -42,8 +42,9 @@ export class SystemuserController {
 
   // System Owner/Employee endpoint - requires auth
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @Permission(FeaturePermission.STAFF)
+  // @UseGuards(JwtAuthGuard)
+  // @Permission(FeaturePermission.STAFF)
+  @Public()
   create(
     @Body() createSystemuserDto: CreateSystemuserDto,
     @CompanyId() creatorCompanyId?: string,
@@ -148,7 +149,8 @@ export class SystemuserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
+    @Public()
   // @Permission(FeaturePermission.STAFF)
   findOne(@Param('id') id: string, @CompanyId() companyId?: string, @Req() req?: any) {
     // Superadmins can access any system user (ignore companyId filter)
@@ -177,7 +179,8 @@ export class SystemuserController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
+  @Public()
   // @Permission(FeaturePermission.STAFF)
   update(
     @Param('id') id: string,

@@ -28,6 +28,7 @@ import { CompanyId } from '../common/decorators/company-id.decorator';
 import * as XLSX from 'xlsx';
 import { DashboardService } from '../dashboard/dashboard.service';
 import { Public } from '../common/decorators/public.decorator';
+import { SystemUserRole } from '../systemuser/system-user-role.enum';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, CompanyIdGuard)
@@ -49,10 +50,20 @@ export class ProductController {
       if (!companyId) {
         throw new BadRequestException('companyId is required');
       }
-      const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-        ? +(req.user.userId || req.user.sub) : undefined;
+      const role: SystemUserRole | undefined = req?.user?.role;
+      const numericUserId = +(req?.user?.userId || req?.user?.sub);
+      const performedByUserId =
+        role && [SystemUserRole.SUPER_ADMIN, SystemUserRole.SYSTEM_OWNER, SystemUserRole.EMPLOYEE].includes(role)
+          ? numericUserId
+          : undefined;
+      const resellerId = role === SystemUserRole.RESELLER ? numericUserId : undefined;
 
-      const product = await this.productService.create(createDto, companyId, performedByUserId);
+      const product = await this.productService.create(
+        createDto,
+        companyId,
+        performedByUserId,
+        resellerId,
+      );
       return { statusCode: HttpStatus.CREATED, message: 'Product created', data: product };
     } catch (error) {
       // Re-throw known exceptions, wrap unknown errors
@@ -67,8 +78,19 @@ export class ProductController {
   async findAll(
     @Query('companyId') companyId: string,
     @Query('status') status?: 'draft' | 'published' | 'trashed',
+    @Query('resellerId') resellerIdFromQuery?: string,
+    @Req() req?: any,
   ) {
-    const products = await this.productService.findAll(companyId, { status });
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const resellerId =
+      role === SystemUserRole.RESELLER
+        ? numericUserId
+        : resellerIdFromQuery
+          ? +resellerIdFromQuery
+          : undefined;
+
+    const products = await this.productService.findAll(companyId, { status, resellerId });
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -89,24 +111,61 @@ export class ProductController {
     @Query('companyId') companyIdFromQuery: string,
     @CompanyId() companyIdFromToken: string,
     @Query('status') status?: 'draft' | 'published' | 'trashed',
+    @Query('resellerId') resellerIdFromQuery?: string,
+    @Req() req?: any,
   ) {
     const companyId = companyIdFromQuery || companyIdFromToken;
     if (!companyId) {
       throw new BadRequestException('companyId is required');
     }
-    const products = await this.productService.findAll(companyId, { status });
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const resellerId =
+      role === SystemUserRole.RESELLER
+        ? numericUserId
+        : resellerIdFromQuery
+          ? +resellerIdFromQuery
+          : undefined;
+
+    const products = await this.productService.findAll(companyId, { status, resellerId });
     return { statusCode: HttpStatus.OK, data: products };
   }
 
   @Get('drafts')
-  async getDrafts(@Query('companyId') companyId: string) {
-    const products = await this.productService.getDraftProducts(companyId);
+  async getDrafts(
+    @Query('companyId') companyId: string,
+    @Query('resellerId') resellerIdFromQuery?: string,
+    @Req() req?: any,
+  ) {
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const resellerId =
+      role === SystemUserRole.RESELLER
+        ? numericUserId
+        : resellerIdFromQuery
+          ? +resellerIdFromQuery
+          : undefined;
+
+    const products = await this.productService.getDraftProducts(companyId, resellerId);
     return { statusCode: HttpStatus.OK, data: products };
   }
 
   @Get('trash')
-  async getTrash(@Query('companyId') companyId: string) {
-    const products = await this.productService.getTrashedProducts(companyId);
+  async getTrash(
+    @Query('companyId') companyId: string,
+    @Query('resellerId') resellerIdFromQuery?: string,
+    @Req() req?: any,
+  ) {
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const resellerId =
+      role === SystemUserRole.RESELLER
+        ? numericUserId
+        : resellerIdFromQuery
+          ? +resellerIdFromQuery
+          : undefined;
+
+    const products = await this.productService.getTrashedProducts(companyId, resellerId);
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -178,6 +237,7 @@ export class ProductController {
     return { statusCode: HttpStatus.OK, data: products };
   }
 
+  @Public()
   @Get('trending')
   async findTrending(
     @Query('companyId') companyId: string,
@@ -481,6 +541,7 @@ export class ProductController {
     };
   }
 
+  @Public()
   @Get("flash-sell/active")
   async getActiveFlashSellProducts(
     @Query('companyId') companyIdFromQuery?: string,

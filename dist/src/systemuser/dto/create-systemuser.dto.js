@@ -109,4 +109,9 @@ __decorate([
     (0, class_validator_1.IsEnum)(system_user_role_enum_1.SystemUserRole),
     __metadata("design:type", String)
 ], CreateSystemuserDto.prototype, "role", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateSystemuserDto.prototype, "resellerCommissionRate", void 0);
 //# sourceMappingURL=create-systemuser.dto.js.map

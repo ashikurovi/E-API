@@ -22,4 +22,5 @@ export declare class CreateSystemuserDto {
     secondaryColor?: string;
     permissions?: FeaturePermission[];
     role?: SystemUserRole;
+    resellerCommissionRate?: number;
 }

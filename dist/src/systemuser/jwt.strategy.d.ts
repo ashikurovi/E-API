@@ -1,6 +1,8 @@
+import { SystemuserService } from './systemuser.service';
 declare const JwtStrategy_base: new (...args: any) => any;
 export declare class JwtStrategy extends JwtStrategy_base {
-    constructor();
+    private readonly systemuserService;
+    constructor(systemuserService: SystemuserService);
     validate(payload: any): Promise<{
         userId: any;
         companyId: any;

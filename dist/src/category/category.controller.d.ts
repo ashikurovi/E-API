@@ -12,7 +12,7 @@ export declare class CategoryController {
         message: string;
         data: import("./entities/category.entity").CategoryEntity;
     }>;
-    findAll(companyIdFromQuery?: string, companyIdFromToken?: string): Promise<{
+    findAll(companyIdFromQuery?: string, companyIdFromToken?: string, resellerIdFromQuery?: string, req?: any): Promise<{
         statusCode: HttpStatus;
         data: import("./entities/category.entity").CategoryEntity[];
     }>;

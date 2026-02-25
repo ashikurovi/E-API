@@ -76,4 +76,9 @@ export class CreateSystemuserDto {
   @IsOptional()
   @IsEnum(SystemUserRole)
   role?: SystemUserRole;
+
+  // For reseller role: optional admin-defined commission % (e.g. 7.5 for 7.5%)
+  @IsOptional()
+  @IsNumber()
+  resellerCommissionRate?: number;
 }

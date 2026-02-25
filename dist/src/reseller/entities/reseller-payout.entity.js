@@ -53,6 +53,10 @@ __decorate([
     __metadata("design:type", String)
 ], ResellerPayout.prototype, "status", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], ResellerPayout.prototype, "paymentDetails", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
     __metadata("design:type", Date)
 ], ResellerPayout.prototype, "paidAt", void 0);

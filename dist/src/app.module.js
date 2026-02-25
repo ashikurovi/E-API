@@ -48,6 +48,7 @@ const credit_note_module_1 = require("./credit-note/credit-note.module");
 const media_module_1 = require("./media/media.module");
 const reseller_module_1 = require("./reseller/reseller.module");
 const cache_manager_1 = require("@nestjs/cache-manager");
+const top_products_module_1 = require("./top-products/top-products.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -109,6 +110,7 @@ exports.AppModule = AppModule = __decorate([
             credit_note_module_1.CreditNoteModule,
             media_module_1.MediaModule,
             reseller_module_1.ResellerModule,
+            top_products_module_1.TopProductsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

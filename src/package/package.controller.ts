@@ -35,6 +35,7 @@ export class PackageController {
   }
 
   @Get(':id')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string) {
     const data = await this.packageService.findOne(+id);
@@ -46,6 +47,7 @@ export class PackageController {
   }
 
   @Patch(':id')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async update(@Param('id') id: string, @Body() updatePackageDto: UpdatePackageDto) {
     const data = await this.packageService.update(+id, updatePackageDto);

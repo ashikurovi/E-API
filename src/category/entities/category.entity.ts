@@ -20,6 +20,9 @@ export class CategoryEntity {
   @Column({ nullable: false })
   companyId: string;
 
+  @Column({ nullable: true })
+  resellerId?: number;
+
   @ManyToOne(() => CategoryEntity, (cat) => cat.children, { nullable: true })
   parent: CategoryEntity | null;
 

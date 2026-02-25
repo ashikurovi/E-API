@@ -113,6 +113,7 @@ let OrderService = class OrderService {
                 const finalPrice = product.discountPrice || product.price;
                 const itemData = {
                     productId: product.id,
+                    resellerId: product.resellerId ?? undefined,
                     product: {
                         id: product.id,
                         name: product.name,
@@ -228,14 +229,28 @@ let OrderService = class OrderService {
             }
         }
     }
-    async findAll(companyId) {
-        return this.orderRepo.find({
+    async findAll(companyId, resellerId) {
+        const orders = await this.orderRepo.find({
             where: {
                 companyId,
-                deletedAt: (0, typeorm_2.IsNull)()
+                deletedAt: (0, typeorm_2.IsNull)(),
             },
-            relations: ["customer"]
+            relations: ["customer"],
+            order: { createdAt: 'DESC' },
         });
+        if (!resellerId) {
+            return orders;
+        }
+        return orders
+            .map((o) => {
+            const ownItems = (o.items || []).filter((it) => it.resellerId === resellerId);
+            if (ownItems.length === 0)
+                return null;
+            const clone = { ...o };
+            clone.items = ownItems;
+            return clone;
+        })
+            .filter(Boolean);
     }
     async getStats(companyId) {
         const orders = await this.orderRepo.find({
@@ -823,10 +838,16 @@ let OrderService = class OrderService {
                     subject = `Order #${order.id} received - thank you for your order`;
                     html = (0, order_status_email_templates_1.generateOrderPlacedEmail)(customerName, order.id, Number(order.totalAmount), productList, storeName);
                     break;
-                case "processing":
+                case "processing": {
                     subject = `Order #${order.id} is now being processed`;
-                    html = (0, order_status_email_templates_1.generateOrderProcessingEmail)(customerName, order.id, storeName);
+                    const frontendBase = 'https://xinzo.shop ';
+                    const trackingId = order.shippingTrackingId ?? undefined;
+                    const trackingUrl = frontendBase && trackingId
+                        ? `${frontendBase.replace(/\/+$/, "")}/order-tracking?trackingId=${encodeURIComponent(trackingId)}`
+                        : undefined;
+                    html = (0, order_status_email_templates_1.generateOrderProcessingEmail)(customerName, order.id, storeName, trackingUrl, trackingId);
                     break;
+                }
                 case "shipped":
                     subject = `Order #${order.id} has been shipped`;
                     html = (0, order_status_email_templates_1.generateOrderShippedEmail)(customerName, order.id, order.shippingTrackingId ?? undefined, order.shippingProvider ?? undefined, storeName);

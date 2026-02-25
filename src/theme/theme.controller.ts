@@ -14,6 +14,7 @@ import { ThemeService } from './theme.service';
 import { CreateThemeDto } from './dto/create-theme.dto';
 import { UpdateThemeDto } from './dto/update-theme.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('theme')
 @UseGuards(JwtAuthGuard)
@@ -32,6 +33,7 @@ export class ThemeController {
   }
 
   @Get()
+  @Public()
   @HttpCode(HttpStatus.OK)
   async findAll() {
     const themes = await this.themeService.findAll();

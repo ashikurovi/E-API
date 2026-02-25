@@ -12,8 +12,8 @@ export declare class CategoryService {
     constructor(categoryRepository: Repository<CategoryEntity>, activityLogService: ActivityLogService, dataSource: DataSource, cacheManager: Cache);
     private clearCache;
     private generateSlug;
-    create(createDto: CreateCategoryDto, companyId: string, performedByUserId?: number): Promise<CategoryEntity>;
-    findAll(companyId: string): Promise<CategoryEntity[]>;
+    create(createDto: CreateCategoryDto, companyId: string, performedByUserId?: number, resellerId?: number): Promise<CategoryEntity>;
+    findAll(companyId: string, resellerId?: number): Promise<CategoryEntity[]>;
     findPublic(companyId: string): Promise<CategoryEntity[]>;
     findOne(id: number, companyId: string): Promise<CategoryEntity>;
     update(id: number, updateDto: UpdateCategoryDto, companyId: string, performedByUserId?: number): Promise<CategoryEntity>;

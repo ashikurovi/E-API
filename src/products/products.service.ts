@@ -39,7 +39,12 @@ export class ProductService {
     }
   }
 
-  async create(createDto: CreateProductDto, companyId: string, performedByUserId?: number): Promise<ProductEntity> {
+  async create(
+    createDto: CreateProductDto,
+    companyId: string,
+    performedByUserId?: number,
+    resellerId?: number,
+  ): Promise<ProductEntity> {
     if (!companyId) {
       throw new BadRequestException("CompanyId is required");
     }
@@ -97,6 +102,7 @@ export class ProductService {
         width: createDto.width,
         unit: createDto.unit ?? 'Piece',
         companyId,
+        resellerId,
       });
 
       const saved = await this.productRepository.save(product);
@@ -155,7 +161,14 @@ export class ProductService {
     }
   }
 
-  async findAll(companyId: string, options?: { relations?: string[], status?: 'draft' | 'published' | 'trashed' }): Promise<ProductEntity[]> {
+  async findAll(
+    companyId: string,
+    options?: {
+      relations?: string[];
+      status?: 'draft' | 'published' | 'trashed';
+      resellerId?: number;
+    },
+  ): Promise<ProductEntity[]> {
     const cacheKey = `products:company_${companyId}:list:${JSON.stringify(options || {})}`;
     try {
       const cached = await this.cacheManager.get<ProductEntity[]>(cacheKey);
@@ -172,6 +185,10 @@ export class ProductService {
       where.status = options.status;
     } else {
       where.status = 'published';
+    }
+
+    if (options?.resellerId) {
+      where.resellerId = options.resellerId;
     }
 
     const result = await this.productRepository.find({
@@ -272,7 +289,6 @@ export class ProductService {
       flashSellEndTime: true,
       stock: true,
       createdAt: true,
-      categoryId: true,
       category: {
         id: true,
         name: true,
@@ -317,7 +333,9 @@ export class ProductService {
       status: 'published',
       deletedAt: IsNull(),
       isActive: true,
-      categoryId: categoryIdToFilter,
+      category: {
+        id: categoryIdToFilter,
+      },
     };
 
     return this.productRepository.find({
@@ -642,17 +660,26 @@ export class ProductService {
     await this.clearCache(companyId);
   }
 
-  async getTrashedProducts(companyId: string): Promise<ProductEntity[]> {
+  async getTrashedProducts(companyId: string, resellerId?: number): Promise<ProductEntity[]> {
     return this.productRepository.find({
-      where: { status: 'trashed', companyId },
+      where: {
+        status: 'trashed',
+        companyId,
+        ...(resellerId ? { resellerId } : {}),
+      },
       relations: ["category"],
       withDeleted: true, // Include soft-deleted (trashed) records
     });
   }
 
-  async getDraftProducts(companyId: string): Promise<ProductEntity[]> {
+  async getDraftProducts(companyId: string, resellerId?: number): Promise<ProductEntity[]> {
     return this.productRepository.find({
-      where: { status: 'draft', deletedAt: IsNull(), companyId },
+      where: {
+        status: 'draft',
+        deletedAt: IsNull(),
+        companyId,
+        ...(resellerId ? { resellerId } : {}),
+      },
       relations: ["category"],
     });
   }

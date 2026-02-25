@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CompanyIdGuard } from '../common/guards/company-id.guard';
 import { CompanyId } from '../common/decorators/company-id.decorator';
 import { UserId } from '../common/decorators/user-id.decorator';
+import { SystemUserRole } from '../systemuser/system-user-role.enum';
 
 @Controller("orders")
 @UseGuards(JwtAuthGuard, CompanyIdGuard)
@@ -44,8 +45,21 @@ export class OrderController {
   }
 
   @Get()
-  async findAll(@CompanyId() companyId: string) {
-    const o = await this.orderService.findAll(companyId);
+  async findAll(
+    @CompanyId() companyId: string,
+    @Query('resellerId') resellerIdFromQuery?: string,
+    @Req() req?: any,
+  ) {
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const resellerId =
+      role === SystemUserRole.RESELLER
+        ? numericUserId
+        : resellerIdFromQuery
+          ? +resellerIdFromQuery
+          : undefined;
+
+    const o = await this.orderService.findAll(companyId, resellerId);
     return { statusCode: 200, data: o };
   }
 

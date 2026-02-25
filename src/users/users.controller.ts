@@ -21,8 +21,12 @@ export class UsersController {
   @Post('register')
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() body: CreateUserDto & { companyId?: string }) {
-    const { companyId, ...createUserDto } = body;
+  async register(
+    @Body() body: CreateUserDto & { companyId?: string },
+    @Query('companyId') companyIdFromQuery?: string,
+  ) {
+    const companyId = body.companyId || companyIdFromQuery;
+    const { companyId: _ignored, ...createUserDto } = body;
     if (!companyId) {
       throw new BadRequestException('CompanyId is required');
     }
@@ -49,8 +53,10 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() body: CreateUserDto & { companyId?: string },
+    @Query('companyId') companyIdFromQuery?: string,
   ) {
-    const { companyId, ...createUserDto } = body;
+    const companyId = body.companyId || companyIdFromQuery;
+    const { companyId: _ignored, ...createUserDto } = body;
     if (!companyId) {
       throw new BadRequestException('CompanyId is required');
     }

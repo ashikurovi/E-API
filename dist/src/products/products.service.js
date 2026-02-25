@@ -43,7 +43,7 @@ let ProductService = class ProductService {
             console.error('Failed to clear product cache:', e);
         }
     }
-    async create(createDto, companyId, performedByUserId) {
+    async create(createDto, companyId, performedByUserId, resellerId) {
         if (!companyId) {
             throw new common_1.BadRequestException("CompanyId is required");
         }
@@ -94,6 +94,7 @@ let ProductService = class ProductService {
                 width: createDto.width,
                 unit: createDto.unit ?? 'Piece',
                 companyId,
+                resellerId,
             });
             const saved = await this.productRepository.save(product);
             if (performedByUserId) {
@@ -153,6 +154,9 @@ let ProductService = class ProductService {
         }
         else {
             where.status = 'published';
+        }
+        if (options?.resellerId) {
+            where.resellerId = options.resellerId;
         }
         const result = await this.productRepository.find({
             where,
@@ -227,7 +231,6 @@ let ProductService = class ProductService {
             flashSellEndTime: true,
             stock: true,
             createdAt: true,
-            categoryId: true,
             category: {
                 id: true,
                 name: true,
@@ -272,7 +275,9 @@ let ProductService = class ProductService {
             status: 'published',
             deletedAt: (0, typeorm_2.IsNull)(),
             isActive: true,
-            categoryId: categoryIdToFilter,
+            category: {
+                id: categoryIdToFilter,
+            },
         };
         return this.productRepository.find({
             select,
@@ -569,16 +574,25 @@ let ProductService = class ProductService {
         }
         await this.clearCache(companyId);
     }
-    async getTrashedProducts(companyId) {
+    async getTrashedProducts(companyId, resellerId) {
         return this.productRepository.find({
-            where: { status: 'trashed', companyId },
+            where: {
+                status: 'trashed',
+                companyId,
+                ...(resellerId ? { resellerId } : {}),
+            },
             relations: ["category"],
             withDeleted: true,
         });
     }
-    async getDraftProducts(companyId) {
+    async getDraftProducts(companyId, resellerId) {
         return this.productRepository.find({
-            where: { status: 'draft', deletedAt: (0, typeorm_2.IsNull)(), companyId },
+            where: {
+                status: 'draft',
+                deletedAt: (0, typeorm_2.IsNull)(),
+                companyId,
+                ...(resellerId ? { resellerId } : {}),
+            },
             relations: ["category"],
         });
     }

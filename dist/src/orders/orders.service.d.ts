@@ -29,7 +29,7 @@ export declare class OrderService {
         order: Order;
         payment: any;
     }>;
-    findAll(companyId: string): Promise<Order[]>;
+    findAll(companyId: string, resellerId?: number): Promise<Order[]>;
     getStats(companyId: string): Promise<{
         total: number;
         pending: number;
@@ -45,7 +45,7 @@ export declare class OrderService {
     findByCustomerId(customerId: number, companyId: string): Promise<Order[]>;
     findByTrackingId(trackingId: string): Promise<{
         orderId: number;
-        status: "pending" | "paid" | "cancelled" | "refunded" | "processing" | "shipped" | "delivered";
+        status: "pending" | "processing" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
         message: string;
         trackingId: string;
         shippingProvider: string;

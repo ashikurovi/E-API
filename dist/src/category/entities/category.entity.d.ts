@@ -5,6 +5,7 @@ export declare class CategoryEntity {
     isActive: boolean;
     photo: string;
     companyId: string;
+    resellerId?: number;
     parent: CategoryEntity | null;
     children: CategoryEntity[];
     createdAt: Date;

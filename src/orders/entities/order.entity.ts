@@ -24,6 +24,7 @@ export class Order {
   @Column('json', { nullable: true })
   items: Array<{
     productId: number;
+    resellerId?: number;
     product?: {
       id: number;
       name: string;

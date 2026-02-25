@@ -25,6 +25,7 @@ const company_id_decorator_1 = require("../common/decorators/company-id.decorato
 const XLSX = require("xlsx");
 const dashboard_service_1 = require("../dashboard/dashboard.service");
 const public_decorator_1 = require("../common/decorators/public.decorator");
+const system_user_role_enum_1 = require("../systemuser/system-user-role.enum");
 let ProductController = class ProductController {
     constructor(productService, dashboardService) {
         this.productService = productService;
@@ -36,9 +37,13 @@ let ProductController = class ProductController {
             if (!companyId) {
                 throw new common_1.BadRequestException('companyId is required');
             }
-            const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-                ? +(req.user.userId || req.user.sub) : undefined;
-            const product = await this.productService.create(createDto, companyId, performedByUserId);
+            const role = req?.user?.role;
+            const numericUserId = +(req?.user?.userId || req?.user?.sub);
+            const performedByUserId = role && [system_user_role_enum_1.SystemUserRole.SUPER_ADMIN, system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER, system_user_role_enum_1.SystemUserRole.EMPLOYEE].includes(role)
+                ? numericUserId
+                : undefined;
+            const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER ? numericUserId : undefined;
+            const product = await this.productService.create(createDto, companyId, performedByUserId, resellerId);
             return { statusCode: common_1.HttpStatus.CREATED, message: 'Product created', data: product };
         }
         catch (error) {
@@ -48,8 +53,15 @@ let ProductController = class ProductController {
             throw new common_1.BadRequestException(error.message || 'Failed to create product');
         }
     }
-    async findAll(companyId, status) {
-        const products = await this.productService.findAll(companyId, { status });
+    async findAll(companyId, status, resellerIdFromQuery, req) {
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER
+            ? numericUserId
+            : resellerIdFromQuery
+                ? +resellerIdFromQuery
+                : undefined;
+        const products = await this.productService.findAll(companyId, { status, resellerId });
         return { statusCode: common_1.HttpStatus.OK, data: products };
     }
     async findAllPublic(companyId) {
@@ -59,20 +71,41 @@ let ProductController = class ProductController {
         const products = await this.productService.findAll(companyId);
         return { statusCode: common_1.HttpStatus.OK, data: products };
     }
-    async findAllForAdmin(companyIdFromQuery, companyIdFromToken, status) {
+    async findAllForAdmin(companyIdFromQuery, companyIdFromToken, status, resellerIdFromQuery, req) {
         const companyId = companyIdFromQuery || companyIdFromToken;
         if (!companyId) {
             throw new common_1.BadRequestException('companyId is required');
         }
-        const products = await this.productService.findAll(companyId, { status });
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER
+            ? numericUserId
+            : resellerIdFromQuery
+                ? +resellerIdFromQuery
+                : undefined;
+        const products = await this.productService.findAll(companyId, { status, resellerId });
         return { statusCode: common_1.HttpStatus.OK, data: products };
     }
-    async getDrafts(companyId) {
-        const products = await this.productService.getDraftProducts(companyId);
+    async getDrafts(companyId, resellerIdFromQuery, req) {
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER
+            ? numericUserId
+            : resellerIdFromQuery
+                ? +resellerIdFromQuery
+                : undefined;
+        const products = await this.productService.getDraftProducts(companyId, resellerId);
         return { statusCode: common_1.HttpStatus.OK, data: products };
     }
-    async getTrash(companyId) {
-        const products = await this.productService.getTrashedProducts(companyId);
+    async getTrash(companyId, resellerIdFromQuery, req) {
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER
+            ? numericUserId
+            : resellerIdFromQuery
+                ? +resellerIdFromQuery
+                : undefined;
+        const products = await this.productService.getTrashedProducts(companyId, resellerId);
         return { statusCode: common_1.HttpStatus.OK, data: products };
     }
     async getStockHistory(id, companyIdFromQuery, companyIdFromToken, limit) {
@@ -349,8 +382,10 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('companyId')),
     __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('resellerId')),
+    __param(3, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findAll", null);
 __decorate([
@@ -366,22 +401,28 @@ __decorate([
     __param(0, (0, common_1.Query)('companyId')),
     __param(1, (0, company_id_decorator_1.CompanyId)()),
     __param(2, (0, common_1.Query)('status')),
+    __param(3, (0, common_1.Query)('resellerId')),
+    __param(4, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findAllForAdmin", null);
 __decorate([
     (0, common_1.Get)('drafts'),
     __param(0, (0, common_1.Query)('companyId')),
+    __param(1, (0, common_1.Query)('resellerId')),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "getDrafts", null);
 __decorate([
     (0, common_1.Get)('trash'),
     __param(0, (0, common_1.Query)('companyId')),
+    __param(1, (0, common_1.Query)('resellerId')),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "getTrash", null);
 __decorate([
@@ -416,6 +457,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findByCategoryPublic", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('trending'),
     __param(0, (0, common_1.Query)('companyId')),
     __param(1, (0, common_1.Query)('days')),
@@ -541,6 +583,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "removeFlashSell", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)("flash-sell/active"),
     __param(0, (0, common_1.Query)('companyId')),
     __param(1, (0, company_id_decorator_1.CompanyId)()),

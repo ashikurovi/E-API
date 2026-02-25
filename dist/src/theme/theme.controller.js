@@ -18,6 +18,7 @@ const theme_service_1 = require("./theme.service");
 const create_theme_dto_1 = require("./dto/create-theme.dto");
 const update_theme_dto_1 = require("./dto/update-theme.dto");
 const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
+const public_decorator_1 = require("../common/decorators/public.decorator");
 let ThemeController = class ThemeController {
     constructor(themeService) {
         this.themeService = themeService;
@@ -73,6 +74,7 @@ __decorate([
 ], ThemeController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, public_decorator_1.Public)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

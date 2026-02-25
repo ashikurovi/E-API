@@ -13,7 +13,7 @@ export declare class ProductController {
         message: string;
         data: import("./entities/product.entity").ProductEntity;
     }>;
-    findAll(companyId: string, status?: 'draft' | 'published' | 'trashed'): Promise<{
+    findAll(companyId: string, status?: 'draft' | 'published' | 'trashed', resellerIdFromQuery?: string, req?: any): Promise<{
         statusCode: HttpStatus;
         data: import("./entities/product.entity").ProductEntity[];
     }>;
@@ -21,15 +21,15 @@ export declare class ProductController {
         statusCode: HttpStatus;
         data: import("./entities/product.entity").ProductEntity[];
     }>;
-    findAllForAdmin(companyIdFromQuery: string, companyIdFromToken: string, status?: 'draft' | 'published' | 'trashed'): Promise<{
+    findAllForAdmin(companyIdFromQuery: string, companyIdFromToken: string, status?: 'draft' | 'published' | 'trashed', resellerIdFromQuery?: string, req?: any): Promise<{
         statusCode: HttpStatus;
         data: import("./entities/product.entity").ProductEntity[];
     }>;
-    getDrafts(companyId: string): Promise<{
+    getDrafts(companyId: string, resellerIdFromQuery?: string, req?: any): Promise<{
         statusCode: HttpStatus;
         data: import("./entities/product.entity").ProductEntity[];
     }>;
-    getTrash(companyId: string): Promise<{
+    getTrash(companyId: string, resellerIdFromQuery?: string, req?: any): Promise<{
         statusCode: HttpStatus;
         data: import("./entities/product.entity").ProductEntity[];
     }>;

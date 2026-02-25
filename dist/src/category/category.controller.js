@@ -22,6 +22,7 @@ const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
 const company_id_guard_1 = require("../common/guards/company-id.guard");
 const dashboard_service_1 = require("../dashboard/dashboard.service");
 const public_decorator_1 = require("../common/decorators/public.decorator");
+const system_user_role_enum_1 = require("../systemuser/system-user-role.enum");
 let CategoryController = class CategoryController {
     constructor(categoryService, dashboardService) {
         this.categoryService = categoryService;
@@ -31,14 +32,25 @@ let CategoryController = class CategoryController {
         const companyId = companyIdFromQuery || companyIdFromToken;
         if (!companyId)
             throw new common_1.BadRequestException("companyId is required");
-        const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-            ? +(req.user.userId || req.user.sub) : undefined;
-        const category = await this.categoryService.create(createDto, companyId, performedByUserId);
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const performedByUserId = role && [system_user_role_enum_1.SystemUserRole.SUPER_ADMIN, system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER, system_user_role_enum_1.SystemUserRole.EMPLOYEE].includes(role)
+            ? numericUserId
+            : undefined;
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER ? numericUserId : undefined;
+        const category = await this.categoryService.create(createDto, companyId, performedByUserId, resellerId);
         return { statusCode: common_1.HttpStatus.CREATED, message: "Category created", data: category };
     }
-    async findAll(companyIdFromQuery, companyIdFromToken) {
+    async findAll(companyIdFromQuery, companyIdFromToken, resellerIdFromQuery, req) {
         const companyId = companyIdFromQuery || companyIdFromToken;
-        const categories = await this.categoryService.findAll(companyId);
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER
+            ? numericUserId
+            : resellerIdFromQuery
+                ? +resellerIdFromQuery
+                : undefined;
+        const categories = await this.categoryService.findAll(companyId, resellerId);
         return { statusCode: common_1.HttpStatus.OK, data: categories };
     }
     async listTrash(companyIdFromQuery, companyIdFromToken) {
@@ -112,8 +124,10 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)("companyId")),
     __param(1, (0, company_id_decorator_1.CompanyId)()),
+    __param(2, (0, common_1.Query)("resellerId")),
+    __param(3, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], CategoryController.prototype, "findAll", null);
 __decorate([

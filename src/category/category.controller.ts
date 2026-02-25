@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CompanyIdGuard } from '../common/guards/company-id.guard';
 import { DashboardService } from '../dashboard/dashboard.service';
 import { Public } from '../common/decorators/public.decorator';
+import { SystemUserRole } from '../systemuser/system-user-role.enum';
 
 @Controller("categories")
 @UseGuards(JwtAuthGuard, CompanyIdGuard)
@@ -25,19 +26,44 @@ export class CategoryController {
   ) {
     const companyId = companyIdFromQuery || companyIdFromToken;
     if (!companyId) throw new BadRequestException("companyId is required");
-    const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-      ? +(req.user.userId || req.user.sub) : undefined;
-    const category = await this.categoryService.create(createDto, companyId as string, performedByUserId);
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const performedByUserId =
+      role && [SystemUserRole.SUPER_ADMIN, SystemUserRole.SYSTEM_OWNER, SystemUserRole.EMPLOYEE].includes(role)
+        ? numericUserId
+        : undefined;
+    const resellerId = role === SystemUserRole.RESELLER ? numericUserId : undefined;
+
+    const category = await this.categoryService.create(
+      createDto,
+      companyId as string,
+      performedByUserId,
+      resellerId,
+    );
     return { statusCode: HttpStatus.CREATED, message: "Category created", data: category };
   }
 
   @Get()
   async findAll(
     @Query("companyId") companyIdFromQuery?: string,
-    @CompanyId() companyIdFromToken?: string
+    @CompanyId() companyIdFromToken?: string,
+    @Query("resellerId") resellerIdFromQuery?: string,
+    @Req() req?: any,
   ) {
     const companyId = companyIdFromQuery || companyIdFromToken;
-    const categories = await this.categoryService.findAll(companyId as string);
+    const role: SystemUserRole | undefined = req?.user?.role;
+    const numericUserId = +(req?.user?.userId || req?.user?.sub);
+    const resellerId =
+      role === SystemUserRole.RESELLER
+        ? numericUserId
+        : resellerIdFromQuery
+          ? +resellerIdFromQuery
+          : undefined;
+
+    const categories = await this.categoryService.findAll(
+      companyId as string,
+      resellerId,
+    );
     return { statusCode: HttpStatus.OK, data: categories };
   }
 

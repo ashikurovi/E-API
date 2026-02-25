@@ -20,6 +20,7 @@ const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
 const company_id_guard_1 = require("../common/guards/company-id.guard");
 const company_id_decorator_1 = require("../common/decorators/company-id.decorator");
 const user_id_decorator_1 = require("../common/decorators/user-id.decorator");
+const system_user_role_enum_1 = require("../systemuser/system-user-role.enum");
 let OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
@@ -42,8 +43,15 @@ let OrderController = class OrderController {
         const o = await this.orderService.findByCustomerId(id, companyId);
         return { statusCode: 200, message: 'Customer orders fetched', data: o };
     }
-    async findAll(companyId) {
-        const o = await this.orderService.findAll(companyId);
+    async findAll(companyId, resellerIdFromQuery, req) {
+        const role = req?.user?.role;
+        const numericUserId = +(req?.user?.userId || req?.user?.sub);
+        const resellerId = role === system_user_role_enum_1.SystemUserRole.RESELLER
+            ? numericUserId
+            : resellerIdFromQuery
+                ? +resellerIdFromQuery
+                : undefined;
+        const o = await this.orderService.findAll(companyId, resellerId);
         return { statusCode: 200, data: o };
     }
     async getStats(companyId) {
@@ -145,8 +153,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, company_id_decorator_1.CompanyId)()),
+    __param(1, (0, common_1.Query)('resellerId')),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "findAll", null);
 __decorate([

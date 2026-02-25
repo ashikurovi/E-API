@@ -64,6 +64,30 @@ let SystemuserService = class SystemuserService {
             console.error('Failed to send update email:', error);
         }
     }
+    async notifyAdminNewReseller(user) {
+        try {
+            const adminEmail = this.configService.get('RESELLER_ADMIN_EMAIL') ||
+                'xinzo.shop@gmail.com';
+            const companyLabel = user.companyName || user.companyId;
+            const subjectPrefix = companyLabel ? `${companyLabel} - ` : '';
+            const html = `
+        <p>A new reseller account has been created or updated.</p>
+        <p><strong>Name:</strong> ${user.name || ''}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
+        <p><strong>Company:</strong> ${user.companyName || ''}</p>
+        <p><strong>Company ID:</strong> ${user.companyId}</p>
+        <p>You can review this user in the admin console and set their password / approval status.</p>
+      `;
+            await this.mailer.sendMail({
+                to: adminEmail,
+                subject: `${subjectPrefix}New reseller account pending approval`,
+                html,
+            });
+        }
+        catch (error) {
+            console.error('Failed to send new reseller admin notification:', error);
+        }
+    }
     async sendWelcomeEmail(user, password) {
         try {
             const html = email_templates_1.EmailTemplates.getWelcomeEmailTemplate(user, password);
@@ -298,6 +322,9 @@ let SystemuserService = class SystemuserService {
             themeId: dto.themeId ?? null,
             permissions,
             role,
+            resellerCommissionRate: dto.resellerCommissionRate != null
+                ? dto.resellerCommissionRate
+                : null,
         });
         await this.systemUserRepo.save(entity);
         const createdUser = await this.systemUserRepo.findOne({
@@ -328,6 +355,9 @@ let SystemuserService = class SystemuserService {
         }
         if (role === system_user_role_enum_1.SystemUserRole.EMPLOYEE && creatorRole === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER && createdUser) {
             await this.sendWelcomeEmail(createdUser, dto.password);
+        }
+        if (role === system_user_role_enum_1.SystemUserRole.RESELLER && createdUser) {
+            await this.notifyAdminNewReseller(createdUser);
         }
         const { passwordHash, passwordSalt, ...safe } = createdUser;
         return safe;
@@ -366,6 +396,8 @@ let SystemuserService = class SystemuserService {
         const entity = await this.systemUserRepo.findOne({ where: whereCondition });
         if (!entity)
             throw new common_1.NotFoundException('System user not found');
+        const previousRole = entity.role;
+        const previousIsActive = entity.isActive;
         let passwordUpdated = false;
         let newPassword;
         if (dto.email && dto.email !== entity.email) {
@@ -452,6 +484,12 @@ let SystemuserService = class SystemuserService {
         if (dto.paymentInfo !== undefined) {
             entity.paymentInfo = dto.paymentInfo;
         }
+        if (dto.resellerCommissionRate !== undefined) {
+            entity.resellerCommissionRate =
+                dto.resellerCommissionRate != null
+                    ? dto.resellerCommissionRate
+                    : null;
+        }
         if (dto.packageId !== undefined) {
             const newPackageId = dto.packageId;
             const currentPackageId = entity.packageId ?? entity.packageId;
@@ -520,6 +558,61 @@ let SystemuserService = class SystemuserService {
         });
         if (passwordUpdated && newPassword) {
             await this.sendUpdateEmail(updatedUser, newPassword);
+        }
+        if (previousRole !== system_user_role_enum_1.SystemUserRole.RESELLER &&
+            updatedUser.role === system_user_role_enum_1.SystemUserRole.RESELLER) {
+            await this.notifyAdminNewReseller(updatedUser);
+        }
+        if (!previousIsActive && updatedUser?.isActive && updatedUser.email) {
+            try {
+                const displayCompany = updatedUser?.companyName;
+                const subjectPrefix = displayCompany ? `${displayCompany} - ` : '';
+                const subject = `${subjectPrefix}Your account is now active`;
+                const greetingName = updatedUser.name || updatedUser.email;
+                const loginUrl = this.configService.get('RESELLER_LOGIN_URL') ||
+                    'https://xinzo.shop';
+                const html = `
+          <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #f4f4f5; padding: 24px;">
+            <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; padding: 24px 24px 20px; box-shadow: 0 10px 30px rgba(15,23,42,0.12);">
+              <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #6366f1; font-weight: 600; margin-bottom: 6px;">
+                Account activated
+              </div>
+              <h1 style="margin: 0 0 12px; font-size: 20px; line-height: 1.3; color: #0f172a;">
+                Hi ${greetingName},
+              </h1>
+              <p style="margin: 0 0 8px; font-size: 14px; color: #4b5563;">
+                আপনার একাউন্টটি <strong>সফলভাবে অ্যাক্টিভ</strong> করা হয়েছে। এখন আপনি লগইন করে আপনার ড্যাশবোর্ড ব্যবহার করতে পারবেন।
+              </p>
+              <p style="margin: 0 0 16px; font-size: 13px; color: #6b7280;">
+                You can now sign in to your dashboard using your email address. If you don&apos;t remember your password, please use the &quot;Forgot password&quot; option on the login page.
+              </p>
+
+              <div style="margin: 18px 0 20px; text-align: center;">
+                <a href="${loginUrl}" style="display: inline-block; padding: 10px 20px; border-radius: 999px; background: linear-gradient(90deg,#4f46e5,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
+                  Go to dashboard
+                </a>
+              </div>
+
+              <div style="border-top: 1px solid #e5e7eb; margin-top: 16px; padding-top: 12px;">
+                <p style="margin: 0 0 4px; font-size: 11px; color: #9ca3af;">
+                  Login URL: <a href="${loginUrl}" style="color: #4f46e5; text-decoration: none;">${loginUrl}</a>
+                </p>
+                <p style="margin: 0; font-size: 11px; color: #9ca3af;">
+                  If you did not expect this email, you can ignore it.
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+                await this.mailer.sendMail({
+                    to: updatedUser.email,
+                    subject,
+                    html,
+                });
+            }
+            catch (error) {
+                console.error('Failed to send system user activation email:', error);
+            }
         }
         if (performedByUserId && updatedUser) {
             try {
@@ -660,6 +753,9 @@ let SystemuserService = class SystemuserService {
         const hash = this.hashPassword(dto.password, user.passwordSalt);
         if (hash !== user.passwordHash)
             throw new common_1.NotFoundException('Invalid credentials');
+        if (!user.isActive && user.role === system_user_role_enum_1.SystemUserRole.RESELLER) {
+            throw new common_1.BadRequestException('Your reseller account is inactive. Please clear pending payments and contact the admin.');
+        }
         const payload = {
             sub: user.id,
             userId: user.id,

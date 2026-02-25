@@ -8,6 +8,7 @@ export declare class Order {
     customerAddress?: string;
     items: Array<{
         productId: number;
+        resellerId?: number;
         product?: {
             id: number;
             name: string;

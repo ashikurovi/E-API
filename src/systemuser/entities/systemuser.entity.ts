@@ -169,6 +169,14 @@ export class SystemUser {
   })
   role: SystemUserRole;
 
+  /**
+   * Optional commission rate (%) that admin charges this reseller
+   * on each delivered sale of their products.
+   * Example: 7.5 means 7.5% of reseller product revenue is admin's commission.
+   */
+  @Column('decimal', { precision: 5, scale: 2, nullable: true })
+  resellerCommissionRate?: number | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -13,27 +13,37 @@ exports.JwtStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
+const systemuser_service_1 = require("./systemuser.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor() {
+    constructor(systemuserService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
             secretOrKey: process.env.JWT_SECRET || 'change-me-in-prod',
         });
+        this.systemuserService = systemuserService;
     }
     async validate(payload) {
+        const userId = payload.userId || payload.sub;
+        if (!userId) {
+            return null;
+        }
+        const user = await this.systemuserService.findOne(Number(userId));
+        if (!user || !user.isActive) {
+            return null;
+        }
         return {
-            userId: payload.userId || payload.sub,
-            companyId: payload.companyId,
-            email: payload.email,
-            permissions: payload.permissions || [],
-            role: payload.role,
+            userId: user.id,
+            companyId: user.companyId,
+            email: user.email,
+            permissions: user.permissions || [],
+            role: user.role,
         };
     }
 };
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [systemuser_service_1.SystemuserService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map
