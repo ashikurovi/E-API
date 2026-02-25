@@ -35,7 +35,7 @@ let MediaController = class MediaController {
             throw new common_1.BadRequestException('File is required');
         }
         const media = await this.mediaService.uploadFile(file, companyId);
-        const baseUrl = 'https://squadcart-backend.up.railway.app';
+        const baseUrl = 'https://e-api-omega.vercel.app';
         const fullUrl = media.url.startsWith('http') ? media.url : `${baseUrl}${media.url}`;
         return {
             statusCode: common_1.HttpStatus.CREATED,
