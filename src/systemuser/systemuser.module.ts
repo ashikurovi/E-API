@@ -17,6 +17,7 @@ import { DomainController } from './domain.controller';
 import { DnsVerificationService } from './dns-verification.service';
 import { CloudflareCustomDomainService } from './cloudflare-custom-domain.service';
 import { DomainVerificationCronService } from './domain-verification-cron.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DomainVerificationCronService } from './domain-verification-cron.servic
       signOptions: { expiresIn: '24d' }, // 24 days token expiration
     }),
     SuperadminModule,
+    UsersModule,
   ],
   controllers: [SystemuserController, AuthController, DomainController],
   providers: [
