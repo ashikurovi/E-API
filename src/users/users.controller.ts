@@ -66,7 +66,7 @@ export class UsersController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard, CompanyIdGuard)
+  @UseGuards(CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
   async getCurrentUser(@UserId() userId: number, @CompanyId() companyId: string) {
     const user = await this.usersService.findOne(userId, companyId);
