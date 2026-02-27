@@ -397,7 +397,14 @@ export class SystemuserService {
     // Super Admin or System Owner can create System Owner
     // System Owner can create other System Owners (they share the same companyId)
     if (role === SystemUserRole.SYSTEM_OWNER) {
-      if (creatorRole && creatorRole !== SystemUserRole.SUPER_ADMIN && creatorRole !== SystemUserRole.SYSTEM_OWNER) {
+      // Normalize creator role to support both enum values and raw string 'SUPER_ADMIN'
+      const normalizedCreatorRole = creatorRole as any;
+      if (
+        normalizedCreatorRole &&
+        normalizedCreatorRole !== SystemUserRole.SUPER_ADMIN &&
+        normalizedCreatorRole !== 'SUPER_ADMIN' &&
+        normalizedCreatorRole !== SystemUserRole.SYSTEM_OWNER
+      ) {
         throw new BadRequestException('Only Super Admin or System Owner can create System Owner');
       }
     }

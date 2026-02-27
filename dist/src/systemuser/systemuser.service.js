@@ -270,7 +270,11 @@ let SystemuserService = class SystemuserService {
             throw new common_1.BadRequestException('Cannot create SUPER_ADMIN role');
         }
         if (role === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
-            if (creatorRole && creatorRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN && creatorRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
+            const normalizedCreatorRole = creatorRole;
+            if (normalizedCreatorRole &&
+                normalizedCreatorRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN &&
+                normalizedCreatorRole !== 'SUPER_ADMIN' &&
+                normalizedCreatorRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
                 throw new common_1.BadRequestException('Only Super Admin or System Owner can create System Owner');
             }
         }

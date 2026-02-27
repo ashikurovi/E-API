@@ -50,8 +50,10 @@ export class SystemuserController {
     @CompanyId() creatorCompanyId?: string,
     @Req() req?: any,
   ) {
-    // Get creator role and user ID from JWT
-    const creatorRole = req?.user?.role || SystemUserRole.EMPLOYEE;
+    // Get creator role and user ID from JWT (if authenticated)
+    // If there is no authenticated user, creatorRole stays undefined so that
+    // the service can treat this as a "self-created" System Owner.
+    const creatorRole = req?.user?.role as SystemUserRole | undefined;
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     // If creator has companyId, new user will share the same companyId
     // Otherwise, a new companyId will be generated

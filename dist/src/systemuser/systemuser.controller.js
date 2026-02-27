@@ -37,7 +37,7 @@ let SystemuserController = class SystemuserController {
         return this.systemuserService.create(createSystemuserDto, creatorCompanyId, creatorRole, performedByUserId);
     }
     create(createSystemuserDto, creatorCompanyId, req) {
-        const creatorRole = req?.user?.role || system_user_role_enum_1.SystemUserRole.EMPLOYEE;
+        const creatorRole = req?.user?.role;
         const performedByUserId = req?.user?.userId || req?.user?.sub;
         return this.systemuserService.create(createSystemuserDto, creatorCompanyId, creatorRole, performedByUserId);
     }

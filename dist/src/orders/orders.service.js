@@ -840,7 +840,7 @@ let OrderService = class OrderService {
                     break;
                 case "processing": {
                     subject = `Order #${order.id} is now being processed`;
-                    const frontendBase = 'https://xinzo.shop ';
+                    const frontendBase = 'https://xinzo.shop';
                     const trackingId = order.shippingTrackingId ?? undefined;
                     const trackingUrl = frontendBase && trackingId
                         ? `${frontendBase.replace(/\/+$/, "")}/order-tracking?trackingId=${encodeURIComponent(trackingId)}`
