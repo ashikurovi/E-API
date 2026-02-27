@@ -37,7 +37,7 @@ export class AuthController {
     return this.superadminService.login(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('me')
   async getCurrentUser(@Request() req) {
     const userId = req.user?.userId || req.user?.sub;
