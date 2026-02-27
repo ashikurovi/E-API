@@ -45,7 +45,7 @@ export declare class OrderService {
     findByCustomerId(customerId: number, companyId: string): Promise<Order[]>;
     findByTrackingId(trackingId: string): Promise<{
         orderId: number;
-        status: "pending" | "processing" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
+        status: "pending" | "paid" | "cancelled" | "refunded" | "processing" | "shipped" | "delivered";
         message: string;
         trackingId: string;
         shippingProvider: string;

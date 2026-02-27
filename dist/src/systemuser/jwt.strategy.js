@@ -28,17 +28,22 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!userId) {
             return null;
         }
-        const user = await this.systemuserService.findOne(Number(userId));
-        if (!user || !user.isActive) {
+        try {
+            const user = await this.systemuserService.findOne(Number(userId));
+            if (!user || !user.isActive) {
+                return null;
+            }
+            return {
+                userId: user.id,
+                companyId: user.companyId,
+                email: user.email,
+                permissions: user.permissions || [],
+                role: user.role,
+            };
+        }
+        catch {
             return null;
         }
-        return {
-            userId: user.id,
-            companyId: user.companyId,
-            email: user.email,
-            permissions: user.permissions || [],
-            role: user.role,
-        };
     }
 };
 exports.JwtStrategy = JwtStrategy;

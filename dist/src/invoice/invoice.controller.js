@@ -21,7 +21,6 @@ const initiate_bkash_payment_dto_1 = require("./dto/initiate-bkash-payment.dto")
 const bkash_callback_dto_1 = require("./dto/bkash-callback.dto");
 const bank_payment_dto_1 = require("./dto/bank-payment.dto");
 const reject_bank_payment_dto_1 = require("./dto/reject-bank-payment.dto");
-const jwt_auth_guard_1 = require("../common/guards/jwt-auth.guard");
 const public_decorator_1 = require("../common/decorators/public.decorator");
 let InvoiceController = class InvoiceController {
     constructor(invoiceService) {
@@ -177,7 +176,6 @@ __decorate([
 ], InvoiceController.prototype, "remove", null);
 exports.InvoiceController = InvoiceController = __decorate([
     (0, common_1.Controller)('invoice'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [invoice_service_1.InvoiceService])
 ], InvoiceController);
 //# sourceMappingURL=invoice.controller.js.map
