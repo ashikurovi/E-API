@@ -31,51 +31,44 @@ export class MediaService {
     });
     return this.mediaRepository.save(media);
   }
-
-  async uploadFile(
-    file: Express.Multer.File,
-    companyId: string,
-  ): Promise<MediaEntity> {
-    if (!companyId) {
-      throw new BadRequestException('CompanyId is required');
-    }
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
-
-    const allowedMimeTypes = [
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'image/webp',
-      'image/gif',
-    ];
+  async uploadFile(file: Express.Multer.File, companyId: string): Promise<MediaEntity> {
+    if (!companyId) throw new BadRequestException('CompanyId is required');
+    if (!file) throw new BadRequestException('File is required');
+  
+    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      throw new BadRequestException(
-        'Invalid file type. Allowed: JPG, PNG, WEBP, GIF',
-      );
+      throw new BadRequestException('Invalid file type. Allowed: JPG, PNG, WEBP, GIF');
     }
-
+  
     const maxSize = 20 * 1024 * 1024; // 20MB
     if (file.size > maxSize) {
       throw new BadRequestException('File size must be less than 20MB');
     }
-
-    const ext = path.extname(file.originalname) || '.jpg';
-    const type = ext.toUpperCase().replace('.', '');
+  
+    const mimeToExt: Record<string, string> = {
+      'image/jpeg': 'JPG',
+      'image/jpg': 'JPG',
+      'image/png': 'PNG',
+      'image/webp': 'WEBP',
+      'image/gif': 'GIF',
+    };
+    const type = mimeToExt[file.mimetype];
+    const ext = path.extname(file.originalname) || `.${type.toLowerCase()}`;
+  
+    const rawName = path.basename(file.originalname, ext);
+    const title = rawName.replace(/[^a-zA-Z0-9-_]/g, '_') || `image_${Date.now()}`;
     const size = this.formatFileSize(file.size);
-    const title =
-      path.basename(file.originalname, ext) || `image_${Date.now()}`;
-
+    const filename = `${Date.now()}_${file.originalname}`;
+  
     const media = this.mediaRepository.create({
       title,
       type,
       size,
-      url: `/uploads/media/${file.filename}`,
+      url: `/uploads/media/${filename}`,
       companyId,
-      filename: file.filename,
+      filename,
     });
-
+  
     return this.mediaRepository.save(media);
   }
 
