@@ -532,6 +532,17 @@ export class OrderService {
     const order = await this.findOne(id, companyId);
     const previousStatus = order.status;
 
+    // For customer dashboard: only allow cancel within 24 hours.
+    // For admin/system users (performedByUserId is set), allow cancel anytime.
+    if (!performedByUserId) {
+      const created = new Date(order.createdAt);
+      const now = new Date();
+      const hoursDiff = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
+      if (hoursDiff > 24) {
+        throw new BadRequestException("Order can only be cancelled within 24 hours of placement");
+      }
+    }
+
     if (order.status === "cancelled") throw new BadRequestException("Already cancelled");
     if (order.status === "refunded") throw new BadRequestException("Already refunded");
 
