@@ -31,20 +31,31 @@ export class MediaService {
     });
     return this.mediaRepository.save(media);
   }
-  async uploadFile(file: Express.Multer.File, companyId: string): Promise<MediaEntity> {
+  async uploadFile(
+    file: Express.Multer.File,
+    companyId: string,
+  ): Promise<MediaEntity> {
     if (!companyId) throw new BadRequestException('CompanyId is required');
     if (!file) throw new BadRequestException('File is required');
-  
-    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      throw new BadRequestException('Invalid file type. Allowed: JPG, PNG, WEBP, GIF');
+      throw new BadRequestException(
+        'Invalid file type. Allowed: JPG, PNG, WEBP, GIF',
+      );
     }
-  
+
     const maxSize = 20 * 1024 * 1024; // 20MB
     if (file.size > maxSize) {
       throw new BadRequestException('File size must be less than 20MB');
     }
-  
+
     const mimeToExt: Record<string, string> = {
       'image/jpeg': 'JPG',
       'image/jpg': 'JPG',
@@ -54,21 +65,63 @@ export class MediaService {
     };
     const type = mimeToExt[file.mimetype];
     const ext = path.extname(file.originalname) || `.${type.toLowerCase()}`;
-  
+
     const rawName = path.basename(file.originalname, ext);
-    const title = rawName.replace(/[^a-zA-Z0-9-_]/g, '_') || `image_${Date.now()}`;
+    const title =
+      rawName.replace(/[^a-zA-Z0-9-_]/g, '_') || `image_${Date.now()}`;
     const size = this.formatFileSize(file.size);
-    const filename = `${Date.now()}_${file.originalname}`;
-  
+
+    const cdnUploadUrl = process.env.CDN_UPLOAD_URL;
+    if (!cdnUploadUrl) {
+      throw new BadRequestException('CDN_UPLOAD_URL is not configured');
+    }
+
+    let cdnUrl: string | undefined;
+    try {
+      const formData = new FormData();
+      // Node 18+: Blob & FormData are available globally
+      const blobPart = new Uint8Array(file.buffer);
+      formData.append(
+        'file',
+        new Blob([blobPart]),
+        file.originalname || 'image.jpg',
+      );
+
+      const response = await fetch(cdnUploadUrl, {
+        method: 'POST',
+        body: formData as any,
+      });
+
+      if (!response.ok) {
+        throw new BadRequestException(
+          `Failed to upload to CDN (${response.status})`,
+        );
+      }
+
+      const data = (await response.json().catch(() => null)) as
+        | { url?: string; secure_url?: string; path?: string }
+        | null;
+
+      cdnUrl = data?.url || data?.secure_url || data?.path;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('[MediaService] CDN upload failed', error);
+      throw new BadRequestException('Failed to upload image to CDN');
+    }
+
+    if (!cdnUrl) {
+      throw new BadRequestException('CDN did not return a URL');
+    }
+
     const media = this.mediaRepository.create({
       title,
       type,
       size,
-      url: `/uploads/media/${filename}`,
+      url: cdnUrl,
       companyId,
-      filename,
+      filename: file.originalname,
     });
-  
+
     return this.mediaRepository.save(media);
   }
 

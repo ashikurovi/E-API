@@ -43,7 +43,7 @@ export class MediaController {
       throw new BadRequestException('File is required');
     }
     const media = await this.mediaService.uploadFile(file, companyId);
-    const baseUrl =  'https://e-api-omega.vercel.app';
+    const baseUrl = process.env.CDN_BASE_URL || 'https://e-cdn.vercel.app';
     const fullUrl = media.url.startsWith('http') ? media.url : `${baseUrl}${media.url}`;
     return {
       statusCode: HttpStatus.CREATED,
@@ -88,7 +88,10 @@ export class MediaController {
       limit: limit ? parseInt(limit, 10) : 24,
     });
 
-    const baseUrl = process.env.API_BASE_URL || 'http://localhost:8000';
+    const baseUrl =
+      process.env.CDN_BASE_URL ||
+      process.env.API_BASE_URL ||
+      'http://localhost:8000';
     const data = result.data.map((m) => ({
       ...m,
       url: m.url.startsWith('http') ? m.url : `${baseUrl}${m.url}`,
@@ -117,7 +120,10 @@ export class MediaController {
     if (!media) {
       return { statusCode: HttpStatus.NOT_FOUND, message: 'Media not found' };
     }
-    const baseUrl = process.env.API_BASE_URL || 'http://localhost:8000';
+    const baseUrl =
+      process.env.CDN_BASE_URL ||
+      process.env.API_BASE_URL ||
+      'http://localhost:8000';
     const url = media.url.startsWith('http') ? media.url : `${baseUrl}${media.url}`;
     return {
       statusCode: HttpStatus.OK,
