@@ -43,7 +43,7 @@ export class MediaController {
       throw new BadRequestException('File is required');
     }
     const media = await this.mediaService.uploadFile(file, companyId);
-    const baseUrl = process.env.CDN_BASE_URL || 'https://e-cdn.vercel.app';
+    const baseUrl = 'https://e-cdn.vercel.app';
     const fullUrl = media.url.startsWith('http') ? media.url : `${baseUrl}${media.url}`;
     return {
       statusCode: HttpStatus.CREATED,

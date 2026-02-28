@@ -409,9 +409,15 @@ export class SystemuserService {
       }
     }
 
-    // Use creator's companyId if provided, otherwise generate a new one
-    // System Owner gets a new companyId, employees share System Owner's companyId
-    const companyId = creatorCompanyId || await this.companyIdService.generateNextCompanyId();
+    // Reseller: always use same companyId from body (no new company created)
+    // Otherwise: creator's companyId if provided, else generate new one
+    const dtoCompanyId = dto.companyId;
+    let companyId: string;
+    if (role === SystemUserRole.RESELLER && dtoCompanyId && typeof dtoCompanyId === 'string') {
+      companyId = dtoCompanyId.trim();
+    } else {
+      companyId = creatorCompanyId || (await this.companyIdService.generateNextCompanyId());
+    }
 
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = this.hashPassword(dto.password, salt);

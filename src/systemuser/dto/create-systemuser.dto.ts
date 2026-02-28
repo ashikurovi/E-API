@@ -81,4 +81,9 @@ export class CreateSystemuserDto {
   @IsOptional()
   @IsNumber()
   resellerCommissionRate?: number;
+
+  // For reseller role: use same companyId (no new company created)
+  @IsOptional()
+  @IsString()
+  companyId?: string;
 }
