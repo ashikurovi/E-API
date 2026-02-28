@@ -23,42 +23,42 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       return null;
     }
 
-    try {
-      // First, try to validate as a system user (admin/dashboard user)
-      const systemUser = await this.systemuserService.findOne(Number(userId));
-      if (systemUser && systemUser.isActive) {
+    const role = payload.role;
+    const companyId = payload.companyId;
+
+    // Customer token (from /users/login) → validate from tbl_users only; /users/me must return user table data
+    if (role === 'customer' && companyId) {
+      try {
+        const customer = await this.usersService.findOne(Number(userId), companyId);
+        if (!customer || !customer.isActive || customer.isBanned) {
+          return null;
+        }
         return {
-          userId: systemUser.id,
-          companyId: systemUser.companyId,
-          email: systemUser.email,
-          permissions: systemUser.permissions || [],
-          role: systemUser.role,
+          userId: customer.id,
+          companyId: customer.companyId,
+          email: customer.email,
+          name: (customer as any).name,
+          role: customer.role ?? 'customer',
         };
+      } catch {
+        return null;
       }
-    } catch {
-      // Fall through to try customer user below
     }
 
-    // If not a valid system user, try to validate as a storefront customer
+    // System user / admin token (from /auth/login) → validate from systemuser table
     try {
-      const companyId = payload.companyId;
-      if (!companyId) {
+      const user = await this.systemuserService.findOne(Number(userId));
+      if (!user || !user.isActive) {
         return null;
       }
-
-      const customer = await this.usersService.findOne(Number(userId), companyId);
-      if (!customer || !customer.isActive || customer.isBanned) {
-        return null;
-      }
-
       return {
-        userId: customer.id,
-        companyId: customer.companyId,
-        email: customer.email,
-        role: customer.role ?? 'customer',
+        userId: user.id,
+        companyId: user.companyId,
+        email: user.email,
+        permissions: user.permissions || [],
+        role: user.role,
       };
     } catch {
-      // If neither system user nor customer lookup succeeds, treat token as invalid
       return null;
     }
   }
