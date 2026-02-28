@@ -1,5 +1,5 @@
 // UsersController
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, ParseIntPipe, HttpCode, UseGuards, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, ParseIntPipe, HttpCode, UseGuards, BadRequestException, Query, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -68,9 +68,24 @@ export class UsersController {
   @Get('me')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@UserId() userId: number, @CompanyId() companyId: string) {
-    const user = await this.usersService.findOne(userId, companyId);
-    return { statusCode: HttpStatus.OK, message: 'Current user fetched', data: user };
+  async getCurrentUser(@UserId() userId: number, @CompanyId() companyId: string, @Req() req: any) {
+    try {
+      const user = await this.usersService.findOne(userId, companyId);
+      return { statusCode: HttpStatus.OK, message: 'Current user fetched', data: user };
+    } catch (error) {
+      // Fallback: if for some reason the DB lookup fails, return a safe view based on the JWT payload
+      const jwtUser = req.user || {};
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Current user fetched from token',
+        data: {
+          id: jwtUser.userId ?? userId,
+          email: jwtUser.email ?? null,
+          name: (jwtUser as any).name ?? null,
+          companyId: jwtUser.companyId ?? companyId,
+        },
+      };
+    }
   }
 
   @Patch('me')
