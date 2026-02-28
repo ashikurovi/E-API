@@ -24,6 +24,14 @@ export class SubdomainMiddleware implements NestMiddleware {
       return next();
     }
 
+    // Skip tenant resolution for the main API domain so /users/me and other API routes work
+    // (companyId comes from JWT or query, not from subdomain)
+    const defaultApiHost = (process.env.DEFAULT_API_HOST || process.env.API_DOMAIN || 'e-api-omega.vercel.app').toLowerCase();
+    const normalizedHostForCompare = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+    if (normalizedHostForCompare === defaultApiHost) {
+      return next();
+    }
+
     const normalizedHost = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
     const parts = normalizedHost.split('.');
     let subdomain = '';
