@@ -10,6 +10,8 @@ import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
 import * as fs from 'fs';
 import * as path from 'path';
+import axios from 'axios';
+import FormData from 'form-data';
 
 @Injectable()
 export class MediaService {
@@ -78,26 +80,16 @@ export class MediaService {
     let cdnUrl: string | undefined;
     try {
       const formData = new FormData();
-      // Node 18+: Blob & FormData are available globally
-      const blobPart = new Uint8Array(file.buffer);
-      formData.append(
-        'file',
-        new Blob([blobPart]),
-        file.originalname || 'image.jpg',
-      );
-
-      const response = await fetch(cdnUploadUrl, {
-        method: 'POST',
-        body: formData as any,
+      formData.append('file', file.buffer, {
+        filename: file.originalname || 'image.jpg',
+        contentType: file.mimetype,
       });
 
-      if (!response.ok) {
-        throw new BadRequestException(
-          `Failed to upload to CDN (${response.status})`,
-        );
-      }
+      const response = await axios.post(cdnUploadUrl, formData, {
+        headers: formData.getHeaders(),
+      });
 
-      const data = (await response.json().catch(() => null)) as
+      const data = response?.data as
         | {
             success?: boolean;
             message?: string;
