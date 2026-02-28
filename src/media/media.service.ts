@@ -71,10 +71,9 @@ export class MediaService {
       rawName.replace(/[^a-zA-Z0-9-_]/g, '_') || `image_${Date.now()}`;
     const size = this.formatFileSize(file.size);
 
-    const cdnUploadUrl = process.env.CDN_UPLOAD_URL;
-    if (!cdnUploadUrl) {
-      throw new BadRequestException('CDN_UPLOAD_URL is not configured');
-    }
+    const cdnUploadUrl =
+      process.env.CDN_UPLOAD_URL ||
+      'https://e-cdn.vercel.app/upload/image';
 
     let cdnUrl: string | undefined;
     try {
@@ -99,10 +98,22 @@ export class MediaService {
       }
 
       const data = (await response.json().catch(() => null)) as
-        | { url?: string; secure_url?: string; path?: string }
+        | {
+            success?: boolean;
+            message?: string;
+            url?: string;
+            secure_url?: string;
+            path?: string;
+          }
         | null;
 
-      cdnUrl = data?.url || data?.secure_url || data?.path;
+      if (!data?.success || !data.url) {
+        throw new BadRequestException(
+          data?.message || 'CDN upload response invalid',
+        );
+      }
+
+      cdnUrl = data.url || data.secure_url || data.path;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('[MediaService] CDN upload failed', error);
