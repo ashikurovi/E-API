@@ -1,4 +1,10 @@
-import { IsEmail, IsString, IsOptional, IsEnum, IsArray } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsArray,
+} from 'class-validator';
 import { SupportStatus } from '../entities/help.entity';
 
 export class CreateHelpDto {

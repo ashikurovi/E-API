@@ -10,4 +10,4 @@ import { TremsCondetion } from './entities/trems-condetion.entity';
   providers: [TremsCondetionsService],
   exports: [TremsCondetionsService],
 })
-export class TremsCondetionsModule { }
+export class TremsCondetionsModule {}

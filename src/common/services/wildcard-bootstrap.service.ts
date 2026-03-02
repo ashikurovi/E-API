@@ -26,6 +26,8 @@ export class WildcardBootstrapService implements OnApplicationBootstrap {
           console.warn('⚠️ Wildcard DNS setup had issues:', r.errors);
         }
       })
-      .catch((err) => console.error('Wildcard startup setup error:', err?.message));
+      .catch((err) =>
+        console.error('Wildcard startup setup error:', err?.message),
+      );
   }
 }

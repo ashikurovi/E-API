@@ -148,10 +148,15 @@ export class ResellerController {
     ) {
       return {
         statusCode: HttpStatus.FORBIDDEN,
-        message: 'Only system owners or super admins can create commission requests',
+        message:
+          'Only system owners or super admins can create commission requests',
       };
     }
-    const data = await this.resellerService.adminCreatePayout(id, companyId, body);
+    const data = await this.resellerService.adminCreatePayout(
+      id,
+      companyId,
+      body,
+    );
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Commission request created for reseller',
@@ -213,7 +218,10 @@ export class ResellerController {
         message: 'Only system owners or super admins can access payout invoice',
       };
     }
-    const data = await this.resellerService.adminGetPayoutInvoice(id, companyId);
+    const data = await this.resellerService.adminGetPayoutInvoice(
+      id,
+      companyId,
+    );
     return {
       statusCode: HttpStatus.OK,
       data,
@@ -241,7 +249,10 @@ export class ResellerController {
   }
 
   @Post('admin/resellers/:id/approve')
-  async approveReseller(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+  async approveReseller(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
+  ) {
     const { role } = req.user || {};
     if (
       role !== SystemUserRole.SYSTEM_OWNER &&
@@ -280,4 +291,3 @@ export class ResellerController {
     };
   }
 }
-

@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
@@ -49,7 +60,10 @@ export class PackageController {
   @Patch(':id')
   @Public()
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id') id: string, @Body() updatePackageDto: UpdatePackageDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePackageDto: UpdatePackageDto,
+  ) {
     const data = await this.packageService.update(+id, updatePackageDto);
     return {
       statusCode: HttpStatus.OK,

@@ -15,5 +15,3 @@ export const CompanyId = createParamDecorator(
     return request.companyId || request.user?.companyId;
   },
 );
-
-

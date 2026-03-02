@@ -1,4 +1,10 @@
-import { IsString, MaxLength, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsString,
+  MaxLength,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 
 export class RequestPayoutDto {
   @IsString()
@@ -14,4 +20,3 @@ export class RequestPayoutDto {
   @IsNumber()
   commissionRate?: number;
 }
-

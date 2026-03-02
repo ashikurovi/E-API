@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  Query,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { SystemuserService } from './systemuser.service';
 import { ActivityLogService } from './activity-log.service';
 import { CreateSystemuserDto } from './dto/create-systemuser.dto';
@@ -13,14 +26,13 @@ import { SystemUserRole } from './system-user-role.enum';
 import { ActivityAction, ActivityEntity } from './entities/activity-log.entity';
 import { Public } from '../common/decorators/public.decorator';
 
-
 @Controller('systemuser')
 // @UseGuards(JwtAuthGuard)
 export class SystemuserController {
   constructor(
     private readonly systemuserService: SystemuserService,
     private readonly activityLogService: ActivityLogService,
-  ) { }
+  ) {}
 
   // System Owner creation endpoint - accessible to System Owners
   @Post('create-system-owner')
@@ -37,7 +49,12 @@ export class SystemuserController {
     const creatorRole = req?.user?.role || SystemUserRole.EMPLOYEE;
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     // System Owner creates another System Owner - they share the same companyId
-    return this.systemuserService.create(createSystemuserDto, creatorCompanyId, creatorRole, performedByUserId);
+    return this.systemuserService.create(
+      createSystemuserDto,
+      creatorCompanyId,
+      creatorRole,
+      performedByUserId,
+    );
   }
 
   // System Owner/Employee endpoint - requires auth
@@ -57,7 +74,12 @@ export class SystemuserController {
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     // If creator has companyId, new user will share the same companyId
     // Otherwise, a new companyId will be generated
-    return this.systemuserService.create(createSystemuserDto, creatorCompanyId, creatorRole, performedByUserId);
+    return this.systemuserService.create(
+      createSystemuserDto,
+      creatorCompanyId,
+      creatorRole,
+      performedByUserId,
+    );
   }
 
   @Post('login')
@@ -101,7 +123,11 @@ export class SystemuserController {
     const filters: any = {};
 
     // Regular users can only see their own activity logs
-    if (userRole !== SystemUserRole.SYSTEM_OWNER && userRole !== SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
+    if (
+      userRole !== SystemUserRole.SYSTEM_OWNER &&
+      userRole !== SystemUserRole.SUPER_ADMIN &&
+      userRole !== 'SUPER_ADMIN'
+    ) {
       filters.performedByUserId = currentUserId;
       filters.targetUserId = currentUserId; // Only show activities related to themselves
     } else {
@@ -118,22 +144,35 @@ export class SystemuserController {
     if (offset) filters.offset = +offset;
 
     // Superadmins can see all activity logs (ignore companyId filter)
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : (companyId || '');
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId || '';
     return this.activityLogService.getActivityLogs(filterCompanyId, filters);
   }
 
   @Get('activity-logs/:id')
   @UseGuards(JwtAuthGuard)
   // @Permission(FeaturePermission.STAFF)
-  async getActivityLogById(@Param('id') id: string, @CompanyId() companyId?: string, @Req() req?: any) {
+  async getActivityLogById(
+    @Param('id') id: string,
+    @CompanyId() companyId?: string,
+    @Req() req?: any,
+  ) {
     const userRole = req?.user?.role;
     const currentUserId = req?.user?.userId || req?.user?.sub;
 
     // Superadmins can view any activity log (ignore companyId filter)
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : (companyId || '');
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId || '';
 
     // Get the activity log first to check ownership
-    const activityLog = await this.activityLogService.getActivityLogById(+id, filterCompanyId);
+    const activityLog = await this.activityLogService.getActivityLogById(
+      +id,
+      filterCompanyId,
+    );
 
     // Check if activity log exists
     if (!activityLog) {
@@ -141,9 +180,18 @@ export class SystemuserController {
     }
 
     // Regular users can only view their own activity logs
-    if (userRole !== SystemUserRole.SYSTEM_OWNER && userRole !== SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
-      if (activityLog.performedByUserId !== currentUserId && activityLog.targetUserId !== currentUserId) {
-        throw new BadRequestException('You can only view your own activity logs');
+    if (
+      userRole !== SystemUserRole.SYSTEM_OWNER &&
+      userRole !== SystemUserRole.SUPER_ADMIN &&
+      userRole !== 'SUPER_ADMIN'
+    ) {
+      if (
+        activityLog.performedByUserId !== currentUserId &&
+        activityLog.targetUserId !== currentUserId
+      ) {
+        throw new BadRequestException(
+          'You can only view your own activity logs',
+        );
       }
     }
 
@@ -151,10 +199,14 @@ export class SystemuserController {
   }
 
   @Get(':id')
-    // @UseGuards(JwtAuthGuard)
-    @Public()
+  // @UseGuards(JwtAuthGuard)
+  @Public()
   // @Permission(FeaturePermission.STAFF)
-  findOne(@Param('id') id: string, @CompanyId() companyId?: string, @Req() req?: any) {
+  findOne(
+    @Param('id') id: string,
+    @CompanyId() companyId?: string,
+    @Req() req?: any,
+  ) {
     // Superadmins can access any system user (ignore companyId filter)
     const userRole = req?.user?.role;
     if (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) {
@@ -173,11 +225,22 @@ export class SystemuserController {
   ) {
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     const userRole = req?.user?.role;
-    if (performedByUserId !== +id && userRole !== 'SUPER_ADMIN' && userRole !== SystemUserRole.SUPER_ADMIN) {
+    if (
+      performedByUserId !== +id &&
+      userRole !== 'SUPER_ADMIN' &&
+      userRole !== SystemUserRole.SUPER_ADMIN
+    ) {
       throw new BadRequestException('You can only revert your own package');
     }
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
-    return this.systemuserService.revertToPreviousPackage(+id, filterCompanyId, performedByUserId);
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId;
+    return this.systemuserService.revertToPreviousPackage(
+      +id,
+      filterCompanyId,
+      performedByUserId,
+    );
   }
 
   @Patch(':id')
@@ -193,19 +256,38 @@ export class SystemuserController {
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     const userRole = req?.user?.role;
     // Superadmins can update any system user (ignore companyId filter)
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
-    return this.systemuserService.update(+id, updateSystemuserDto, filterCompanyId, performedByUserId);
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId;
+    return this.systemuserService.update(
+      +id,
+      updateSystemuserDto,
+      filterCompanyId,
+      performedByUserId,
+    );
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   // @Permission(FeaturePermission.STAFF)
-  remove(@Param('id') id: string, @CompanyId() companyId?: string, @Req() req?: any) {
+  remove(
+    @Param('id') id: string,
+    @CompanyId() companyId?: string,
+    @Req() req?: any,
+  ) {
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     const userRole = req?.user?.role;
     // Superadmins can delete any system user (ignore companyId filter)
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
-    return this.systemuserService.remove(+id, filterCompanyId, performedByUserId);
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId;
+    return this.systemuserService.remove(
+      +id,
+      filterCompanyId,
+      performedByUserId,
+    );
   }
 
   @Patch(':id/permissions')
@@ -223,28 +305,54 @@ export class SystemuserController {
     const userRole = req?.user?.role;
     // Only SYSTEM_OWNER and SUPER_ADMIN can assign permissions to others
     // Regular users cannot modify permissions (even their own)
-    if (userRole !== SystemUserRole.SYSTEM_OWNER && userRole !== SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
-      throw new BadRequestException('Only System Owners and Super Admins can assign permissions');
+    if (
+      userRole !== SystemUserRole.SYSTEM_OWNER &&
+      userRole !== SystemUserRole.SUPER_ADMIN &&
+      userRole !== 'SUPER_ADMIN'
+    ) {
+      throw new BadRequestException(
+        'Only System Owners and Super Admins can assign permissions',
+      );
     }
     // Superadmins can assign permissions to any system user (ignore companyId filter)
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
-    return this.systemuserService.assignPermissions(+id, dto.permissions, filterCompanyId, assignerPermissions, performedByUserId);
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId;
+    return this.systemuserService.assignPermissions(
+      +id,
+      dto.permissions,
+      filterCompanyId,
+      assignerPermissions,
+      performedByUserId,
+    );
   }
 
   @Get(':id/permissions')
   @UseGuards(JwtAuthGuard)
   // @Permission(FeaturePermission.STAFF)
-  async getPermissions(@Param('id') id: string, @CompanyId() companyId?: string, @Req() req?: any) {
+  async getPermissions(
+    @Param('id') id: string,
+    @CompanyId() companyId?: string,
+    @Req() req?: any,
+  ) {
     const performedByUserId = req?.user?.userId || req?.user?.sub;
     const userRole = req?.user?.role;
     // Only allow users to view their own permissions, unless they are SYSTEM_OWNER or SUPER_ADMIN
-    if (userRole !== SystemUserRole.SYSTEM_OWNER && userRole !== SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
+    if (
+      userRole !== SystemUserRole.SYSTEM_OWNER &&
+      userRole !== SystemUserRole.SUPER_ADMIN &&
+      userRole !== 'SUPER_ADMIN'
+    ) {
       if (performedByUserId !== +id) {
         throw new BadRequestException('You can only view your own permissions');
       }
     }
     // Superadmins can view permissions of any system user (ignore companyId filter)
-    const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
+    const filterCompanyId =
+      userRole === 'SUPER_ADMIN' || userRole === SystemUserRole.SUPER_ADMIN
+        ? undefined
+        : companyId;
     const user = await this.systemuserService.findOne(+id, filterCompanyId);
     return {
       statusCode: 200,

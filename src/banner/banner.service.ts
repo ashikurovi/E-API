@@ -10,7 +10,7 @@ export class BannerService {
   constructor(
     @InjectRepository(BannerEntity)
     private readonly bannerRepository: Repository<BannerEntity>,
-  ) { }
+  ) {}
 
   async create(dto: CreateBannerDto, companyId: string): Promise<BannerEntity> {
     if (!companyId) {
@@ -34,8 +34,14 @@ export class BannerService {
     return this.bannerRepository.findOne({ where: { id, companyId } });
   }
 
-  async update(id: number, dto: UpdateBannerDto, companyId: string): Promise<BannerEntity> {
-    const banner = await this.bannerRepository.findOne({ where: { id, companyId } });
+  async update(
+    id: number,
+    dto: UpdateBannerDto,
+    companyId: string,
+  ): Promise<BannerEntity> {
+    const banner = await this.bannerRepository.findOne({
+      where: { id, companyId },
+    });
     if (!banner) {
       throw new NotFoundException('Banner not found');
     }

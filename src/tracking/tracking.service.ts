@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import * as cheerio from "cheerio";
-import { OrderService } from "../orders/orders.service";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as cheerio from 'cheerio';
+import { OrderService } from '../orders/orders.service';
 
 /** Unified tracking item - same format as RedX/Steadfast/Pathao */
 export interface TrackingItem {
@@ -34,27 +34,27 @@ export class TrackingService {
 
   /** Common courier status/message → Bangla translation */
   private static readonly STATUS_BN: Record<string, string> = {
-    "in transit": "পথ অতিক্রমণ করছে",
-    "in-transit": "পথ অতিক্রমণ করছে",
-    "delivered": "ডেলিভারি সম্পন্ন",
-    "out for delivery": "ডেলিভারির জন্য বের হয়েছে",
-    "out-for-delivery": "ডেলিভারির জন্য বের হয়েছে",
-    "picked up": "কুরিয়ার দ্বারা সংগ্রহ করা হয়েছে",
-    "picked-up": "কুরিয়ার দ্বারা সংগ্রহ করা হয়েছে",
-    "received": "প্রাপ্ত",
-    "processing": "প্রক্রিয়াধীন",
-    "pending": "অপেক্ষমাণ",
-    "paid": "পেইড",
-    "shipped": "পাঠানো হয়েছে",
-    "cancelled": "বাতিল",
-    "refunded": "রিফান্ড",
-    "returned": "ফেরত",
-    "not found": "পাওয়া যায়নি",
-    "error": "ত্রুটি",
+    'in transit': 'পথ অতিক্রমণ করছে',
+    'in-transit': 'পথ অতিক্রমণ করছে',
+    delivered: 'ডেলিভারি সম্পন্ন',
+    'out for delivery': 'ডেলিভারির জন্য বের হয়েছে',
+    'out-for-delivery': 'ডেলিভারির জন্য বের হয়েছে',
+    'picked up': 'কুরিয়ার দ্বারা সংগ্রহ করা হয়েছে',
+    'picked-up': 'কুরিয়ার দ্বারা সংগ্রহ করা হয়েছে',
+    received: 'প্রাপ্ত',
+    processing: 'প্রক্রিয়াধীন',
+    pending: 'অপেক্ষমাণ',
+    paid: 'পেইড',
+    shipped: 'পাঠানো হয়েছে',
+    cancelled: 'বাতিল',
+    refunded: 'রিফান্ড',
+    returned: 'ফেরত',
+    'not found': 'পাওয়া যায়নি',
+    error: 'ত্রুটি',
   };
 
   private translateToBangla(msg: string): string {
-    const key = (msg || "").toLowerCase().trim();
+    const key = (msg || '').toLowerCase().trim();
     return TrackingService.STATUS_BN[key] ?? msg;
   }
 
@@ -74,15 +74,18 @@ export class TrackingService {
     }>,
   ): TrackingItem[] {
     return items.map((h) => {
-      const msgEn = h.messageEn ?? h.message_en ?? h.message ?? "";
-      const msgBnRaw = h.messageBn ?? h.message_bn ?? h.message ?? "";
-      const msgBn = msgBnRaw && msgBnRaw !== msgEn ? msgBnRaw : this.translateToBangla(msgEn || msgBnRaw);
+      const msgEn = h.messageEn ?? h.message_en ?? h.message ?? '';
+      const msgBnRaw = h.messageBn ?? h.message_bn ?? h.message ?? '';
+      const msgBn =
+        msgBnRaw && msgBnRaw !== msgEn
+          ? msgBnRaw
+          : this.translateToBangla(msgEn || msgBnRaw);
       return {
         messageEn: msgEn,
         messageBn: msgBn,
-        status: h.status ?? "unknown",
-        groupedStatus: h.groupedStatus ?? h.status ?? "unknown",
-        action: h.action ?? h.status ?? "unknown",
+        status: h.status ?? 'unknown',
+        groupedStatus: h.groupedStatus ?? h.status ?? 'unknown',
+        action: h.action ?? h.status ?? 'unknown',
         time: h.time ?? new Date().toISOString(),
         reason: h.reason,
       };
@@ -93,7 +96,9 @@ export class TrackingService {
    * RedX: GET https://api.redx.com.bd/v1/logistics/global-tracking/{id}
    * Response may have: data.tracking or data.tracking_history
    */
-  private async trackRedX(trackingId: string): Promise<UnifiedTrackingResponse | null> {
+  private async trackRedX(
+    trackingId: string,
+  ): Promise<UnifiedTrackingResponse | null> {
     try {
       const res = await fetch(
         `https://api.redx.com.bd/v1/logistics/global-tracking/${encodeURIComponent(trackingId)}`,
@@ -104,16 +109,23 @@ export class TrackingService {
       if (!data) return null;
       if (json?.isError === true) return null;
 
-      const rawTracking = json?.tracking ?? data?.tracking ?? data?.tracking_history ?? data?.history ?? data?.events ?? [];
+      const rawTracking =
+        json?.tracking ??
+        data?.tracking ??
+        data?.tracking_history ??
+        data?.history ??
+        data?.events ??
+        [];
       const tracking = this.toTrackingItems(rawTracking);
       const latest = tracking[0];
-      const status = latest?.status ?? data?.status ?? data?.current_status ?? "unknown";
+      const status =
+        latest?.status ?? data?.status ?? data?.current_status ?? 'unknown';
 
       return {
         isError: false,
-        courier: "RedX",
+        courier: 'RedX',
         tracking_id: trackingId,
-        status: String(status).replace(/-/g, " "),
+        status: String(status).replace(/-/g, ' '),
         tracking,
         raw: data,
       };
@@ -126,7 +138,9 @@ export class TrackingService {
    * Steadfast: Scrape https://www.steadfast.com.bd/track/consignment/{id}
    * API may return JSON (consignment not found) or HTML (tracking page)
    */
-  private async trackSteadfast(trackingId: string): Promise<UnifiedTrackingResponse | null> {
+  private async trackSteadfast(
+    trackingId: string,
+  ): Promise<UnifiedTrackingResponse | null> {
     try {
       const res = await fetch(
         `https://www.steadfast.com.bd/track/consignment/${encodeURIComponent(trackingId)}`,
@@ -135,30 +149,46 @@ export class TrackingService {
 
       // Steadfast returns JSON when consignment not found: {"status":0,"message":"Consignment not found!","result":[],"trackings":[]}
       try {
-        const json = JSON.parse(text) as { status?: number; message?: string; result?: unknown[]; trackings?: unknown[] };
-        if (json.status === 0 || (json.message && /consignment not found/i.test(json.message))) return null;
-        if (Array.isArray(json.result) && json.result.length === 0 && Array.isArray(json.trackings) && json.trackings.length === 0) return null;
+        const json = JSON.parse(text) as {
+          status?: number;
+          message?: string;
+          result?: unknown[];
+          trackings?: unknown[];
+        };
+        if (
+          json.status === 0 ||
+          (json.message && /consignment not found/i.test(json.message))
+        )
+          return null;
+        if (
+          Array.isArray(json.result) &&
+          json.result.length === 0 &&
+          Array.isArray(json.trackings) &&
+          json.trackings.length === 0
+        )
+          return null;
       } catch {
         // Not JSON, treat as HTML
       }
 
       const html = text;
-      if (!html.includes("Consignment") && !html.includes("consignment")) return null;
+      if (!html.includes('Consignment') && !html.includes('consignment'))
+        return null;
 
       const $ = cheerio.load(html);
-      let status = "In Transit";
+      let status = 'In Transit';
       const tracking: TrackingItem[] = [];
 
       // Try table-based layout
-      const rows = $("table tr");
+      const rows = $('table tr');
       if (rows.length >= 2) {
-        const statusCell = rows.eq(1).find("td").eq(2);
+        const statusCell = rows.eq(1).find('td').eq(2);
         if (statusCell.length) status = statusCell.text().trim() || status;
       }
 
       // Extract tracking history from table
-      $("table tr").each((_, el) => {
-        const tds = $(el).find("td");
+      $('table tr').each((_, el) => {
+        const tds = $(el).find('td');
         if (tds.length >= 2) {
           const msg = tds.eq(1).text().trim();
           const time = tds.eq(2)?.text()?.trim() ?? new Date().toISOString();
@@ -188,9 +218,9 @@ export class TrackingService {
 
       return {
         isError: false,
-        courier: "Steadfast",
+        courier: 'Steadfast',
         tracking_id: trackingId,
-        status: status || "In Transit",
+        status: status || 'In Transit',
         tracking,
         raw: { html: text.slice(0, 500) },
       };
@@ -204,37 +234,59 @@ export class TrackingService {
    * Body: { tracking_id }
    * Header: Authorization: Bearer {token}
    */
-  private async trackPathao(trackingId: string): Promise<UnifiedTrackingResponse | null> {
+  private async trackPathao(
+    trackingId: string,
+  ): Promise<UnifiedTrackingResponse | null> {
     const token =
-      this.configService.get<string>("PATHAO_TOKEN") ||
-      this.configService.get<string>("PATHAO_ACCESS_TOKEN");
+      this.configService.get<string>('PATHAO_TOKEN') ||
+      this.configService.get<string>('PATHAO_ACCESS_TOKEN');
     if (!token) return null;
 
     try {
-      const res = await fetch("https://merchant.pathao.com/api/v1/user/tracking", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
+      const res = await fetch(
+        'https://merchant.pathao.com/api/v1/user/tracking',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({ tracking_id: trackingId }),
         },
-        body: JSON.stringify({ tracking_id: trackingId }),
-      });
+      );
 
       if (!res.ok) return null;
       const data = await res.json();
 
-      const rawTracking = data?.data?.tracking ?? data?.tracking ?? data?.tracking_history ?? data?.history ?? [];
+      const rawTracking =
+        data?.data?.tracking ??
+        data?.tracking ??
+        data?.tracking_history ??
+        data?.history ??
+        [];
       const tracking = this.toTrackingItems(rawTracking);
       const latest = tracking[0];
-      const status = latest?.status ?? data?.data?.status ?? data?.status ?? "unknown";
+      const status =
+        latest?.status ?? data?.data?.status ?? data?.status ?? 'unknown';
 
       return {
         isError: false,
-        courier: "Pathao",
+        courier: 'Pathao',
         tracking_id: trackingId,
-        status: String(status).replace(/-/g, " "),
-        tracking: tracking.length ? tracking : [{ messageEn: status, messageBn: status, status, groupedStatus: status, action: status, time: new Date().toISOString() }],
+        status: String(status).replace(/-/g, ' '),
+        tracking: tracking.length
+          ? tracking
+          : [
+              {
+                messageEn: status,
+                messageBn: status,
+                status,
+                groupedStatus: status,
+                action: status,
+                time: new Date().toISOString(),
+              },
+            ],
         raw: (data ?? {}) as Record<string, unknown>,
       };
     } catch {
@@ -248,28 +300,56 @@ export class TrackingService {
     message: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    statusHistory?: Array<{ previousStatus?: string; newStatus: string; createdAt: Date | string; comment?: string }>;
+    statusHistory?: Array<{
+      previousStatus?: string;
+      newStatus: string;
+      createdAt: Date | string;
+      comment?: string;
+    }>;
     items?: Array<{ name: string; quantity: number }>;
   }): TrackingItem[] {
     const statusMessages: Record<string, { en: string; bn: string }> = {
-      pending: { en: "Order received and awaiting confirmation", bn: "অর্ডার প্রাপ্ত এবং নিশ্চিতকরণের অপেক্ষায়" },
-      processing: { en: "Order is being prepared for shipment", bn: "অর্ডার শিপমেন্টের জন্য প্রস্তুত করা হচ্ছে" },
-      paid: { en: "Payment received. Order is being processed", bn: "পেমেন্ট প্রাপ্ত। অর্ডার প্রক্রিয়াধীন" },
-      shipped: { en: "Order has been shipped and is on its way", bn: "অর্ডার পাঠানো হয়েছে এবং পথে আছে" },
-      delivered: { en: "Order has been delivered successfully", bn: "অর্ডার সফলভাবে ডেলিভারি হয়েছে" },
-      cancelled: { en: "This order has been cancelled", bn: "এই অর্ডার বাতিল করা হয়েছে" },
-      refunded: { en: "This order has been refunded", bn: "এই অর্ডার রিফান্ড করা হয়েছে" },
+      pending: {
+        en: 'Order received and awaiting confirmation',
+        bn: 'অর্ডার প্রাপ্ত এবং নিশ্চিতকরণের অপেক্ষায়',
+      },
+      processing: {
+        en: 'Order is being prepared for shipment',
+        bn: 'অর্ডার শিপমেন্টের জন্য প্রস্তুত করা হচ্ছে',
+      },
+      paid: {
+        en: 'Payment received. Order is being processed',
+        bn: 'পেমেন্ট প্রাপ্ত। অর্ডার প্রক্রিয়াধীন',
+      },
+      shipped: {
+        en: 'Order has been shipped and is on its way',
+        bn: 'অর্ডার পাঠানো হয়েছে এবং পথে আছে',
+      },
+      delivered: {
+        en: 'Order has been delivered successfully',
+        bn: 'অর্ডার সফলভাবে ডেলিভারি হয়েছে',
+      },
+      cancelled: {
+        en: 'This order has been cancelled',
+        bn: 'এই অর্ডার বাতিল করা হয়েছে',
+      },
+      refunded: {
+        en: 'This order has been refunded',
+        bn: 'এই অর্ডার রিফান্ড করা হয়েছে',
+      },
     };
 
     const tracking: TrackingItem[] = [];
 
     if (data.statusHistory?.length) {
       for (const h of data.statusHistory) {
-        const s = (h.newStatus || "").toLowerCase();
+        const s = (h.newStatus || '').toLowerCase();
         const msg = statusMessages[s] ?? { en: h.newStatus, bn: h.newStatus };
         const messageEn = msg.en;
         const messageBn = msg.bn;
-        const time = h.createdAt ? new Date(h.createdAt).toISOString() : new Date().toISOString();
+        const time = h.createdAt
+          ? new Date(h.createdAt).toISOString()
+          : new Date().toISOString();
         tracking.push({
           messageEn,
           messageBn,
@@ -282,9 +362,13 @@ export class TrackingService {
         });
       }
     } else {
-      const s = (data.status || "").toLowerCase();
+      const s = (data.status || '').toLowerCase();
       const msg = statusMessages[s] ?? { en: data.message, bn: data.message };
-      const time = data.updatedAt ? new Date(data.updatedAt).toISOString() : (data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString());
+      const time = data.updatedAt
+        ? new Date(data.updatedAt).toISOString()
+        : data.createdAt
+          ? new Date(data.createdAt).toISOString()
+          : new Date().toISOString();
       tracking.push({
         messageEn: msg.en,
         messageBn: msg.bn,
@@ -296,14 +380,20 @@ export class TrackingService {
     }
 
     if (data.items?.length) {
-      const itemsMsg = data.items.map((it) => `${it.name} x ${it.quantity}`).join(", ");
-      const itemsTime = data.updatedAt ? new Date(data.updatedAt).toISOString() : (data.createdAt ? new Date(data.createdAt).toISOString() : new Date().toISOString());
+      const itemsMsg = data.items
+        .map((it) => `${it.name} x ${it.quantity}`)
+        .join(', ');
+      const itemsTime = data.updatedAt
+        ? new Date(data.updatedAt).toISOString()
+        : data.createdAt
+          ? new Date(data.createdAt).toISOString()
+          : new Date().toISOString();
       tracking.push({
         messageEn: `Items: ${itemsMsg}`,
         messageBn: `আইটেম: ${itemsMsg}`,
         status: data.status,
         groupedStatus: data.status,
-        action: "items",
+        action: 'items',
         time: itemsTime,
       });
     }
@@ -314,7 +404,9 @@ export class TrackingService {
   /**
    * Our own order tracking (internal orders database)
    */
-  private async trackOurOwn(trackingId: string): Promise<UnifiedTrackingResponse | null> {
+  private async trackOurOwn(
+    trackingId: string,
+  ): Promise<UnifiedTrackingResponse | null> {
     try {
       const data = await this.orderService.findByTrackingId(trackingId);
       if (!data) return null;
@@ -330,9 +422,9 @@ export class TrackingService {
 
       return {
         isError: false,
-        courier: "Store",
+        courier: 'Store',
         tracking_id: data.trackingId || trackingId,
-        status: data.status || "Unknown",
+        status: data.status || 'Unknown',
         tracking,
         raw: data as unknown as Record<string, unknown>,
       };
@@ -345,20 +437,20 @@ export class TrackingService {
    * Unified tracking: RedX → Steadfast → Pathao → Own Store
    */
   async trackAnywhere(trackingId: string): Promise<UnifiedTrackingResponse> {
-    const trimmed = (trackingId || "").trim();
+    const trimmed = (trackingId || '').trim();
     if (!trimmed) {
       return {
         isError: true,
-        courier: "Unknown",
-        tracking_id: "",
-        status: "Error",
+        courier: 'Unknown',
+        tracking_id: '',
+        status: 'Error',
         tracking: [
           {
-            messageEn: "Tracking number is required",
-            messageBn: "ট্র্যাকিং নম্বর প্রয়োজন",
-            status: "error",
-            groupedStatus: "error",
-            action: "error",
+            messageEn: 'Tracking number is required',
+            messageBn: 'ট্র্যাকিং নম্বর প্রয়োজন',
+            status: 'error',
+            groupedStatus: 'error',
+            action: 'error',
             time: new Date().toISOString(),
           },
         ],
@@ -375,16 +467,16 @@ export class TrackingService {
 
     return {
       isError: true,
-      courier: "Unknown",
+      courier: 'Unknown',
       tracking_id: trimmed,
-      status: "Not Found",
+      status: 'Not Found',
       tracking: [
         {
-          messageEn: "Tracking ID not found in any courier",
-          messageBn: "কোন কুরিয়ারে ট্র্যাকিং আইডি পাওয়া যায়নি",
-          status: "not-found",
-          groupedStatus: "not-found",
-          action: "not-found",
+          messageEn: 'Tracking ID not found in any courier',
+          messageBn: 'কোন কুরিয়ারে ট্র্যাকিং আইডি পাওয়া যায়নি',
+          status: 'not-found',
+          groupedStatus: 'not-found',
+          action: 'not-found',
           time: new Date().toISOString(),
         },
       ],

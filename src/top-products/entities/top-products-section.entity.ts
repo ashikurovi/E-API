@@ -28,4 +28,3 @@ export class TopProductsSectionEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

@@ -1,7 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ActivityLog, ActivityAction, ActivityEntity } from './entities/activity-log.entity';
+import {
+  ActivityLog,
+  ActivityAction,
+  ActivityEntity,
+} from './entities/activity-log.entity';
 import { SystemUser } from './entities/systemuser.entity';
 
 @Injectable()
@@ -30,28 +34,33 @@ export class ActivityLogService {
     const log = this.activityLogRepo.create({
       ...data,
       performedBy: { id: data.performedByUserId } as SystemUser,
-      targetUser: data.targetUserId ? { id: data.targetUserId } as SystemUser : undefined,
+      targetUser: data.targetUserId
+        ? ({ id: data.targetUserId } as SystemUser)
+        : undefined,
     });
 
     return await this.activityLogRepo.save(log);
   }
 
-  async getActivityLogs(companyId: string | undefined, filters?: {
-    performedByUserId?: number;
-    targetUserId?: number;
-    action?: ActivityAction;
-    entity?: ActivityEntity;
-    startDate?: Date;
-    endDate?: Date;
-    limit?: number;
-    offset?: number;
-  }) {
+  async getActivityLogs(
+    companyId: string | undefined,
+    filters?: {
+      performedByUserId?: number;
+      targetUserId?: number;
+      action?: ActivityAction;
+      entity?: ActivityEntity;
+      startDate?: Date;
+      endDate?: Date;
+      limit?: number;
+      offset?: number;
+    },
+  ) {
     const query = this.activityLogRepo
       .createQueryBuilder('log')
       .leftJoinAndSelect('log.performedBy', 'performedBy')
       .leftJoinAndSelect('log.targetUser', 'targetUser')
       .orderBy('log.createdAt', 'DESC');
-    
+
     // Only filter by companyId if provided (superadmins can pass undefined to see all)
     if (companyId) {
       query.where('log.companyId = :companyId', { companyId });
@@ -78,7 +87,9 @@ export class ActivityLogService {
     }
 
     if (filters?.startDate) {
-      query.andWhere('log.createdAt >= :startDate', { startDate: filters.startDate });
+      query.andWhere('log.createdAt >= :startDate', {
+        startDate: filters.startDate,
+      });
     }
 
     if (filters?.endDate) {

@@ -1,4 +1,10 @@
-import { IsArray, IsNumber, IsDateString, IsOptional, ArrayMinSize } from "class-validator";
+import {
+  IsArray,
+  IsNumber,
+  IsDateString,
+  IsOptional,
+  ArrayMinSize,
+} from 'class-validator';
 
 export class FlashSellDto {
   @IsArray()
@@ -15,4 +21,3 @@ export class FlashSellDto {
   @IsNumber()
   flashSellPrice?: number;
 }
-

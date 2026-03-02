@@ -52,7 +52,9 @@ export class PaymentsService {
     if (!validateUrl) {
       throw new Error('SSL_VALIDATION_URL is not defined');
     }
-    const response = await firstValueFrom(this.http.get(validateUrl, { params }));
+    const response = await firstValueFrom(
+      this.http.get(validateUrl, { params }),
+    );
     return response.data;
   }
 
@@ -65,7 +67,9 @@ export class PaymentsService {
     // For now, we assume tran_id IS the system user ID (as per common pattern in this codebase)
     const userId = Number(tranId);
     if (!userId || isNaN(userId)) {
-      console.error(`[PaymentsService] Invalid transaction ID format: ${tranId}`);
+      console.error(
+        `[PaymentsService] Invalid transaction ID format: ${tranId}`,
+      );
       return null;
     }
 
@@ -73,7 +77,7 @@ export class PaymentsService {
       const user = await this.systemUserRepo.findOne({ where: { id: userId } });
       if (user) {
         user.isActive = true;
-        
+
         // Update payment info if exists
         if (!user.paymentInfo) {
           user.paymentInfo = {};
@@ -81,26 +85,30 @@ export class PaymentsService {
         user.paymentInfo.paymentstatus = 'paid';
         user.paymentInfo.paymentmethod = paymentData.card_type || 'SSLCommerz';
         user.paymentInfo.amount = Number(paymentData.amount || 0);
-        
+
         await this.systemUserRepo.save(user);
-        
-        console.log(`[PaymentsService] Automatically activated user ${user.id} (${user.email}) after successful payment`);
-        
+
+        console.log(
+          `[PaymentsService] Automatically activated user ${user.id} (${user.email}) after successful payment`,
+        );
+
         return {
-           success: true,
-           userId: user.id,
-           companyId: user.companyId
+          success: true,
+          userId: user.id,
+          companyId: user.companyId,
         };
       } else {
-        console.warn(`[PaymentsService] User not found for transaction ID: ${tranId}`);
+        console.warn(
+          `[PaymentsService] User not found for transaction ID: ${tranId}`,
+        );
       }
     } catch (error) {
       console.error(`[PaymentsService] Error activating user:`, error);
     }
-    
+
     return {
       success: false,
-      message: 'User activation failed'
+      message: 'User activation failed',
     };
   }
 

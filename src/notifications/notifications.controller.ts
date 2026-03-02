@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { BroadcastEmailDto } from './dto/broadcast-email.dto';
 import { BroadcastSmsDto } from './dto/broadcast-sms.dto';
@@ -20,11 +32,13 @@ export class NotificationsController {
     @Query('companyId') queryCompanyId?: string,
   ) {
     // Use query parameter if provided, otherwise get from request context
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
-    const notifications = await this.notificationsService.getNotificationsByCompanyAndType(
-      companyId,
-      type,
-    );
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
+    const notifications =
+      await this.notificationsService.getNotificationsByCompanyAndType(
+        companyId,
+        type,
+      );
     return {
       statusCode: HttpStatus.OK,
       message: 'Notifications retrieved successfully',
@@ -34,7 +48,8 @@ export class NotificationsController {
 
   @Patch('mark-all-read')
   async markAllAsRead(@Query('companyId') queryCompanyId?: string) {
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
     await this.notificationsService.markAllAsRead(companyId);
     return {
       statusCode: HttpStatus.OK,
@@ -47,8 +62,12 @@ export class NotificationsController {
     @Param('id', ParseIntPipe) id: number,
     @Query('companyId') queryCompanyId?: string,
   ) {
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
-    const notification = await this.notificationsService.markAsRead(id, companyId);
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
+    const notification = await this.notificationsService.markAsRead(
+      id,
+      companyId,
+    );
     return {
       statusCode: HttpStatus.OK,
       message: 'Notification marked as read',
@@ -57,13 +76,17 @@ export class NotificationsController {
   }
 
   @Get('order-created')
-  async getOrderCreatedNotifications(@Query('companyId') queryCompanyId?: string) {
+  async getOrderCreatedNotifications(
+    @Query('companyId') queryCompanyId?: string,
+  ) {
     // Use query parameter if provided, otherwise get from request context
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
-    const notifications = await this.notificationsService.getNotificationsByCompanyAndType(
-      companyId,
-      NotificationType.ORDER_CREATED,
-    );
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
+    const notifications =
+      await this.notificationsService.getNotificationsByCompanyAndType(
+        companyId,
+        NotificationType.ORDER_CREATED,
+      );
     return {
       statusCode: HttpStatus.OK,
       message: 'Order created notifications retrieved successfully',
@@ -72,12 +95,19 @@ export class NotificationsController {
   }
 
   @Get('order-status')
-  async getOrderStatusNotifications(@Query('companyId') queryCompanyId?: string) {
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
+  async getOrderStatusNotifications(
+    @Query('companyId') queryCompanyId?: string,
+  ) {
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
     // Get all order-related notifications
-    const allNotifications = await this.notificationsService.getNotificationsByCompany(companyId);
-    const orderNotifications = allNotifications.filter(n => 
-      n.type.startsWith('order_') || n.type === NotificationType.PAYMENT_RECEIVED || n.type === NotificationType.PAYMENT_FAILED
+    const allNotifications =
+      await this.notificationsService.getNotificationsByCompany(companyId);
+    const orderNotifications = allNotifications.filter(
+      (n) =>
+        n.type.startsWith('order_') ||
+        n.type === NotificationType.PAYMENT_RECEIVED ||
+        n.type === NotificationType.PAYMENT_FAILED,
     );
     return {
       statusCode: HttpStatus.OK,
@@ -87,12 +117,16 @@ export class NotificationsController {
   }
 
   @Get('new-customers')
-  async getNewCustomerNotifications(@Query('companyId') queryCompanyId?: string) {
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
-    const notifications = await this.notificationsService.getNotificationsByCompanyAndType(
-      companyId,
-      NotificationType.NEW_CUSTOMER,
-    );
+  async getNewCustomerNotifications(
+    @Query('companyId') queryCompanyId?: string,
+  ) {
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
+    const notifications =
+      await this.notificationsService.getNotificationsByCompanyAndType(
+        companyId,
+        NotificationType.NEW_CUSTOMER,
+      );
     return {
       statusCode: HttpStatus.OK,
       message: 'New customer notifications retrieved successfully',
@@ -102,10 +136,14 @@ export class NotificationsController {
 
   @Get('low-stock')
   async getLowStockNotifications(@Query('companyId') queryCompanyId?: string) {
-    const companyId = queryCompanyId || this.requestContextService.getCompanyId();
-    const allNotifications = await this.notificationsService.getNotificationsByCompany(companyId);
-    const stockNotifications = allNotifications.filter(n => 
-      n.type === NotificationType.LOW_STOCK || n.type === NotificationType.OUT_OF_STOCK
+    const companyId =
+      queryCompanyId || this.requestContextService.getCompanyId();
+    const allNotifications =
+      await this.notificationsService.getNotificationsByCompany(companyId);
+    const stockNotifications = allNotifications.filter(
+      (n) =>
+        n.type === NotificationType.LOW_STOCK ||
+        n.type === NotificationType.OUT_OF_STOCK,
     );
     return {
       statusCode: HttpStatus.OK,
@@ -136,4 +174,3 @@ export class NotificationsController {
     };
   }
 }
-

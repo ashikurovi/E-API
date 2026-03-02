@@ -11,7 +11,9 @@ describe('TremsCondetionsController', () => {
       providers: [TremsCondetionsService],
     }).compile();
 
-    controller = module.get<TremsCondetionsController>(TremsCondetionsController);
+    controller = module.get<TremsCondetionsController>(
+      TremsCondetionsController,
+    );
   });
 
   it('should be defined', () => {

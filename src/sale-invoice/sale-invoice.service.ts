@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SaleInvoice, SaleInvoiceStatus } from './entities/sale-invoice.entity';
@@ -15,11 +20,16 @@ export class SaleInvoiceService {
     @InjectRepository(SaleInvoiceItem)
     private readonly saleInvoiceItemRepository: Repository<SaleInvoiceItem>,
     @Inject('MAILER_TRANSPORT')
-    private readonly mailer: { sendMail: (message: unknown) => Promise<{ id?: string }> },
+    private readonly mailer: {
+      sendMail: (message: unknown) => Promise<{ id?: string }>;
+    },
     private readonly systemuserService: SystemuserService,
   ) {}
 
-  async create(createSaleInvoiceDto: CreateSaleInvoiceDto, companyId: string): Promise<SaleInvoice> {
+  async create(
+    createSaleInvoiceDto: CreateSaleInvoiceDto,
+    companyId: string,
+  ): Promise<SaleInvoice> {
     const { items, ...invoiceData } = createSaleInvoiceDto;
     const saleInvoice = this.saleInvoiceRepository.create({
       ...invoiceData,
@@ -69,7 +79,11 @@ export class SaleInvoiceService {
     return invoice;
   }
 
-  async update(id: number, companyId: string, updateDto: UpdateSaleInvoiceDto): Promise<SaleInvoice> {
+  async update(
+    id: number,
+    companyId: string,
+    updateDto: UpdateSaleInvoiceDto,
+  ): Promise<SaleInvoice> {
     const invoice = await this.findOne(id, companyId);
     Object.assign(invoice, updateDto);
     await this.saleInvoiceRepository.save(invoice);
@@ -91,13 +105,20 @@ export class SaleInvoiceService {
     return this.findOne(id, companyId);
   }
 
-  async sendEmail(id: number, companyId: string, pdfBase64: string): Promise<{ success: boolean; message: string }> {
+  async sendEmail(
+    id: number,
+    companyId: string,
+    pdfBase64: string,
+  ): Promise<{ success: boolean; message: string }> {
     const invoice = await this.findOne(id, companyId);
     const customerEmail = invoice.customer?.email;
     if (!customerEmail) {
       throw new BadRequestException('Customer has no email address');
     }
-    const fromAddress = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? 'squadlog.studio@gmail.com';
+    const fromAddress =
+      process.env.SMTP_FROM ??
+      process.env.SMTP_USER ??
+      'squadlog.studio@gmail.com';
 
     // Resolve company name from the tenant (system user) instead of env
     let companyName = '';

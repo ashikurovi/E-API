@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('theme')
 export class Theme {
@@ -7,8 +13,6 @@ export class Theme {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   domainUrl: string;
-
- 
 
   @CreateDateColumn()
   createdAt: Date;

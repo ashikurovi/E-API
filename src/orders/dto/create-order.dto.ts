@@ -1,5 +1,13 @@
-import { IsInt, IsArray, ArrayMinSize, ValidateNested, IsNumber, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
+import {
+  IsInt,
+  IsArray,
+  ArrayMinSize,
+  ValidateNested,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 class OrderItemDto {
   @IsInt()
@@ -42,7 +50,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsString()
-  paymentMethod?: "DIRECT" | "COD";
+  paymentMethod?: 'DIRECT' | 'COD';
 
   // removed deliveryAddressId
 
@@ -51,7 +59,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsString()
-  deliveryType?: "INSIDEDHAKA" | "OUTSIDEDHAKA";
+  deliveryType?: 'INSIDEDHAKA' | 'OUTSIDEDHAKA';
 
   @IsOptional()
   @IsString()

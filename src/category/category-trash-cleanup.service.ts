@@ -14,13 +14,16 @@ export class CategoryTrashCleanupService {
     try {
       // TypeScript language service can get confused in some setups;
       // keep runtime call explicit.
-      const deleted = await (this.categoryService as any).hardDeleteTrashedOlderThanDays(7);
+      const deleted = await (
+        this.categoryService as any
+      ).hardDeleteTrashedOlderThanDays(7);
       if (deleted > 0) {
-        this.logger.log(`Purged ${deleted} trashed categories older than 7 days`);
+        this.logger.log(
+          `Purged ${deleted} trashed categories older than 7 days`,
+        );
       }
     } catch (e) {
-      this.logger.error('Failed to purge expired trashed categories', e as any);
+      this.logger.error('Failed to purge expired trashed categories', e);
     }
   }
 }
-

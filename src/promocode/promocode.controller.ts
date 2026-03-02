@@ -1,4 +1,17 @@
-import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Body, Query, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { PromocodeService } from './promocode.service';
 import { CreatePromocodeDto } from './dto/create-promocode.dto';
 import { UpdatePromocodeDto } from './dto/update-promocode.dto';
@@ -10,7 +23,7 @@ import { Public } from '../common/decorators/public.decorator';
 @Controller('promocode')
 @UseGuards(JwtAuthGuard, CompanyIdGuard)
 export class PromocodeController {
-  constructor(private readonly promocodeService: PromocodeService) { }
+  constructor(private readonly promocodeService: PromocodeService) {}
 
   @Public()
   @Get('public')
@@ -33,7 +46,11 @@ export class PromocodeController {
       throw new BadRequestException('companyId is required');
     }
     const promo = await this.promocodeService.create(dto, companyId);
-    return { statusCode: HttpStatus.CREATED, message: 'Promocode created', data: promo };
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Promocode created',
+      data: promo,
+    };
   }
 
   @Get()
@@ -75,7 +92,11 @@ export class PromocodeController {
       throw new BadRequestException('companyId is required');
     }
     const promo = await this.promocodeService.update(id, dto, companyId);
-    return { statusCode: HttpStatus.OK, message: 'Promocode updated', data: promo };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Promocode updated',
+      data: promo,
+    };
   }
 
   @Delete(':id')
@@ -104,7 +125,15 @@ export class PromocodeController {
       throw new BadRequestException('companyId is required');
     }
     const isActive = active === 'true';
-    const promo = await this.promocodeService.toggleActive(id, isActive, companyId);
-    return { statusCode: HttpStatus.OK, message: `Promocode ${isActive ? 'activated' : 'disabled'}`, data: promo };
+    const promo = await this.promocodeService.toggleActive(
+      id,
+      isActive,
+      companyId,
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: `Promocode ${isActive ? 'activated' : 'disabled'}`,
+      data: promo,
+    };
   }
 }

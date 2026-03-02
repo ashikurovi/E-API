@@ -118,7 +118,6 @@ import { TopProductsModule } from './top-products/top-products.module';
     MediaModule,
     ResellerModule,
     TopProductsModule,
-
   ],
   controllers: [AppController],
   providers: [
@@ -127,7 +126,6 @@ import { TopProductsModule } from './top-products/top-products.module';
       provide: 'MAILER_TRANSPORT',
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-
         return createTransport({
           host: 'smtp.gmail.com',
           port: 587,
@@ -143,7 +141,6 @@ import { TopProductsModule } from './top-products/top-products.module';
           greetingTimeout: 30000,
           socketTimeout: 30000,
         });
-        
       },
     },
   ],

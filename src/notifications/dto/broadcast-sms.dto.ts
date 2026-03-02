@@ -6,4 +6,3 @@ export class BroadcastSmsDto {
   @MaxLength(480, { message: 'SMS message should not exceed 480 characters' })
   message: string;
 }
-

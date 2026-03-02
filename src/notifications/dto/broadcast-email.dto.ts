@@ -1,4 +1,10 @@
-import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class BroadcastEmailDto {
   @IsString()
@@ -18,4 +24,3 @@ export class BroadcastEmailDto {
   @IsInt({ each: true })
   customerIds?: number[];
 }
-

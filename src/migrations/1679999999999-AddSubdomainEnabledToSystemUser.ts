@@ -15,4 +15,3 @@ export class AddSubdomainEnabledToSystemUser1679999999999 implements MigrationIn
     `);
   }
 }
-

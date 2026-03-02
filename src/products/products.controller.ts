@@ -36,7 +36,7 @@ export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly dashboardService: DashboardService,
-  ) { }
+  ) {}
 
   @Post()
   async create(
@@ -53,10 +53,16 @@ export class ProductController {
       const role: SystemUserRole | undefined = req?.user?.role;
       const numericUserId = +(req?.user?.userId || req?.user?.sub);
       const performedByUserId =
-        role && [SystemUserRole.SUPER_ADMIN, SystemUserRole.SYSTEM_OWNER, SystemUserRole.EMPLOYEE].includes(role)
+        role &&
+        [
+          SystemUserRole.SUPER_ADMIN,
+          SystemUserRole.SYSTEM_OWNER,
+          SystemUserRole.EMPLOYEE,
+        ].includes(role)
           ? numericUserId
           : undefined;
-      const resellerId = role === SystemUserRole.RESELLER ? numericUserId : undefined;
+      const resellerId =
+        role === SystemUserRole.RESELLER ? numericUserId : undefined;
 
       const product = await this.productService.create(
         createDto,
@@ -64,13 +70,22 @@ export class ProductController {
         performedByUserId,
         resellerId,
       );
-      return { statusCode: HttpStatus.CREATED, message: 'Product created', data: product };
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Product created',
+        data: product,
+      };
     } catch (error) {
       // Re-throw known exceptions, wrap unknown errors
-      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
-      throw new BadRequestException(error.message || 'Failed to create product');
+      throw new BadRequestException(
+        error.message || 'Failed to create product',
+      );
     }
   }
 
@@ -90,7 +105,10 @@ export class ProductController {
           ? +resellerIdFromQuery
           : undefined;
 
-    const products = await this.productService.findAll(companyId, { status, resellerId });
+    const products = await this.productService.findAll(companyId, {
+      status,
+      resellerId,
+    });
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -127,7 +145,10 @@ export class ProductController {
           ? +resellerIdFromQuery
           : undefined;
 
-    const products = await this.productService.findAll(companyId, { status, resellerId });
+    const products = await this.productService.findAll(companyId, {
+      status,
+      resellerId,
+    });
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -146,7 +167,10 @@ export class ProductController {
           ? +resellerIdFromQuery
           : undefined;
 
-    const products = await this.productService.getDraftProducts(companyId, resellerId);
+    const products = await this.productService.getDraftProducts(
+      companyId,
+      resellerId,
+    );
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -165,7 +189,10 @@ export class ProductController {
           ? +resellerIdFromQuery
           : undefined;
 
-    const products = await this.productService.getTrashedProducts(companyId, resellerId);
+    const products = await this.productService.getTrashedProducts(
+      companyId,
+      resellerId,
+    );
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -181,7 +208,11 @@ export class ProductController {
       throw new BadRequestException('companyId is required');
     }
     const limitNumber = limit ? parseInt(limit, 10) : 50;
-    const history = await this.productService.getStockHistory(id, companyId, limitNumber);
+    const history = await this.productService.getStockHistory(
+      id,
+      companyId,
+      limitNumber,
+    );
     return { statusCode: HttpStatus.OK, data: history };
   }
 
@@ -189,13 +220,13 @@ export class ProductController {
   async findByCategory(
     @Query('companyId') companyId: string,
     @Query('categories') categories?: string,
-    @Query('categoryId') categoryId?: string
+    @Query('categoryId') categoryId?: string,
   ) {
     const parsedCategoryId = categoryId ? parseInt(categoryId, 10) : undefined;
     const products = await this.productService.findByCategory(
       companyId,
       categories,
-      parsedCategoryId
+      parsedCategoryId,
     );
     return { statusCode: HttpStatus.OK, data: products };
   }
@@ -219,13 +250,18 @@ export class ProductController {
           ? (categories[0] && String(categories[0]).trim()) || undefined
           : undefined;
     const parsedCategoryId = categoryId ? parseInt(categoryId, 10) : undefined;
-    if (categoryId && (parsedCategoryId === undefined || Number.isNaN(parsedCategoryId))) {
+    if (
+      categoryId &&
+      (parsedCategoryId === undefined || Number.isNaN(parsedCategoryId))
+    ) {
       throw new BadRequestException('categoryId must be a number');
     }
     const limitNum = limit ? parseInt(limit, 10) : 20;
     const offsetNum = offset ? parseInt(offset, 10) : 0;
-    const safeLimit = Number.isFinite(limitNum) && limitNum > 0 ? Math.min(limitNum, 100) : 20;
-    const safeOffset = Number.isFinite(offsetNum) && offsetNum >= 0 ? offsetNum : 0;
+    const safeLimit =
+      Number.isFinite(limitNum) && limitNum > 0 ? Math.min(limitNum, 100) : 20;
+    const safeOffset =
+      Number.isFinite(offsetNum) && offsetNum >= 0 ? offsetNum : 0;
 
     const products = await this.productService.findPublicByCategory(
       companyId,
@@ -245,11 +281,19 @@ export class ProductController {
     @Query('limit') limit?: string,
   ) {
     if (!companyId) {
-      return { statusCode: HttpStatus.BAD_REQUEST, message: 'companyId is required', data: [] };
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'companyId is required',
+        data: [],
+      };
     }
     const daysParam = days ? parseInt(days, 10) : 30;
     const limitParam = limit ? parseInt(limit, 10) : 10;
-    const products = await this.productService.findTrending(companyId, daysParam, limitParam);
+    const products = await this.productService.findTrending(
+      companyId,
+      daysParam,
+      limitParam,
+    );
     return { statusCode: HttpStatus.OK, data: products };
   }
 
@@ -298,7 +342,7 @@ export class ProductController {
     };
   }
 
-  @Post("bulk-upload")
+  @Post('bulk-upload')
   @UseInterceptors(FileInterceptor('file'))
   async bulkUpload(
     @UploadedFile() file: Express.Multer.File,
@@ -321,10 +365,17 @@ export class ProductController {
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ];
     const allowedExtensions = ['.csv', '.xls', '.xlsx'];
-    const fileExtension = file.originalname.substring(file.originalname.lastIndexOf('.')).toLowerCase();
+    const fileExtension = file.originalname
+      .substring(file.originalname.lastIndexOf('.'))
+      .toLowerCase();
 
-    if (!allowedExtensions.includes(fileExtension) && !allowedMimeTypes.includes(file.mimetype)) {
-      throw new BadRequestException('Invalid file type. Please upload a CSV or Excel file (.csv, .xls, .xlsx)');
+    if (
+      !allowedExtensions.includes(fileExtension) &&
+      !allowedMimeTypes.includes(file.mimetype)
+    ) {
+      throw new BadRequestException(
+        'Invalid file type. Please upload a CSV or Excel file (.csv, .xls, .xlsx)',
+      );
     }
 
     try {
@@ -347,29 +398,45 @@ export class ProductController {
         const lines = text.trim().split('\n');
 
         if (lines.length < 2) {
-          throw new BadRequestException('CSV file must contain at least a header row and one data row');
+          throw new BadRequestException(
+            'CSV file must contain at least a header row and one data row',
+          );
         }
 
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const headers = lines[0].split(',').map((h) => h.trim().toLowerCase());
         const requiredHeaders = ['name', 'sku', 'price', 'categoryid'];
-        const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+        const missingHeaders = requiredHeaders.filter(
+          (h) => !headers.includes(h),
+        );
 
         if (missingHeaders.length > 0) {
-          throw new BadRequestException(`Missing required columns: ${missingHeaders.join(', ')}`);
+          throw new BadRequestException(
+            `Missing required columns: ${missingHeaders.join(', ')}`,
+          );
         }
 
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+          const values = lines[i]
+            .split(',')
+            .map((v) => v.trim().replace(/^"|"$/g, ''));
           if (values.length < headers.length) continue;
 
           const product: any = {};
           headers.forEach((header, index) => {
             const value = values[index]?.trim();
             if (value) {
-              if (['price', 'discountprice', 'categoryid', 'stock'].includes(header)) {
-                product[header] = header === 'stock' ? (parseInt(value, 10) || 0) : (parseFloat(value) || parseInt(value, 10));
+              if (
+                ['price', 'discountprice', 'categoryid', 'stock'].includes(
+                  header,
+                )
+              ) {
+                product[header] =
+                  header === 'stock'
+                    ? parseInt(value, 10) || 0
+                    : parseFloat(value) || parseInt(value, 10);
               } else if (header === 'isactive') {
-                product[header] = value.toLowerCase() === 'true' || value === '1';
+                product[header] =
+                  value.toLowerCase() === 'true' || value === '1';
               } else {
                 product[header] = value;
               }
@@ -377,18 +444,33 @@ export class ProductController {
           });
 
           // Map headers to camelCase
-          const stockVal = product.stock ?? product.Stock ?? product['stock quantity'];
+          const stockVal =
+            product.stock ?? product.Stock ?? product['stock quantity'];
           products.push({
             name: product.name || product.Name,
             sku: product.sku || product.SKU,
             price: product.price || product.Price,
-            discountPrice: product.discountprice || product.discountPrice || product['discount price'],
-            categoryId: product.categoryid || product.categoryId || product['category id'],
-            isActive: product.isactive !== undefined ? product.isactive : (product.isActive !== undefined ? product.isActive : true),
+            discountPrice:
+              product.discountprice ||
+              product.discountPrice ||
+              product['discount price'],
+            categoryId:
+              product.categoryid ||
+              product.categoryId ||
+              product['category id'],
+            isActive:
+              product.isactive !== undefined
+                ? product.isactive
+                : product.isActive !== undefined
+                  ? product.isActive
+                  : true,
             description: product.description || product.Description,
             thumbnail: product.thumbnail || product.Thumbnail,
             images: product.images || product.Images || product['image urls'],
-            stock: stockVal !== undefined ? (parseInt(String(stockVal), 10) || 0) : undefined,
+            stock:
+              stockVal !== undefined
+                ? parseInt(String(stockVal), 10) || 0
+                : undefined,
           });
         }
       } else {
@@ -403,28 +485,44 @@ export class ProductController {
         }
 
         // Normalize headers (convert to lowercase, remove spaces)
-        const normalizeHeader = (header: string) => header.toLowerCase().replace(/\s+/g, '');
+        const normalizeHeader = (header: string) =>
+          header.toLowerCase().replace(/\s+/g, '');
 
         products = data.map((row: any) => {
           const normalizedRow: any = {};
-          Object.keys(row).forEach(key => {
+          Object.keys(row).forEach((key) => {
             normalizedRow[normalizeHeader(key)] = row[key];
           });
 
-          const stockVal = normalizedRow.stock ?? normalizedRow.stockquantity ?? normalizedRow.inventory;
+          const stockVal =
+            normalizedRow.stock ??
+            normalizedRow.stockquantity ??
+            normalizedRow.inventory;
           return {
             name: normalizedRow.name || normalizedRow.productname || '',
             sku: normalizedRow.sku || '',
             price: parseFloat(normalizedRow.price) || 0,
-            discountPrice: normalizedRow.discountprice ? parseFloat(normalizedRow.discountprice) : undefined,
-            categoryId: parseInt(normalizedRow.categoryid || normalizedRow.category, 10) || 0,
-            isActive: normalizedRow.isactive !== undefined
-              ? (normalizedRow.isactive === true || normalizedRow.isactive === 'true' || normalizedRow.isactive === '1')
-              : true,
+            discountPrice: normalizedRow.discountprice
+              ? parseFloat(normalizedRow.discountprice)
+              : undefined,
+            categoryId:
+              parseInt(
+                normalizedRow.categoryid || normalizedRow.category,
+                10,
+              ) || 0,
+            isActive:
+              normalizedRow.isactive !== undefined
+                ? normalizedRow.isactive === true ||
+                  normalizedRow.isactive === 'true' ||
+                  normalizedRow.isactive === '1'
+                : true,
             description: normalizedRow.description || '',
             thumbnail: normalizedRow.thumbnail || '',
             images: normalizedRow.images || normalizedRow.imageurls || '',
-            stock: stockVal !== undefined && stockVal !== '' ? (parseInt(String(stockVal), 10) || 0) : undefined,
+            stock:
+              stockVal !== undefined && stockVal !== ''
+                ? parseInt(String(stockVal), 10) || 0
+                : undefined,
           };
         });
       }
@@ -443,7 +541,11 @@ export class ProductController {
           failed: result.failed.length,
           total: products.length,
           details: {
-            successful: result.success.map(p => ({ id: p.id, name: p.name, sku: p.sku })),
+            successful: result.success.map((p) => ({
+              id: p.id,
+              name: p.name,
+              sku: p.sku,
+            })),
             failed: result.failed,
           },
         },
@@ -456,15 +558,18 @@ export class ProductController {
     }
   }
 
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  @Get(':id')
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     const product = await this.productService.findOne(id, companyId);
     return { statusCode: HttpStatus.OK, data: product };
   }
 
-  @Patch(":id")
+  @Patch(':id')
   async update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProductDto,
     @Query('companyId') companyIdFromQuery?: string,
     @CompanyId() companyIdFromToken?: string,
@@ -472,49 +577,107 @@ export class ProductController {
   ) {
     const companyId = companyIdFromQuery || companyIdFromToken;
     if (!companyId) throw new BadRequestException('companyId is required');
-    const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-      ? +(req.user.userId || req.user.sub) : undefined;
-    const product = await this.productService.update(id, updateDto, companyId, performedByUserId);
-    return { statusCode: HttpStatus.OK, message: "Product updated", data: product };
+    const performedByUserId =
+      req?.user?.role &&
+      ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
+        ? +(req.user.userId || req.user.sub)
+        : undefined;
+    const product = await this.productService.update(
+      id,
+      updateDto,
+      companyId,
+      performedByUserId,
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Product updated',
+      data: product,
+    };
   }
 
-  @Delete(":id")
-  async softDelete(@Param("id", ParseIntPipe) id: number, @CompanyId() companyId: string, @Req() req?: any) {
-    const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-      ? +(req.user.userId || req.user.sub) : undefined;
+  @Delete(':id')
+  async softDelete(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+    @Req() req?: any,
+  ) {
+    const performedByUserId =
+      req?.user?.role &&
+      ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
+        ? +(req.user.userId || req.user.sub)
+        : undefined;
     await this.productService.softDelete(id, companyId, performedByUserId);
-    return { statusCode: HttpStatus.OK, message: "Product moved to trash" };
+    return { statusCode: HttpStatus.OK, message: 'Product moved to trash' };
   }
 
-  @Patch(":id/recover")
-  async recoverFromTrash(@Param("id", ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  @Patch(':id/recover')
+  async recoverFromTrash(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     const product = await this.productService.recoverFromTrash(id, companyId);
-    return { statusCode: HttpStatus.OK, message: "Product recovered from trash", data: product };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Product recovered from trash',
+      data: product,
+    };
   }
 
-  @Patch(":id/publish")
-  async publishDraft(@Param("id", ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  @Patch(':id/publish')
+  async publishDraft(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     const product = await this.productService.publishDraft(id, companyId);
-    return { statusCode: HttpStatus.OK, message: "Product published", data: product };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Product published',
+      data: product,
+    };
   }
 
-  @Delete(":id/permanent")
-  async permanentDelete(@Param("id", ParseIntPipe) id: number, @CompanyId() companyId: string, @Req() req?: any) {
-    const performedByUserId = req?.user?.role && ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
-      ? +(req.user.userId || req.user.sub) : undefined;
+  @Delete(':id/permanent')
+  async permanentDelete(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+    @Req() req?: any,
+  ) {
+    const performedByUserId =
+      req?.user?.role &&
+      ['SUPER_ADMIN', 'SYSTEM_OWNER', 'EMPLOYEE'].includes(req.user.role)
+        ? +(req.user.userId || req.user.sub)
+        : undefined;
     await this.productService.permanentDelete(id, companyId, performedByUserId);
-    return { statusCode: HttpStatus.OK, message: "Product permanently deleted" };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Product permanently deleted',
+    };
   }
 
-  @Patch(":id/toggle-active")
-  async toggleActive(@Param("id", ParseIntPipe) id: number, @Query("active") active: string, @CompanyId() companyId: string) {
-    const isActive = active === "true";
-    const product = await this.productService.toggleActive(id, isActive, companyId);
-    return { statusCode: HttpStatus.OK, message: `Product ${isActive ? "activated" : "disabled"}`, data: product };
+  @Patch(':id/toggle-active')
+  async toggleActive(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('active') active: string,
+    @CompanyId() companyId: string,
+  ) {
+    const isActive = active === 'true';
+    const product = await this.productService.toggleActive(
+      id,
+      isActive,
+      companyId,
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: `Product ${isActive ? 'activated' : 'disabled'}`,
+      data: product,
+    };
   }
 
-  @Post("flash-sell")
-  async setFlashSell(@Body() flashSellDto: FlashSellDto, @CompanyId() companyId: string) {
+  @Post('flash-sell')
+  async setFlashSell(
+    @Body() flashSellDto: FlashSellDto,
+    @CompanyId() companyId: string,
+  ) {
     const startTime = new Date(flashSellDto.flashSellStartTime);
     const endTime = new Date(flashSellDto.flashSellEndTime);
     const products = await this.productService.setFlashSell(
@@ -522,27 +685,33 @@ export class ProductController {
       startTime,
       endTime,
       flashSellDto.flashSellPrice,
-      companyId
+      companyId,
     );
     return {
       statusCode: HttpStatus.OK,
-      message: "Flash sell set for selected products",
+      message: 'Flash sell set for selected products',
       data: products,
     };
   }
 
-  @Delete("flash-sell")
-  async removeFlashSell(@Body() body: { productIds: number[] }, @CompanyId() companyId: string) {
-    const products = await this.productService.removeFlashSell(body.productIds, companyId);
+  @Delete('flash-sell')
+  async removeFlashSell(
+    @Body() body: { productIds: number[] },
+    @CompanyId() companyId: string,
+  ) {
+    const products = await this.productService.removeFlashSell(
+      body.productIds,
+      companyId,
+    );
     return {
       statusCode: HttpStatus.OK,
-      message: "Flash sell removed from selected products",
+      message: 'Flash sell removed from selected products',
       data: products,
     };
   }
 
   @Public()
-  @Get("flash-sell/active")
+  @Get('flash-sell/active')
   async getActiveFlashSellProducts(
     @Query('companyId') companyIdFromQuery?: string,
     @CompanyId() companyIdFromToken?: string,
@@ -551,7 +720,8 @@ export class ProductController {
     if (!companyId) {
       throw new BadRequestException('companyId is required');
     }
-    const products = await this.productService.getActiveFlashSellProducts(companyId);
+    const products =
+      await this.productService.getActiveFlashSellProducts(companyId);
     return {
       statusCode: HttpStatus.OK,
       data: products,

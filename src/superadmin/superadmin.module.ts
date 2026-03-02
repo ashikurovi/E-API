@@ -18,7 +18,16 @@ import { WildcardBootstrapService } from '../common/services/wildcard-bootstrap.
     }),
   ],
   controllers: [SuperadminController],
-  providers: [SuperadminService, WildcardDomainService, WildcardBootstrapService],
-  exports: [SuperadminService, JwtModule, PassportModule, WildcardDomainService],
+  providers: [
+    SuperadminService,
+    WildcardDomainService,
+    WildcardBootstrapService,
+  ],
+  exports: [
+    SuperadminService,
+    JwtModule,
+    PassportModule,
+    WildcardDomainService,
+  ],
 })
 export class SuperadminModule {}

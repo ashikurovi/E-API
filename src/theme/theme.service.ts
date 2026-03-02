@@ -1,8 +1,8 @@
-import { 
-  Injectable, 
-  NotFoundException, 
+import {
+  Injectable,
+  NotFoundException,
   BadRequestException,
-  InternalServerErrorException 
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,17 +22,23 @@ export class ThemeService {
       const theme = this.themeRepository.create(createThemeDto);
       return await this.themeRepository.save(theme);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to create theme', error.message);
+      throw new InternalServerErrorException(
+        'Failed to create theme',
+        error.message,
+      );
     }
   }
 
   async findAll(): Promise<Theme[]> {
     try {
       return await this.themeRepository.find({
-        order: { createdAt: 'DESC' }
+        order: { createdAt: 'DESC' },
       });
     } catch (error) {
-      throw new InternalServerErrorException('Failed to retrieve themes', error.message);
+      throw new InternalServerErrorException(
+        'Failed to retrieve themes',
+        error.message,
+      );
     }
   }
 
@@ -40,7 +46,7 @@ export class ThemeService {
     if (!id || isNaN(id)) {
       throw new BadRequestException('Invalid theme ID');
     }
-    
+
     const theme = await this.themeRepository.findOne({ where: { id } });
     if (!theme) {
       throw new NotFoundException(`Theme with ID ${id} not found`);
@@ -54,10 +60,16 @@ export class ThemeService {
       Object.assign(theme, updateThemeDto);
       return await this.themeRepository.save(theme);
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to update theme', error.message);
+      throw new InternalServerErrorException(
+        'Failed to update theme',
+        error.message,
+      );
     }
   }
 
@@ -66,10 +78,16 @@ export class ThemeService {
       const theme = await this.findOne(id);
       await this.themeRepository.remove(theme);
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
-      throw new InternalServerErrorException('Failed to delete theme', error.message);
+      throw new InternalServerErrorException(
+        'Failed to delete theme',
+        error.message,
+      );
     }
   }
 }

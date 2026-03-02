@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
@@ -10,8 +15,8 @@ import { Invoice, InvoiceStatus } from './entities/invoice.entity';
 import { SystemUser } from '../systemuser/entities/systemuser.entity';
 import { ConfigService } from '@nestjs/config';
 import { SystemuserService } from '../systemuser/systemuser.service';
-import { 
-  generatePaymentConfirmationEmail, 
+import {
+  generatePaymentConfirmationEmail,
   generatePaymentRejectionEmail,
   generateNewInvoiceAdminNotification,
   generateBankPaymentAdminNotification,
@@ -39,10 +44,13 @@ export class InvoiceService {
     private readonly systemuserService: SystemuserService,
   ) {
     this.bkashAppKey = this.configService.get<string>('BKASH_APP_KEY') || '';
-    this.bkashAppSecret = this.configService.get<string>('BKASH_APP_SECRET') || '';
+    this.bkashAppSecret =
+      this.configService.get<string>('BKASH_APP_SECRET') || '';
     this.bkashUsername = this.configService.get<string>('BKASH_USERNAME') || '';
     this.bkashPassword = this.configService.get<string>('BKASH_PASSWORD') || '';
-    this.bkashBaseURL = this.configService.get<string>('BKASH_BASE_URL') || 'https://checkout.sandbox.bka.sh/v1.2.0-beta';
+    this.bkashBaseURL =
+      this.configService.get<string>('BKASH_BASE_URL') ||
+      'https://checkout.sandbox.bka.sh/v1.2.0-beta';
     this.bkashGrantTokenURL = `${this.bkashBaseURL}/checkout/token/grant`;
     this.bkashCreatePaymentURL = `${this.bkashBaseURL}/checkout/payment/create`;
     this.bkashExecutePaymentURL = `${this.bkashBaseURL}/checkout/payment/execute`;
@@ -55,7 +63,9 @@ export class InvoiceService {
     });
 
     if (!customer) {
-      throw new NotFoundException(`Customer with ID ${createInvoiceDto.customerId} not found`);
+      throw new NotFoundException(
+        `Customer with ID ${createInvoiceDto.customerId} not found`,
+      );
     }
 
     // Generate unique invoice number and transaction ID
@@ -64,7 +74,8 @@ export class InvoiceService {
 
     // Calculate due amount
     const paidAmount = parseFloat(String(createInvoiceDto.paidAmount || 0));
-    const dueAmount = parseFloat(String(createInvoiceDto.totalAmount)) - paidAmount;
+    const dueAmount =
+      parseFloat(String(createInvoiceDto.totalAmount)) - paidAmount;
 
     // Auto-update status based on payment
     let status = createInvoiceDto.status || InvoiceStatus.PENDING;
@@ -89,7 +100,8 @@ export class InvoiceService {
 
     // Send admin notification email
     try {
-      const adminEmail = this.configService.get<string>('ADMIN_EMAIL') || 'admin@gmail.com';
+      const adminEmail =
+        this.configService.get<string>('ADMIN_EMAIL') || 'admin@gmail.com';
       const emailHtml = generateNewInvoiceAdminNotification(
         customer.name,
         customer.email,
@@ -97,12 +109,12 @@ export class InvoiceService {
         savedInvoice.transactionId,
         savedInvoice.totalAmount,
         savedInvoice.amountType,
-        new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
+        new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
           day: 'numeric',
           hour: '2-digit',
-          minute: '2-digit'
+          minute: '2-digit',
         }),
         customer.companyName || '',
       );
@@ -128,10 +140,10 @@ export class InvoiceService {
   }
 
   async findOne(id: number): Promise<Invoice> {
-    const invoice = await this.invoiceRepository.findOne({
+    const invoice = (await this.invoiceRepository.findOne({
       where: { id },
       relations: ['customer'],
-    }) as Invoice & { customer: SystemUser };
+    })) as Invoice & { customer: SystemUser };
 
     if (!invoice) {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
@@ -155,29 +167,43 @@ export class InvoiceService {
     });
 
     if (!invoice) {
-      throw new NotFoundException(`Invoice with number ${invoiceNumber} not found`);
+      throw new NotFoundException(
+        `Invoice with number ${invoiceNumber} not found`,
+      );
     }
 
     return invoice;
   }
 
-  async update(id: number, updateInvoiceDto: UpdateInvoiceDto): Promise<Invoice> {
+  async update(
+    id: number,
+    updateInvoiceDto: UpdateInvoiceDto,
+  ): Promise<Invoice> {
     const invoice = await this.findOne(id);
 
     // If updating customer, verify new customer exists
-    if (updateInvoiceDto.customerId && updateInvoiceDto.customerId !== invoice.customerId) {
+    if (
+      updateInvoiceDto.customerId &&
+      updateInvoiceDto.customerId !== invoice.customerId
+    ) {
       const customer = await this.systemUserRepository.findOne({
         where: { id: updateInvoiceDto.customerId },
       });
 
       if (!customer) {
-        throw new NotFoundException(`Customer with ID ${updateInvoiceDto.customerId} not found`);
+        throw new NotFoundException(
+          `Customer with ID ${updateInvoiceDto.customerId} not found`,
+        );
       }
     }
 
     // Recalculate due amount if amounts changed
-    const totalAmount = parseFloat(String(updateInvoiceDto.totalAmount ?? invoice.totalAmount));
-    const paidAmount = parseFloat(String(updateInvoiceDto.paidAmount ?? invoice.paidAmount));
+    const totalAmount = parseFloat(
+      String(updateInvoiceDto.totalAmount ?? invoice.totalAmount),
+    );
+    const paidAmount = parseFloat(
+      String(updateInvoiceDto.paidAmount ?? invoice.paidAmount),
+    );
     const dueAmount = totalAmount - paidAmount;
 
     // Auto-update status based on payment
@@ -212,7 +238,7 @@ export class InvoiceService {
       });
 
       const data = await response.json();
-      
+
       if (!data.id_token) {
         throw new BadRequestException('Failed to get bKash token');
       }
@@ -240,7 +266,8 @@ export class InvoiceService {
     const token = await this.getBkashToken();
 
     // Create payment request
-    const callbackURL = initiatePaymentDto.callbackURL || 
+    const callbackURL =
+      initiatePaymentDto.callbackURL ||
       `${this.configService.get<string>('APP_URL')}/api/invoice/bkash/callback`;
 
     try {
@@ -284,9 +311,7 @@ export class InvoiceService {
     }
   }
 
-  async executeBkashPayment(
-    paymentID: string,
-  ): Promise<Invoice> {
+  async executeBkashPayment(paymentID: string): Promise<Invoice> {
     const invoice = await this.invoiceRepository.findOne({
       where: { bkashPaymentID: paymentID },
       relations: ['customer'],
@@ -323,12 +348,17 @@ export class InvoiceService {
 
       // Update invoice with payment details
       const paidAmount = parseFloat(data.amount) || 0;
-      const newTotalPaidAmount = parseFloat(String(invoice.paidAmount)) + paidAmount;
-      const dueAmount = parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
+      const newTotalPaidAmount =
+        parseFloat(String(invoice.paidAmount)) + paidAmount;
+      const dueAmount =
+        parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
 
       invoice.paidAmount = newTotalPaidAmount;
       invoice.dueAmount = dueAmount < 0 ? 0 : dueAmount;
-      invoice.status = newTotalPaidAmount >= invoice.totalAmount ? InvoiceStatus.PAID : InvoiceStatus.PENDING;
+      invoice.status =
+        newTotalPaidAmount >= invoice.totalAmount
+          ? InvoiceStatus.PAID
+          : InvoiceStatus.PENDING;
       invoice.bkashTrxID = data.trxID;
 
       const savedInvoice = await this.invoiceRepository.save(invoice);
@@ -368,9 +398,7 @@ export class InvoiceService {
     }
   }
 
-  async processBankPayment(
-    bankPaymentDto: BankPaymentDto,
-  ): Promise<Invoice> {
+  async processBankPayment(bankPaymentDto: BankPaymentDto): Promise<Invoice> {
     const invoice = await this.findOne(bankPaymentDto.invoiceId);
 
     if (invoice.status === InvoiceStatus.PAID) {
@@ -378,7 +406,9 @@ export class InvoiceService {
     }
 
     if (invoice.status === InvoiceStatus.CANCELLED) {
-      throw new BadRequestException('Cannot process payment for cancelled invoice');
+      throw new BadRequestException(
+        'Cannot process payment for cancelled invoice',
+      );
     }
 
     if (invoice.totalAmount <= 0) {
@@ -395,12 +425,18 @@ export class InvoiceService {
 
     // If status is verified, update paid amount
     if (bankPaymentDto.status === BankPaymentStatus.VERIFIED) {
-      const newTotalPaidAmount = parseFloat(String(invoice.paidAmount)) + parseFloat(String(invoice.totalAmount));
-      const dueAmount = parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
+      const newTotalPaidAmount =
+        parseFloat(String(invoice.paidAmount)) +
+        parseFloat(String(invoice.totalAmount));
+      const dueAmount =
+        parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
 
       invoice.paidAmount = newTotalPaidAmount;
       invoice.dueAmount = dueAmount < 0 ? 0 : dueAmount;
-      invoice.status = newTotalPaidAmount >= invoice.totalAmount ? InvoiceStatus.PAID : InvoiceStatus.PENDING;
+      invoice.status =
+        newTotalPaidAmount >= invoice.totalAmount
+          ? InvoiceStatus.PAID
+          : InvoiceStatus.PENDING;
     }
 
     const savedInvoice = await this.invoiceRepository.save(invoice);
@@ -413,7 +449,8 @@ export class InvoiceService {
     // Send admin notification email
     try {
       const customer = invoice.customer;
-      const adminEmail = this.configService.get<string>('ADMIN_EMAIL') || 'admin@gmail.com';
+      const adminEmail =
+        this.configService.get<string>('ADMIN_EMAIL') || 'admin@gmail.com';
       const emailHtml = generateBankPaymentAdminNotification(
         customer.name,
         customer.email,
@@ -423,12 +460,12 @@ export class InvoiceService {
         bankPaymentDto.bankName,
         invoice.totalAmount,
         bankPaymentDto.accLastDigit,
-        new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
+        new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
           day: 'numeric',
           hour: '2-digit',
-          minute: '2-digit'
+          minute: '2-digit',
         }),
         customer.companyName || '',
       );
@@ -462,12 +499,17 @@ export class InvoiceService {
 
     // Update paid amount
     const paymentAmount = parseFloat(String(invoice.bankPayment.amount)) || 0;
-    const newTotalPaidAmount = parseFloat(String(invoice.paidAmount)) + paymentAmount;
-    const dueAmount = parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
+    const newTotalPaidAmount =
+      parseFloat(String(invoice.paidAmount)) + paymentAmount;
+    const dueAmount =
+      parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
 
     invoice.paidAmount = newTotalPaidAmount;
     invoice.dueAmount = dueAmount < 0 ? 0 : dueAmount;
-    invoice.status = newTotalPaidAmount >= invoice.totalAmount ? InvoiceStatus.PAID : InvoiceStatus.PENDING;
+    invoice.status =
+      newTotalPaidAmount >= invoice.totalAmount
+        ? InvoiceStatus.PAID
+        : InvoiceStatus.PENDING;
 
     const updatedInvoice = await this.invoiceRepository.save(invoice);
 
@@ -485,12 +527,12 @@ export class InvoiceService {
         invoice.totalAmount,
         paymentAmount,
         invoice.bankPayment.bankName || 'Bank Transfer',
-        new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long', 
+        new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
           day: 'numeric',
           hour: '2-digit',
-          minute: '2-digit'
+          minute: '2-digit',
         }),
         customer.companyName || '',
       );
@@ -508,7 +550,10 @@ export class InvoiceService {
     return updatedInvoice;
   }
 
-  async rejectBankPayment(invoiceId: number, reason?: string): Promise<Invoice> {
+  async rejectBankPayment(
+    invoiceId: number,
+    reason?: string,
+  ): Promise<Invoice> {
     const invoice = await this.findOne(invoiceId);
 
     if (!invoice.bankPayment) {
@@ -554,11 +599,13 @@ export class InvoiceService {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
-    
+
     // Find the last invoice of the current month
     const lastInvoice = await this.invoiceRepository
       .createQueryBuilder('invoice')
-      .where('invoice.invoiceNumber LIKE :prefix', { prefix: `INV-${year}${month}%` })
+      .where('invoice.invoiceNumber LIKE :prefix', {
+        prefix: `INV-${year}${month}%`,
+      })
       .orderBy('invoice.id', 'DESC')
       .getOne();
 
@@ -573,9 +620,14 @@ export class InvoiceService {
 
   private generateTransactionId(): string {
     const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
-    
+    const random = Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0');
+    const randomChars = Math.random()
+      .toString(36)
+      .substring(2, 8)
+      .toUpperCase();
+
     return `TXN${timestamp}${random}${randomChars}`;
   }
 
@@ -587,10 +639,10 @@ export class InvoiceService {
   private async handleInvoicePaid(invoice: Invoice): Promise<void> {
     try {
       // Reload invoice with customer relation to avoid partial entities
-      const fullInvoice = await this.invoiceRepository.findOne({
+      const fullInvoice = (await this.invoiceRepository.findOne({
         where: { id: invoice.id },
         relations: ['customer'],
-      }) as Invoice & { customer: SystemUser };
+      })) as Invoice & { customer: SystemUser };
 
       if (!fullInvoice || !fullInvoice.customer) {
         return;
@@ -622,7 +674,7 @@ export class InvoiceService {
       // Ensure uniqueness by appending numeric suffix if needed
       let uniqueSlug = slug;
       let counter = 1;
-      // eslint-disable-next-line no-constant-condition
+
       while (true) {
         const existing = await this.systemUserRepository.findOne({
           where: { subdomain: uniqueSlug },
@@ -637,7 +689,7 @@ export class InvoiceService {
       }
 
       customer.subdomain = uniqueSlug;
-      // By default, enable platform subdomain so <slug>.console.squadcart.app works
+      // By default, enable platform subdomain so <slug>.console.innowavecart.app works
       (customer as any).subdomainEnabled =
         (customer as any).subdomainEnabled !== undefined
           ? (customer as any).subdomainEnabled
@@ -646,7 +698,7 @@ export class InvoiceService {
       await this.systemUserRepository.save(customer);
 
       // Auto-provision subdomain in Railway (fire-and-forget)
-      // This will add the subdomain (e.g., "ovi.console.squadcart.app") to Railway
+      // This will add the subdomain (e.g., "ovi.console.innowavecart.app") to Railway
       // Railway will automatically provision SSL certificate once DNS is configured
       this.systemuserService
         .provisionSubdomainInRailway(customer.id)
@@ -662,7 +714,10 @@ export class InvoiceService {
         );
     } catch (error) {
       // We don't want payment flow to fail because of provisioning issues
-      console.error('Failed to handle post-payment tenant/subdomain provisioning:', error);
+      console.error(
+        'Failed to handle post-payment tenant/subdomain provisioning:',
+        error,
+      );
     }
   }
 }

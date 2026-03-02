@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TopProductsSectionEntity } from './entities/top-products-section.entity';
@@ -31,7 +35,9 @@ export class TopProductsService {
     private readonly itemRepo: Repository<TopProductsItemEntity>,
   ) {}
 
-  private async ensureSection(companyId: string): Promise<TopProductsSectionEntity> {
+  private async ensureSection(
+    companyId: string,
+  ): Promise<TopProductsSectionEntity> {
     if (!companyId) throw new BadRequestException('CompanyId is required');
     const existing = await this.sectionRepo.findOne({ where: { companyId } });
     if (existing) return existing;
@@ -43,7 +49,10 @@ export class TopProductsService {
     return this.sectionRepo.save(created);
   }
 
-  private mapSection(section: TopProductsSectionEntity, items: TopProductsItemEntity[]): TopProductSection {
+  private mapSection(
+    section: TopProductsSectionEntity,
+    items: TopProductsItemEntity[],
+  ): TopProductSection {
     return {
       leftImage: section.leftImageUrl ?? null,
       rightImage: section.rightImageUrl ?? null,
@@ -76,14 +85,21 @@ export class TopProductsService {
     return this.mapSection(section, items);
   }
 
-  async updateSection(companyId: string, dto: UpdateTopProductsSectionDto): Promise<TopProductsSectionEntity> {
+  async updateSection(
+    companyId: string,
+    dto: UpdateTopProductsSectionDto,
+  ): Promise<TopProductsSectionEntity> {
     const section = await this.ensureSection(companyId);
     if (dto.leftImageUrl !== undefined) section.leftImageUrl = dto.leftImageUrl;
-    if (dto.rightImageUrl !== undefined) section.rightImageUrl = dto.rightImageUrl;
+    if (dto.rightImageUrl !== undefined)
+      section.rightImageUrl = dto.rightImageUrl;
     return this.sectionRepo.save(section);
   }
 
-  async createItem(companyId: string, dto: CreateTopProductsItemDto): Promise<TopProductsItemEntity> {
+  async createItem(
+    companyId: string,
+    dto: CreateTopProductsItemDto,
+  ): Promise<TopProductsItemEntity> {
     if (!companyId) throw new BadRequestException('CompanyId is required');
     const item = this.itemRepo.create({
       companyId,
@@ -96,7 +112,11 @@ export class TopProductsService {
     return this.itemRepo.save(item);
   }
 
-  async updateItem(companyId: string, id: number, dto: UpdateTopProductsItemDto): Promise<TopProductsItemEntity> {
+  async updateItem(
+    companyId: string,
+    id: number,
+    dto: UpdateTopProductsItemDto,
+  ): Promise<TopProductsItemEntity> {
     if (!companyId) throw new BadRequestException('CompanyId is required');
     const item = await this.itemRepo.findOne({ where: { id, companyId } });
     if (!item) throw new NotFoundException('Top product item not found');
@@ -117,4 +137,3 @@ export class TopProductsService {
     await this.itemRepo.delete({ id, companyId });
   }
 }
-

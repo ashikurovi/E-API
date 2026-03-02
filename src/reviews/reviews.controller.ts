@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -11,11 +22,15 @@ import { Public } from '../common/decorators/public.decorator';
 
 @Controller('reviews')
 export class ReviewsController {
-  constructor(private readonly reviewsService: ReviewsService) { }
+  constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
-  create(@Body() createReviewDto: CreateReviewDto, @CompanyId() companyId: string, @UserId() userId: number) {
+  create(
+    @Body() createReviewDto: CreateReviewDto,
+    @CompanyId() companyId: string,
+    @UserId() userId: number,
+  ) {
     return this.reviewsService.create(createReviewDto, companyId, userId);
   }
 
@@ -35,14 +50,17 @@ export class ReviewsController {
   @Public()
   findByProduct(
     @Param('productId', ParseIntPipe) productId: number,
-    @Query('companyId') companyId: string
+    @Query('companyId') companyId: string,
   ) {
     return this.reviewsService.findByProduct(productId, companyId);
   }
 
   @Get(':id')
   @Public()
-  findOne(@Param('id', ParseIntPipe) id: number, @Query('companyId') companyId: string) {
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('companyId') companyId: string,
+  ) {
     return this.reviewsService.findOne(id, companyId);
   }
 
@@ -68,7 +86,10 @@ export class ReviewsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
-  remove(@Param('id', ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     return this.reviewsService.remove(id, companyId);
   }
 }

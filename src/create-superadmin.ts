@@ -10,7 +10,7 @@ import { FeaturePermission } from './systemuser/feature-permission.enum';
  */
 async function bootstrap() {
   console.log('Starting superadmin creation script...');
-  
+
   const app = await NestFactory.createApplicationContext(AppModule);
   const superadminService = app.get(SuperadminService);
 

@@ -40,6 +40,12 @@ import { UsersModule } from '../users/users.module';
     CloudflareCustomDomainService,
     DomainVerificationCronService,
   ],
-  exports: [JwtModule, PassportModule, CompanyIdService, ActivityLogService, SystemuserService],
+  exports: [
+    JwtModule,
+    PassportModule,
+    CompanyIdService,
+    ActivityLogService,
+    SystemuserService,
+  ],
 })
 export class SystemuserModule {}

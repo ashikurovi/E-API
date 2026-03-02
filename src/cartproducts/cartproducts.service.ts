@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateCartproductDto } from './dto/create-cartproduct.dto';
 import { UpdateCartproductDto } from './dto/update-cartproduct.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,7 +34,7 @@ export class CartproductsService {
     private readonly userRepo: Repository<User>,
     private readonly ordersService: OrderService,
     private readonly requestContextService: RequestContextService,
-  ) { }
+  ) {}
 
   async create(dto: CreateCartproductDto, companyId: string) {
     if (!companyId) {
@@ -43,8 +47,8 @@ export class CartproductsService {
       where: {
         id: dto.productId,
         companyId,
-        deletedAt: IsNull()
-      }
+        deletedAt: IsNull(),
+      },
     });
     if (!product) throw new NotFoundException('Product not found');
 
@@ -117,7 +121,8 @@ export class CartproductsService {
   async update(id: number, dto: UpdateCartproductDto) {
     const item = await this.findOne(id);
     if (dto.quantity !== undefined) {
-      if (dto.quantity < 1) throw new BadRequestException('Quantity must be at least 1');
+      if (dto.quantity < 1)
+        throw new BadRequestException('Quantity must be at least 1');
       item.quantity = dto.quantity;
     }
     item.totalPrice = +item.unitPrice * item.quantity;
@@ -145,7 +150,10 @@ export class CartproductsService {
     return { affected: items.length };
   }
 
-  async orderFromUserCart(userId: number, payload?: { paymentMethod?: 'DIRECT' | 'COD'; pickupPoint?: any }) {
+  async orderFromUserCart(
+    userId: number,
+    payload?: { paymentMethod?: 'DIRECT' | 'COD'; pickupPoint?: any },
+  ) {
     const items = await this.cartRepo.find({
       where: { user: { id: userId } },
       relations: ['product', 'user'],
@@ -155,7 +163,10 @@ export class CartproductsService {
     const companyId = this.requestContextService.getCompanyId();
     const orderDto = {
       customerId: userId,
-      items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+      items: items.map((i) => ({
+        productId: i.product.id,
+        quantity: i.quantity,
+      })),
       paymentMethod: payload?.paymentMethod,
       pickupPoint: payload?.pickupPoint,
     };

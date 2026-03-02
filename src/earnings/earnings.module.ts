@@ -12,17 +12,3 @@ import { Invoice } from '../invoice/entities/invoice.entity';
   exports: [EarningsService],
 })
 export class EarningsModule {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-

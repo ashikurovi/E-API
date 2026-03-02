@@ -19,8 +19,13 @@ export class HelpSupportGateway {
    * Emit new reply to all clients viewing this ticket.
    * Called from HelpService.addReply.
    */
-  emitNewReply(ticketId: number, reply: { message: string; author: string; createdAt: string }) {
-    this.server?.to(`ticket:${ticketId}`).emit('help:reply', { ticketId, reply });
+  emitNewReply(
+    ticketId: number,
+    reply: { message: string; author: string; createdAt: string },
+  ) {
+    this.server
+      ?.to(`ticket:${ticketId}`)
+      .emit('help:reply', { ticketId, reply });
   }
 
   /**

@@ -10,4 +10,4 @@ import { RefundPolicy } from './entities/refund-policy.entity';
   providers: [RefundPolicyService],
   exports: [RefundPolicyService],
 })
-export class RefundPolicyModule { }
+export class RefundPolicyModule {}

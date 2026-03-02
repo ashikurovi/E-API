@@ -42,7 +42,7 @@ export class AuthController {
   async getCurrentUser(@Request() req) {
     const userId = req.user?.userId || req.user?.sub;
     const userRole = req.user?.role;
-    
+
     // Validate userId is a valid number
     if (!userId || isNaN(Number(userId))) {
       return {
@@ -64,7 +64,7 @@ export class AuthController {
 
     // Otherwise, fetch from systemuser service
     const user = await this.systemuserService.findOne(userIdNumber);
-    
+
     return {
       success: true,
       data: user,
@@ -73,10 +73,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  async updateCurrentUser(
-    @Request() req,
-    @Body() dto: UpdateSystemuserDto,
-  ) {
+  async updateCurrentUser(@Request() req, @Body() dto: UpdateSystemuserDto) {
     const userId = req.user?.userId || req.user?.sub;
 
     if (!userId || isNaN(Number(userId))) {
@@ -105,7 +102,7 @@ export class AuthController {
   resetPassword(
     @Param('userId') userId: string,
     @Param('token') token: string,
-    @Body() dto: ResetPasswordDto
+    @Body() dto: ResetPasswordDto,
   ) {
     return this.systemuserService.resetPassword(+userId, token, dto);
   }
@@ -121,7 +118,9 @@ export class AuthController {
     }
 
     try {
-      const tokens = await this.systemuserService.refreshToken(body.refreshToken);
+      const tokens = await this.systemuserService.refreshToken(
+        body.refreshToken,
+      );
       return {
         success: true,
         data: tokens,
@@ -129,7 +128,8 @@ export class AuthController {
     } catch (error) {
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to refresh token',
+        message:
+          error instanceof Error ? error.message : 'Failed to refresh token',
       };
     }
   }

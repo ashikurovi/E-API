@@ -5,14 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
-} from "typeorm";
+} from 'typeorm';
 
 export enum PromocodeDiscountType {
   PERCENTAGE = 'percentage',
   FIXED = 'fixed',
 }
 
-@Entity("tbl_promocodes")
+@Entity('tbl_promocodes')
 export class PromocodeEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,7 +26,7 @@ export class PromocodeEntity {
   @Column({ type: 'enum', enum: PromocodeDiscountType })
   discountType: PromocodeDiscountType;
 
-  @Column("decimal", { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   discountValue: number;
 
   @Column({ type: 'int', nullable: true })
@@ -35,7 +35,7 @@ export class PromocodeEntity {
   @Column({ type: 'int', default: 0 })
   currentUses: number;
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   minOrderAmount?: number;
 
   @Column({ type: 'timestamp', nullable: true })

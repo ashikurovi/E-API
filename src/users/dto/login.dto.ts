@@ -10,9 +10,3 @@ export class LoginDto {
   @IsString()
   companyId: string;
 }
-
-
-
-
-
-

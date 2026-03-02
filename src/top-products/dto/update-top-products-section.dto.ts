@@ -11,4 +11,3 @@ export class UpdateTopProductsSectionDto {
   @IsUrl()
   rightImageUrl?: string;
 }
-

@@ -14,11 +14,13 @@ export class HelpService {
     @InjectRepository(Help)
     private readonly helpRepo: Repository<Help>,
     @Inject('MAILER_TRANSPORT')
-    private readonly mailer: { sendMail: (message: unknown) => Promise<{ id?: string }> },
+    private readonly mailer: {
+      sendMail: (message: unknown) => Promise<{ id?: string }>;
+    },
     private readonly helpSupportGateway: HelpSupportGateway,
-  ) { }
+  ) {}
 
-  async create(createHelpDto: CreateHelpDto, companyId?: string | undefined) {
+  async create(createHelpDto: CreateHelpDto, companyId?: string) {
     if (!companyId) {
       throw new NotFoundException('CompanyId is required');
     }
@@ -29,14 +31,16 @@ export class HelpService {
       companyId: companyId,
       priority: createHelpDto.priority ?? 'medium',
       tags: Array.isArray(createHelpDto.tags) ? createHelpDto.tags : [],
-      attachments: Array.isArray(createHelpDto.attachments) ? createHelpDto.attachments : [],
+      attachments: Array.isArray(createHelpDto.attachments)
+        ? createHelpDto.attachments
+        : [],
     });
     const saved = await this.helpRepo.save(entity);
     await this.sendSupportEmail(saved, createHelpDto.email);
     return saved;
   }
 
-  async findAll(companyId?: string | undefined) {
+  async findAll(companyId?: string) {
     const where = companyId != null ? { companyId } : {};
     return this.helpRepo.find({
       where,
@@ -44,13 +48,19 @@ export class HelpService {
     });
   }
 
-  async getStats(companyId?: string | undefined) {
+  async getStats(companyId?: string) {
     const baseWhere = companyId != null ? { companyId } : {};
     const [all, pending, inProgress, resolved] = await Promise.all([
       this.helpRepo.count({ where: baseWhere }),
-      this.helpRepo.count({ where: { ...baseWhere, status: SupportStatus.PENDING } }),
-      this.helpRepo.count({ where: { ...baseWhere, status: SupportStatus.IN_PROGRESS } }),
-      this.helpRepo.count({ where: { ...baseWhere, status: SupportStatus.RESOLVED } }),
+      this.helpRepo.count({
+        where: { ...baseWhere, status: SupportStatus.PENDING },
+      }),
+      this.helpRepo.count({
+        where: { ...baseWhere, status: SupportStatus.IN_PROGRESS },
+      }),
+      this.helpRepo.count({
+        where: { ...baseWhere, status: SupportStatus.RESOLVED },
+      }),
     ]);
     const active = pending + inProgress;
     return {
@@ -62,27 +72,27 @@ export class HelpService {
     };
   }
 
-  async findOne(id: number, companyId?: string | undefined) {
+  async findOne(id: number, companyId?: string) {
     const where = companyId != null ? { id, companyId } : { id };
     const entity = await this.helpRepo.findOne({ where });
     if (!entity) throw new NotFoundException(`Help ticket ${id} not found`);
     return entity;
   }
 
-  async update(id: number, updateHelpDto: UpdateHelpDto, companyId?: string | undefined) {
+  async update(id: number, updateHelpDto: UpdateHelpDto, companyId?: string) {
     const entity = await this.findOne(id, companyId);
     const merged = this.helpRepo.merge(entity, updateHelpDto);
     if (companyId != null) merged.companyId = companyId;
     return this.helpRepo.save(merged);
   }
 
-  async remove(id: number, companyId?: string | undefined) {
+  async remove(id: number, companyId?: string) {
     const entity = await this.findOne(id, companyId);
     await this.helpRepo.softRemove(entity);
     return { success: true };
   }
 
-  async addReply(id: number, replyDto: ReplyHelpDto, companyId?: string | undefined) {
+  async addReply(id: number, replyDto: ReplyHelpDto, companyId?: string) {
     const entity = await this.findOne(id, companyId);
     const reply = {
       message: replyDto.message,

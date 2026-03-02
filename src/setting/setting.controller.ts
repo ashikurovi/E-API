@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { SettingService } from './setting.service';
 import { CreateSettingDto } from './dto/create-setting.dto';
 import { UpdateSettingDto } from './dto/update-setting.dto';
@@ -19,7 +28,11 @@ export class SettingController {
   @Get()
   async findAll() {
     const data = await this.settingService.findAll();
-    return { status: 'success', message: 'Settings fetched successfully', data };
+    return {
+      status: 'success',
+      message: 'Settings fetched successfully',
+      data,
+    };
   }
 
   @Get(':id')
@@ -29,7 +42,10 @@ export class SettingController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateSettingDto: UpdateSettingDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateSettingDto: UpdateSettingDto,
+  ) {
     const data = await this.settingService.update(+id, updateSettingDto);
     return { status: 'success', message: 'Setting updated successfully', data };
   }

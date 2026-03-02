@@ -1,83 +1,83 @@
 import { Expose, Type } from 'class-transformer';
 
 export class PublicCategoryDto {
-    @Expose()
-    id: number;
+  @Expose()
+  id: number;
 
-    @Expose()
-    name: string;
+  @Expose()
+  name: string;
 
-    @Expose()
-    slug: string;
+  @Expose()
+  slug: string;
 }
 
 export class PublicProductDto {
-    @Expose()
-    id: number;
+  @Expose()
+  id: number;
 
-    @Expose()
-    name: string;
+  @Expose()
+  name: string;
 
-    @Expose()
-    sku: string;
+  @Expose()
+  sku: string;
 
-    @Expose()
-    price: number;
+  @Expose()
+  price: number;
 
-    @Expose()
-    discountPrice: number;
+  @Expose()
+  discountPrice: number;
 
-    @Expose()
-    thumbnail: string;
+  @Expose()
+  thumbnail: string;
 
-    @Expose()
-    images: { url: string; alt?: string; isPrimary?: boolean }[];
+  @Expose()
+  images: { url: string; alt?: string; isPrimary?: boolean }[];
 
-    @Expose()
-    @Type(() => PublicCategoryDto)
-    category: PublicCategoryDto;
+  @Expose()
+  @Type(() => PublicCategoryDto)
+  category: PublicCategoryDto;
 
-    @Expose()
-    isFlashSell: boolean;
+  @Expose()
+  isFlashSell: boolean;
 
-    @Expose()
-    flashSellPrice: number;
+  @Expose()
+  flashSellPrice: number;
 
-    @Expose()
-    flashSellStartTime: Date;
+  @Expose()
+  flashSellStartTime: Date;
 
-    @Expose()
-    flashSellEndTime: Date;
+  @Expose()
+  flashSellEndTime: Date;
 
-    @Expose()
-    isInStock: boolean;
+  @Expose()
+  isInStock: boolean;
 
-    @Expose() // Only expose slug if it exists on entity, otherwise omit or compute
-    slug: string;
+  @Expose() // Only expose slug if it exists on entity, otherwise omit or compute
+  slug: string;
 }
 
 export class AdminProductDto extends PublicProductDto {
-    @Expose()
-    stock: number;
+  @Expose()
+  stock: number;
 
-    @Expose()
-    newStock: number;
+  @Expose()
+  newStock: number;
 
-    @Expose()
-    sold: number;
+  @Expose()
+  sold: number;
 
-    @Expose()
-    totalIncome: number;
+  @Expose()
+  totalIncome: number;
 
-    @Expose()
-    isLowStock: boolean;
+  @Expose()
+  isLowStock: boolean;
 
-    @Expose()
-    status: string;
+  @Expose()
+  status: string;
 
-    @Expose()
-    createdAt: Date;
+  @Expose()
+  createdAt: Date;
 
-    @Expose()
-    updatedAt: Date;
+  @Expose()
+  updatedAt: Date;
 }

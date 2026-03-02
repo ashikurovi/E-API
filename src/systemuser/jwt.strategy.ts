@@ -29,7 +29,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // Customer token (from /users/login) → validate from tbl_users only; /users/me must return user table data
     if (role === 'customer' && companyId) {
       try {
-        const customer = await this.usersService.findOne(Number(userId), companyId);
+        const customer = await this.usersService.findOne(
+          Number(userId),
+          companyId,
+        );
         if (!customer || !customer.isActive || customer.isBanned) {
           return null;
         }
@@ -63,5 +66,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
   }
 }
-
-

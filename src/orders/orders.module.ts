@@ -16,12 +16,7 @@ import { SystemuserModule } from '../systemuser/systemuser.module';
     PaymentsModule,
     NotificationsModule,
     SystemuserModule,
-    TypeOrmModule.forFeature([
-      Order,
-      OrderStatusHistory,
-      ProductEntity,
-      User,
-    ]),
+    TypeOrmModule.forFeature([Order, OrderStatusHistory, ProductEntity, User]),
   ],
   controllers: [OrderController, TrackOrderController],
   providers: [OrderService],

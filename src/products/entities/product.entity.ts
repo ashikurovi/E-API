@@ -1,8 +1,15 @@
-import { CategoryEntity } from "../../category/entities/category.entity";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import { CategoryEntity } from '../../category/entities/category.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
-
-@Entity("tbl_products")
+@Entity('tbl_products')
 export class ProductEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -13,10 +20,10 @@ export class ProductEntity {
   @Column({ unique: true })
   sku: string;
 
-  @Column("decimal", { precision: 10, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   discountPrice?: number;
 
   @Column({ type: 'text', nullable: true })
@@ -31,7 +38,11 @@ export class ProductEntity {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ type: 'enum', enum: ['draft', 'published', 'trashed'], default: 'published' })
+  @Column({
+    type: 'enum',
+    enum: ['draft', 'published', 'trashed'],
+    default: 'published',
+  })
   status: 'draft' | 'published' | 'trashed';
 
   @Column({ default: false })
@@ -43,20 +54,20 @@ export class ProductEntity {
   @Column({ type: 'timestamp', nullable: true })
   flashSellEndTime?: Date;
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   flashSellPrice?: number;
 
   // Inventory fields
-  @Column("int", { default: 0 })
+  @Column('int', { default: 0 })
   stock: number;
 
-  @Column("int", { default: 0 })
+  @Column('int', { default: 0 })
   newStock: number;
 
-  @Column("int", { default: 0 })
+  @Column('int', { default: 0 })
   sold: number;
 
-  @Column("decimal", { precision: 12, scale: 2, default: 0 })
+  @Column('decimal', { precision: 12, scale: 2, default: 0 })
   totalIncome: number;
 
   @Column({ default: false })
@@ -71,16 +82,16 @@ export class ProductEntity {
   variants?: { name: string }[];
 
   // Shipping dimensions
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   weight?: number; // kg
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   length?: number; // inches
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   breadth?: number; // inches
 
-  @Column("decimal", { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
   width?: number; // inches
 
   @Column({ default: 'Piece', nullable: true })

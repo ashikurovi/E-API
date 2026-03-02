@@ -44,7 +44,9 @@ export class MediaController {
     }
     const media = await this.mediaService.uploadFile(file, companyId);
     const baseUrl = 'https://e-cdn.vercel.app';
-    const fullUrl = media.url.startsWith('http') ? media.url : `${baseUrl}${media.url}`;
+    const fullUrl = media.url.startsWith('http')
+      ? media.url
+      : `${baseUrl}${media.url}`;
     return {
       statusCode: HttpStatus.CREATED,
       message: 'Media uploaded successfully',
@@ -124,11 +126,17 @@ export class MediaController {
       process.env.CDN_BASE_URL ||
       process.env.API_BASE_URL ||
       'http://localhost:8000';
-    const url = media.url.startsWith('http') ? media.url : `${baseUrl}${media.url}`;
+    const url = media.url.startsWith('http')
+      ? media.url
+      : `${baseUrl}${media.url}`;
     return {
       statusCode: HttpStatus.OK,
       message: 'Media fetched successfully',
-      data: { ...media, url, date: media.createdAt?.toISOString().split('T')[0] || '' },
+      data: {
+        ...media,
+        url,
+        date: media.createdAt?.toISOString().split('T')[0] || '',
+      },
     };
   }
 

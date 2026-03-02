@@ -10,9 +10,12 @@ export class TremsCondetionsService {
   constructor(
     @InjectRepository(TremsCondetion)
     private readonly termsConditionsRepo: Repository<TremsCondetion>,
-  ) { }
+  ) {}
 
-  async create(createTremsCondetionDto: CreateTremsCondetionDto, companyId: string) {
+  async create(
+    createTremsCondetionDto: CreateTremsCondetionDto,
+    companyId: string,
+  ) {
     if (!companyId) {
       throw new NotFoundException('CompanyId is required');
     }
@@ -35,14 +38,24 @@ export class TremsCondetionsService {
   }
 
   async findOne(id: number, companyId: string) {
-    const entity = await this.termsConditionsRepo.findOne({ where: { id, companyId } });
-    if (!entity) throw new NotFoundException(`Terms & Conditions ${id} not found`);
+    const entity = await this.termsConditionsRepo.findOne({
+      where: { id, companyId },
+    });
+    if (!entity)
+      throw new NotFoundException(`Terms & Conditions ${id} not found`);
     return entity;
   }
 
-  async update(id: number, updateTremsCondetionDto: UpdateTremsCondetionDto, companyId: string) {
+  async update(
+    id: number,
+    updateTremsCondetionDto: UpdateTremsCondetionDto,
+    companyId: string,
+  ) {
     const entity = await this.findOne(id, companyId);
-    const merged = this.termsConditionsRepo.merge(entity, updateTremsCondetionDto);
+    const merged = this.termsConditionsRepo.merge(
+      entity,
+      updateTremsCondetionDto,
+    );
     // Ensure companyId is preserved
     merged.companyId = companyId;
     return this.termsConditionsRepo.save(merged);

@@ -8,7 +8,7 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { ThemeService } from './theme.service';
 import { CreateThemeDto } from './dto/create-theme.dto';
@@ -19,7 +19,7 @@ import { Public } from '../common/decorators/public.decorator';
 @Controller('theme')
 @UseGuards(JwtAuthGuard)
 export class ThemeController {
-  constructor(private readonly themeService: ThemeService) { }
+  constructor(private readonly themeService: ThemeService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -57,7 +57,10 @@ export class ThemeController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id') id: string, @Body() updateThemeDto: UpdateThemeDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateThemeDto: UpdateThemeDto,
+  ) {
     const theme = await this.themeService.update(+id, updateThemeDto);
     return {
       statusCode: HttpStatus.OK,

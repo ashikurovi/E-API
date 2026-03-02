@@ -7,7 +7,10 @@ import { SystemuserModule } from '../systemuser/systemuser.module';
 import { SaleInvoiceController } from './sale-invoice.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SaleInvoice, SaleInvoiceItem]), SystemuserModule],
+  imports: [
+    TypeOrmModule.forFeature([SaleInvoice, SaleInvoiceItem]),
+    SystemuserModule,
+  ],
   controllers: [SaleInvoiceController],
   providers: [SaleInvoiceService],
   exports: [SaleInvoiceService],

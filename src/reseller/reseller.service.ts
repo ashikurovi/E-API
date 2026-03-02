@@ -22,7 +22,9 @@ export class ResellerService {
     private readonly systemUserRepo: Repository<SystemUser>,
     private readonly configService: ConfigService,
     @Inject('MAILER_TRANSPORT')
-    private readonly mailer: { sendMail: (message: any) => Promise<{ id?: string }> },
+    private readonly mailer: {
+      sendMail: (message: any) => Promise<{ id?: string }>;
+    },
   ) {}
 
   async getSummary(resellerId: number, companyId: string) {
@@ -293,7 +295,10 @@ export class ResellerService {
         });
       }
     } catch (error) {
-      console.error('Failed to send admin notification for reseller payout:', error);
+      console.error(
+        'Failed to send admin notification for reseller payout:',
+        error,
+      );
       // Do not throw – payout marking should still succeed
     }
 
@@ -384,7 +389,9 @@ export class ResellerService {
       throw new BadRequestException('Payout not found');
     }
     if (payout.status !== ResellerPayoutStatus.PAID) {
-      throw new BadRequestException('Invoice is available only for paid payouts');
+      throw new BadRequestException(
+        'Invoice is available only for paid payouts',
+      );
     }
     const reseller = await this.systemUserRepo.findOne({
       where: { id: resellerId },
@@ -410,7 +417,9 @@ export class ResellerService {
       throw new BadRequestException('Payout not found');
     }
     if (payout.status !== ResellerPayoutStatus.PAID) {
-      throw new BadRequestException('Invoice is available only for paid payouts');
+      throw new BadRequestException(
+        'Invoice is available only for paid payouts',
+      );
     }
     const reseller = await this.systemUserRepo.findOne({
       where: { id: payout.resellerId },
@@ -522,4 +531,3 @@ export class ResellerService {
     return { id };
   }
 }
-

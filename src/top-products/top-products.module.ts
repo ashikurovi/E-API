@@ -6,10 +6,11 @@ import { TopProductsSectionEntity } from './entities/top-products-section.entity
 import { TopProductsItemEntity } from './entities/top-products-item.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TopProductsSectionEntity, TopProductsItemEntity])],
+  imports: [
+    TypeOrmModule.forFeature([TopProductsSectionEntity, TopProductsItemEntity]),
+  ],
   controllers: [TopProductsController],
   providers: [TopProductsService],
   exports: [TopProductsService],
 })
 export class TopProductsModule {}
-

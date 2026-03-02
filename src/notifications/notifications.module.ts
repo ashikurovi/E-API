@@ -15,8 +15,11 @@ import { Notification } from './entities/notification.entity';
     forwardRef(() => UsersModule),
   ],
   controllers: [NotificationsController],
-  providers: [NotificationsService, NotificationsSchedulerService, RequestContextService],
+  providers: [
+    NotificationsService,
+    NotificationsSchedulerService,
+    RequestContextService,
+  ],
   exports: [NotificationsService],
 })
 export class NotificationsModule {}
-

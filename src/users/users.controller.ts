@@ -1,5 +1,19 @@
 // UsersController
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, ParseIntPipe, HttpCode, UseGuards, BadRequestException, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
+  ParseIntPipe,
+  HttpCode,
+  UseGuards,
+  BadRequestException,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,7 +30,7 @@ import { Public } from '../common/decorators/public.decorator';
 @Controller('users')
 // @UseGuards(CompanyIdGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
   @Public()
@@ -34,7 +48,11 @@ export class UsersController {
       throw new BadRequestException('Password is required');
     }
     const user = await this.usersService.create(createUserDto, companyId);
-    return { statusCode: HttpStatus.CREATED, message: 'User registered successfully', data: user };
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'User registered successfully',
+      data: user,
+    };
   }
 
   @Post('login')
@@ -43,9 +61,14 @@ export class UsersController {
     const { accessToken, user } = await this.usersService.login(
       loginDto.email,
       loginDto.password,
-      loginDto.companyId
+      loginDto.companyId,
     );
-    return { statusCode: HttpStatus.OK, message: 'Login successful', accessToken, user };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Login successful',
+      accessToken,
+      user,
+    };
   }
 
   @Post()
@@ -62,43 +85,84 @@ export class UsersController {
     }
 
     const user = await this.usersService.create(createUserDto, companyId);
-    return { statusCode: HttpStatus.CREATED, message: 'User created', data: user };
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'User created',
+      data: user,
+    };
   }
 
   /** Returns current customer from tbl_users only (storefront). Use /auth/me for systemuser. */
   @Get('me')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async getCurrentUser(@UserId() userId: number, @CompanyId() companyId: string) {
+  async getCurrentUser(
+    @UserId() userId: number,
+    @CompanyId() companyId: string,
+  ) {
     const user = await this.usersService.findOne(userId, companyId);
-    return { statusCode: HttpStatus.OK, message: 'Current user fetched', data: user };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Current user fetched',
+      data: user,
+    };
   }
 
   @Patch('me')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async updateCurrentUser(@UserId() userId: number, @Body() updateUserDto: UpdateUserDto, @CompanyId() companyId: string) {
-    const updated = await this.usersService.update(userId, updateUserDto, companyId);
-    return { statusCode: HttpStatus.OK, message: 'Profile updated', data: updated };
+  async updateCurrentUser(
+    @UserId() userId: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @CompanyId() companyId: string,
+  ) {
+    const updated = await this.usersService.update(
+      userId,
+      updateUserDto,
+      companyId,
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Profile updated',
+      data: updated,
+    };
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
   async findAll(@CompanyId() companyId: string, @Query() query: QueryUsersDto) {
-    const filters: { isBanned?: boolean; isActive?: boolean; successfulOrders?: 'has' | 'none'; cancelledOrders?: 'has' | 'none' } = {};
-    if (query.isBanned !== undefined) filters.isBanned = query.isBanned === 'true';
-    if (query.isActive !== undefined) filters.isActive = query.isActive === 'true';
-    if (query.successfulOrders) filters.successfulOrders = query.successfulOrders;
+    const filters: {
+      isBanned?: boolean;
+      isActive?: boolean;
+      successfulOrders?: 'has' | 'none';
+      cancelledOrders?: 'has' | 'none';
+    } = {};
+    if (query.isBanned !== undefined)
+      filters.isBanned = query.isBanned === 'true';
+    if (query.isActive !== undefined)
+      filters.isActive = query.isActive === 'true';
+    if (query.successfulOrders)
+      filters.successfulOrders = query.successfulOrders;
     if (query.cancelledOrders) filters.cancelledOrders = query.cancelledOrders;
-    const users = await this.usersService.findAll(companyId, Object.keys(filters).length ? filters : undefined);
-    return { statusCode: HttpStatus.OK, message: 'Users list fetched', data: users };
+    const users = await this.usersService.findAll(
+      companyId,
+      Object.keys(filters).length ? filters : undefined,
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Users list fetched',
+      data: users,
+    };
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id', ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     const user = await this.usersService.findOne(id, companyId);
     return { statusCode: HttpStatus.OK, message: 'User fetched', data: user };
   }
@@ -106,16 +170,32 @@ export class UsersController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto, @CompanyId() companyId: string) {
-    const updated = await this.usersService.update(id, updateUserDto, companyId);
-    return { statusCode: HttpStatus.OK, message: 'User updated', data: updated };
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @CompanyId() companyId: string,
+  ) {
+    const updated = await this.usersService.update(
+      id,
+      updateUserDto,
+      companyId,
+    );
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User updated',
+      data: updated,
+    };
   }
 
   // Add ban/unban endpoints
   @Patch(':id/ban')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async ban(@Param('id', ParseIntPipe) id: number, @Body() dto: BanUserDto, @CompanyId() companyId: string) {
+  async ban(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: BanUserDto,
+    @CompanyId() companyId: string,
+  ) {
     const banned = await this.usersService.ban(id, companyId, dto?.reason);
     return { statusCode: HttpStatus.OK, message: 'User banned', data: banned };
   }
@@ -123,15 +203,25 @@ export class UsersController {
   @Patch(':id/unban')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async unban(@Param('id', ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  async unban(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     const unbanned = await this.usersService.unban(id, companyId);
-    return { statusCode: HttpStatus.OK, message: 'User unbanned', data: unbanned };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User unbanned',
+      data: unbanned,
+    };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, CompanyIdGuard)
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('id', ParseIntPipe) id: number, @CompanyId() companyId: string) {
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CompanyId() companyId: string,
+  ) {
     await this.usersService.remove(id, companyId);
     return { statusCode: HttpStatus.OK, message: 'User removed' };
   }

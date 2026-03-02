@@ -1,5 +1,12 @@
 // UsersService
-import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Inject,
+  forwardRef,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository, InjectDataSource } from '@nestjs/typeorm';
@@ -37,7 +44,7 @@ export class UsersService {
       }
 
       const existing = await this.repository.findOne({
-        where: { email: createUserDto.email, companyId }
+        where: { email: createUserDto.email, companyId },
       });
       if (existing) throw new BadRequestException('Email already exists');
 
@@ -79,26 +86,32 @@ export class UsersService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      
+
       // Handle DB unique/email errors gracefully instead of generic 500
       if (error instanceof QueryFailedError) {
         const pgError = error as any;
         const errorCode = pgError.code;
         const message = pgError.detail || pgError.message || '';
-        
+
         // PostgreSQL unique constraint violation error code
-        if (errorCode === '23505' || message?.toLowerCase().includes('unique') || message?.toLowerCase().includes('duplicate')) {
+        if (
+          errorCode === '23505' ||
+          message?.toLowerCase().includes('unique') ||
+          message?.toLowerCase().includes('duplicate')
+        ) {
           throw new BadRequestException('Email already exists');
         }
       }
-      
+
       console.error('Error creating user:', error);
       // Log full error details for debugging
       if (error instanceof Error) {
         console.error('Error stack:', error.stack);
         console.error('Error message:', error.message);
       }
-      throw new InternalServerErrorException(`Failed to register user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new InternalServerErrorException(
+        `Failed to register user: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -142,14 +155,18 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto, companyId: string): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    companyId: string,
+  ): Promise<User> {
     const user = await this.findOne(id, companyId);
 
     const dto: Partial<UpdateUserDto> = updateUserDto ?? {};
 
     if (dto.email && dto.email !== user.email) {
       const exists = await this.repository.findOne({
-        where: { email: dto.email, companyId }
+        where: { email: dto.email, companyId },
       });
       if (exists) throw new BadRequestException('Email already exists');
     }
@@ -226,8 +243,12 @@ export class UsersService {
     return user;
   }
 
-  async findCustomers(companyId: string, filter?: { ids?: number[]; includeInactive?: boolean }): Promise<User[]> {
-    const qb = this.repository.createQueryBuilder('user')
+  async findCustomers(
+    companyId: string,
+    filter?: { ids?: number[]; includeInactive?: boolean },
+  ): Promise<User[]> {
+    const qb = this.repository
+      .createQueryBuilder('user')
       .where('user.role = :role', { role: 'customer' })
       .andWhere('user.companyId = :companyId', { companyId });
 
@@ -244,8 +265,8 @@ export class UsersService {
   }
 
   async login(email: string, password: string, companyId: string) {
-    const user = await this.repository.findOne({ 
-      where: { email, companyId } 
+    const user = await this.repository.findOne({
+      where: { email, companyId },
     });
     if (!user) throw new NotFoundException('Invalid credentials');
 
@@ -254,9 +275,11 @@ export class UsersService {
     }
 
     const hash = this.hashPassword(password, user.passwordSalt);
-    if (hash !== user.passwordHash) throw new NotFoundException('Invalid credentials');
+    if (hash !== user.passwordHash)
+      throw new NotFoundException('Invalid credentials');
 
-    if (!user.isActive) throw new BadRequestException('User account is inactive');
+    if (!user.isActive)
+      throw new BadRequestException('User account is inactive');
     if (user.isBanned) throw new BadRequestException('User account is banned');
 
     const payload = {

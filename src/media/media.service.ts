@@ -74,8 +74,7 @@ export class MediaService {
     const size = this.formatFileSize(file.size);
 
     const cdnUploadUrl =
-      process.env.CDN_UPLOAD_URL ||
-      'https://e-cdn.vercel.app/upload/image';
+      process.env.CDN_UPLOAD_URL || 'https://e-cdn.vercel.app/upload/image';
 
     let cdnUrl: string | undefined;
     try {
@@ -89,15 +88,13 @@ export class MediaService {
         headers: formData.getHeaders(),
       });
 
-      const data = response?.data as
-        | {
-            success?: boolean;
-            message?: string;
-            url?: string;
-            secure_url?: string;
-            path?: string;
-          }
-        | null;
+      const data = response?.data as {
+        success?: boolean;
+        message?: string;
+        url?: string;
+        secure_url?: string;
+        path?: string;
+      } | null;
 
       if (!data?.success || !data.url) {
         throw new BadRequestException(
@@ -107,7 +104,6 @@ export class MediaService {
 
       cdnUrl = data.url || data.secure_url || data.path;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('[MediaService] CDN upload failed', error);
       throw new BadRequestException('Failed to upload image to CDN');
     }
@@ -136,7 +132,12 @@ export class MediaService {
       page?: number;
       limit?: number;
     },
-  ): Promise<{ data: MediaEntity[]; total: number; page: number; totalPages: number }> {
+  ): Promise<{
+    data: MediaEntity[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
     if (!companyId) {
       throw new BadRequestException('CompanyId is required');
     }

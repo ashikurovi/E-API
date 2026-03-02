@@ -15,4 +15,3 @@ import { Invoice } from '../invoice/entities/invoice.entity';
   exports: [OverviewService],
 })
 export class OverviewModule {}
-

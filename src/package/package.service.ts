@@ -21,24 +21,28 @@ export class PackageService {
       name: createPackageDto.name,
       description: createPackageDto.description,
       price: createPackageDto.price,
-      ...(createPackageDto.discountPrice !== undefined && { discountPrice: createPackageDto.discountPrice }),
+      ...(createPackageDto.discountPrice !== undefined && {
+        discountPrice: createPackageDto.discountPrice,
+      }),
       isFeatured: createPackageDto.isFeatured ?? false,
       features: createPackageDto.features ?? [],
-      ...(createPackageDto.themeId !== undefined && { themeId: createPackageDto.themeId }),
+      ...(createPackageDto.themeId !== undefined && {
+        themeId: createPackageDto.themeId,
+      }),
     });
 
     return await this.packageRepo.save(entity);
   }
 
   async findAll() {
-    return await this.packageRepo.find({ 
+    return await this.packageRepo.find({
       order: { id: 'DESC' },
       relations: ['theme'],
     });
   }
 
   async findOne(id: number) {
-    const entity = await this.packageRepo.findOne({ 
+    const entity = await this.packageRepo.findOne({
       where: { id },
       relations: ['theme'],
     });

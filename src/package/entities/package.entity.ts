@@ -1,7 +1,17 @@
-import { SystemUser } from "../../systemuser/entities/systemuser.entity";
-import { Theme } from "../../theme/entities/theme.entity";
-import { FeaturePermission } from "../../systemuser/feature-permission.enum";
-import { Column, DeleteDateColumn, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { SystemUser } from '../../systemuser/entities/systemuser.entity';
+import { Theme } from '../../theme/entities/theme.entity';
+import { FeaturePermission } from '../../systemuser/feature-permission.enum';
+import {
+  Column,
+  DeleteDateColumn,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('packages')
 export class Package {
@@ -45,4 +55,3 @@ export class Package {
   @DeleteDateColumn({ nullable: true })
   deletedAt?: Date;
 }
-  

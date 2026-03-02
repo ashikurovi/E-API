@@ -17,4 +17,4 @@ import { CategoryTrashCleanupService } from './category-trash-cleanup.service';
   controllers: [CategoryController, PublicCategoryController],
   providers: [CategoryService, CategoryTrashCleanupService],
 })
-export class CategoryModule { }
+export class CategoryModule {}

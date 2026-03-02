@@ -8,12 +8,10 @@ export async function getApp() {
   if (!cachedApp) {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-app.enableCors({
-  origin: true, // ✅ সব domain allow
-  credentials: false, // optional: cookie/credential নেই
-});
-
-
+    app.enableCors({
+      origin: true, // ✅ সব domain allow
+      credentials: false, // optional: cookie/credential নেই
+    });
 
     await app.init();
     cachedApp = app;

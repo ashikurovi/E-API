@@ -4,7 +4,7 @@ export class EmailTemplates {
     // E.g., "EMAIL_NOTIFICATIONS" -> "Email Notifications"
     return feature
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
   }
 
@@ -378,7 +378,11 @@ export class EmailTemplates {
    * Email when invoice is paid and store subdomain is ready.
    * Contains: login email, password (temp set for this user), and subdomain URL.
    */
-  static getInvoicePaidStoreReadyTemplate(user: any, password: string, subdomainUrl: string): string {
+  static getInvoicePaidStoreReadyTemplate(
+    user: any,
+    password: string,
+    subdomainUrl: string,
+  ): string {
     const companyName: string = (user && user.companyName) || '';
     return `
 <!DOCTYPE html>
@@ -459,7 +463,11 @@ export class EmailTemplates {
 `;
   }
 
-  static getPackageUpgradeTemplate(user: any, oldPackage: any, newPackage: any): string {
+  static getPackageUpgradeTemplate(
+    user: any,
+    oldPackage: any,
+    newPackage: any,
+  ): string {
     const companyName: string = (user && user.companyName) || '';
     return `
 <!DOCTYPE html>

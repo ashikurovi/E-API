@@ -9,7 +9,10 @@ import { OrdersModule } from '../orders/orders.module';
 import { RequestContextService } from '../common/services/request-context.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cartproduct, ProductEntity, User]), OrdersModule],
+  imports: [
+    TypeOrmModule.forFeature([Cartproduct, ProductEntity, User]),
+    OrdersModule,
+  ],
   controllers: [CartproductsController],
   providers: [CartproductsService, RequestContextService],
 })

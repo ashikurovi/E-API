@@ -1,23 +1,23 @@
 import { Expose, Type } from 'class-transformer';
 
 export class PublicCategoryDto {
-    @Expose()
-    id: number;
+  @Expose()
+  id: number;
 
-    @Expose()
-    name: string;
+  @Expose()
+  name: string;
 
-    @Expose()
-    slug: string;
+  @Expose()
+  slug: string;
 
-    @Expose()
-    photo: string;
+  @Expose()
+  photo: string;
 
-    @Expose()
-    @Type(() => PublicCategoryDto)
-    children: PublicCategoryDto[];
+  @Expose()
+  @Type(() => PublicCategoryDto)
+  children: PublicCategoryDto[];
 
-    @Expose()
-    @Type(() => PublicCategoryDto)
-    parent: PublicCategoryDto;
+  @Expose()
+  @Type(() => PublicCategoryDto)
+  parent: PublicCategoryDto;
 }

@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, HttpStatus, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+  HttpStatus,
+  BadRequestException,
+  UseGuards,
+} from '@nestjs/common';
 import { CartproductsService } from './cartproducts.service';
 import { CreateCartproductDto } from './dto/create-cartproduct.dto';
 import { UpdateCartproductDto } from './dto/update-cartproduct.dto';
@@ -9,8 +22,8 @@ import { Public } from '../common/decorators/public.decorator';
 @Controller('cartproducts')
 @UseGuards(CompanyIdGuard)
 export class CartproductsController {
-  constructor(private readonly cartproductsService: CartproductsService) { }
-// /cartproducts
+  constructor(private readonly cartproductsService: CartproductsService) {}
+  // /cartproducts
   @Post()
   @Public()
   async create(
@@ -18,18 +31,17 @@ export class CartproductsController {
     @Query('companyId') companyId?: string,
     @CompanyId() companyIdFromToken?: string,
   ) {
-    const effectiveCompanyId = companyId || companyIdFromToken || createCartproductDto.companyId;
+    const effectiveCompanyId =
+      companyId || companyIdFromToken || createCartproductDto.companyId;
     if (!effectiveCompanyId) {
       throw new BadRequestException('companyId is required');
     }
     const data = await this.cartproductsService.create(
       { ...createCartproductDto, companyId: effectiveCompanyId },
-      effectiveCompanyId
+      effectiveCompanyId,
     );
     return { statusCode: HttpStatus.CREATED, message: 'Added to cart', data };
   }
-
-
 
   @Get('user/:userId')
   @Public()
@@ -42,11 +54,12 @@ export class CartproductsController {
     if (!effectiveCompanyId) {
       throw new BadRequestException('companyId is required');
     }
-    const data = await this.cartproductsService.findUserCart(userId, effectiveCompanyId);
+    const data = await this.cartproductsService.findUserCart(
+      userId,
+      effectiveCompanyId,
+    );
     return { statusCode: HttpStatus.OK, data };
   }
-
-
 
   @Delete('user/:userId')
   @Public()
@@ -59,15 +72,16 @@ export class CartproductsController {
     if (!effectiveCompanyId) {
       throw new BadRequestException('companyId is required');
     }
-    const data = await this.cartproductsService.clearUserCart(userId, effectiveCompanyId);
+    const data = await this.cartproductsService.clearUserCart(
+      userId,
+      effectiveCompanyId,
+    );
     return { statusCode: HttpStatus.OK, message: 'User cart cleared', data };
   }
 
   @Delete(':id')
   @Public()
-  async removeOne(
-    @Param('id', ParseIntPipe) id: number,
-  ) {
+  async removeOne(@Param('id', ParseIntPipe) id: number) {
     await this.cartproductsService.remove(id);
     return { statusCode: HttpStatus.OK, message: 'Cart item removed' };
   }
@@ -91,7 +105,11 @@ export class CartproductsController {
     }
 
     const updated = await this.cartproductsService.update(id, dto);
-    return { statusCode: HttpStatus.OK, message: 'Cart item updated', data: updated };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Cart item updated',
+      data: updated,
+    };
   }
 
   @Post(':userId/order')
@@ -99,7 +117,14 @@ export class CartproductsController {
     @Param('userId', ParseIntPipe) userId: number,
     @Body() payload?: { paymentMethod?: 'DIRECT' | 'COD'; pickupPoint?: any },
   ) {
-    const data = await this.cartproductsService.orderFromUserCart(userId, payload);
-    return { statusCode: HttpStatus.CREATED, message: 'Order created from cart', data };
+    const data = await this.cartproductsService.orderFromUserCart(
+      userId,
+      payload,
+    );
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Order created from cart',
+      data,
+    };
   }
 }

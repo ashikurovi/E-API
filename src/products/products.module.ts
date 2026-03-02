@@ -22,6 +22,12 @@ import { DashboardModule } from '../dashboard/dashboard.module';
     DashboardModule,
   ],
   controllers: [ProductController, PublicProductController],
-  providers: [ProductService, ProductsSchedulerService, ImageSearchService, JwtAuthGuard, PermissionGuard],
+  providers: [
+    ProductService,
+    ProductsSchedulerService,
+    ImageSearchService,
+    JwtAuthGuard,
+    PermissionGuard,
+  ],
 })
-export class ProductModule { }
+export class ProductModule {}

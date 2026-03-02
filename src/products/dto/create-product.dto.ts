@@ -1,6 +1,14 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, IsArray, ValidateNested, IsDateString } from "class-validator";
-import { Type } from "class-transformer";
-import { ProductImageDto } from "./product-image.dto";
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsDateString,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { ProductImageDto } from './product-image.dto';
 
 export class CreateProductDto {
   @IsString()

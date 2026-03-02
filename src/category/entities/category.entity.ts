@@ -1,6 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
-@Entity("tbl_categories")
+@Entity('tbl_categories')
 export class CategoryEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -36,5 +45,5 @@ export class CategoryEntity {
   updatedAt: Date;
 
   @DeleteDateColumn({ nullable: true })
-  deletedAt?: Date;  // Soft delete timestamp
+  deletedAt?: Date; // Soft delete timestamp
 }

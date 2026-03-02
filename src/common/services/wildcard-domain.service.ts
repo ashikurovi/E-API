@@ -10,17 +10,17 @@ export interface WildcardSetupResult {
 }
 
 /**
- * Automates wildcard DNS setup for *.console.squadcart.app (or MAIN_DOMAIN).
+ * Automates wildcard DNS setup for *.console.innowavecart.app (or MAIN_DOMAIN).
  * 1. Creates CNAME *.console -> RAILWAY_SERVICE_DOMAIN in Cloudflare
- * 2. Adds *.console.squadcart.app to Railway project via GraphQL API
+ * 2. Adds *.console.innowavecart.app to Railway project via GraphQL API
  *
  * Required env:
- * - CLOUDFLARE_ZONE_ID: Zone ID for squadcart.app
+ * - CLOUDFLARE_ZONE_ID: Zone ID for innowavecart.app
  * - CLOUDFLARE_API_TOKEN: API token with Zone:DNS:Edit
  * - RAILWAY_TOKEN: Railway API token
  * - RAILWAY_PROJECT_ID: Railway project ID
- * - RAILWAY_SERVICE_DOMAIN: e.g. squadcart-console.up.railway.app
- * - MAIN_DOMAIN: e.g. console.squadcart.app (optional, defaults to console.squadcart.app)
+ * - RAILWAY_SERVICE_DOMAIN: e.g. innowavecart-console.up.railway.app
+ * - MAIN_DOMAIN: e.g. console.innowavecart.app (optional, defaults to console.innowavecart.app)
  */
 @Injectable()
 export class WildcardDomainService {
@@ -57,34 +57,42 @@ export class WildcardDomainService {
   }
 
   private get mainDomain(): string {
-    return this.configService.get<string>('MAIN_DOMAIN') ?? 'console.squadcart.app';
+    return (
+      this.configService.get<string>('MAIN_DOMAIN') ??
+      'console.innowavecart.app'
+    );
   }
 
   isConfigured(): boolean {
     return Boolean(
       this.zoneId &&
-        this.cloudflareToken &&
-        this.railwayToken &&
-        this.railwayProjectId &&
-        this.railwayServiceDomain,
+      this.cloudflareToken &&
+      this.railwayToken &&
+      this.railwayProjectId &&
+      this.railwayServiceDomain,
     );
   }
 
   /**
-   * Ensures wildcard CNAME *.console.squadcart.app exists in Cloudflare
+   * Ensures wildcard CNAME *.console.innowavecart.app exists in Cloudflare
    * pointing to RAILWAY_SERVICE_DOMAIN.
    */
-  async ensureCloudflareWildcardDns(): Promise<{ done: boolean; message: string; recordId?: string }> {
+  async ensureCloudflareWildcardDns(): Promise<{
+    done: boolean;
+    message: string;
+    recordId?: string;
+  }> {
     if (!this.zoneId || !this.cloudflareToken || !this.railwayServiceDomain) {
       return {
         done: false,
-        message: 'Missing CLOUDFLARE_ZONE_ID, CLOUDFLARE_API_TOKEN, or RAILWAY_SERVICE_DOMAIN',
+        message:
+          'Missing CLOUDFLARE_ZONE_ID, CLOUDFLARE_API_TOKEN, or RAILWAY_SERVICE_DOMAIN',
       };
     }
 
-    const mainDomain = this.mainDomain; // e.g. console.squadcart.app
+    const mainDomain = this.mainDomain; // e.g. console.innowavecart.app
     const baseName = mainDomain.split('.')[0]; // e.g. console
-    const wildcardName = `*.${baseName}`; // *.console (Cloudflare uses this for *.console.squadcart.app)
+    const wildcardName = `*.${baseName}`; // *.console (Cloudflare uses this for *.console.innowavecart.app)
     const target = this.railwayServiceDomain;
 
     try {
@@ -98,16 +106,24 @@ export class WildcardDomainService {
       );
 
       const records = listRes.data?.result ?? [];
-      const zoneApex = mainDomain.includes('.') ? mainDomain.split('.').slice(-2).join('.') : 'squadcart.app';
-      const wildcardFqdn = `${wildcardName}.${zoneApex}`; // *.console.squadcart.app
+      const zoneApex = mainDomain.includes('.')
+        ? mainDomain.split('.').slice(-2).join('.')
+        : 'innowavecart.app';
+      const wildcardFqdn = `${wildcardName}.${zoneApex}`; // *.console.innowavecart.app
       const existing = Array.isArray(records)
         ? records.find((r: any) => r.name === wildcardFqdn)
         : null;
 
       if (existing) {
         if (existing.content === target) {
-          this.logger.log(`Cloudflare wildcard DNS already exists: ${wildcardName} -> ${target}`);
-          return { done: true, message: 'Wildcard CNAME already exists', recordId: existing.id };
+          this.logger.log(
+            `Cloudflare wildcard DNS already exists: ${wildcardName} -> ${target}`,
+          );
+          return {
+            done: true,
+            message: 'Wildcard CNAME already exists',
+            recordId: existing.id,
+          };
         }
         // Update existing record
         await axios.patch(
@@ -115,12 +131,18 @@ export class WildcardDomainService {
           { type: 'CNAME', content: target, ttl: 1, proxied: false },
           { headers: { Authorization: `Bearer ${this.cloudflareToken}` } },
         );
-        this.logger.log(`Cloudflare wildcard DNS updated: ${wildcardName} -> ${target}`);
-        return { done: true, message: 'Wildcard CNAME updated', recordId: existing.id };
+        this.logger.log(
+          `Cloudflare wildcard DNS updated: ${wildcardName} -> ${target}`,
+        );
+        return {
+          done: true,
+          message: 'Wildcard CNAME updated',
+          recordId: existing.id,
+        };
       }
 
       // Create new record - Cloudflare expects name relative to zone
-      // For zone squadcart.app: name "*.console" creates *.console.squadcart.app
+      // For zone innowavecart.app: name "*.console" creates *.console.innowavecart.app
       const createRes = await axios.post(
         `https://api.cloudflare.com/client/v4/zones/${this.zoneId}/dns_records`,
         {
@@ -139,13 +161,17 @@ export class WildcardDomainService {
       );
 
       if (!createRes.data?.success) {
-        const errMsg = createRes.data?.errors?.[0]?.message || JSON.stringify(createRes.data);
+        const errMsg =
+          createRes.data?.errors?.[0]?.message ||
+          JSON.stringify(createRes.data);
         this.logger.error(`Cloudflare create wildcard failed: ${errMsg}`);
         return { done: false, message: errMsg };
       }
 
       const recordId = createRes.data?.result?.id;
-      this.logger.log(`Cloudflare wildcard DNS created: ${wildcardName} -> ${target} (id: ${recordId})`);
+      this.logger.log(
+        `Cloudflare wildcard DNS created: ${wildcardName} -> ${target} (id: ${recordId})`,
+      );
       return { done: true, message: 'Wildcard CNAME created', recordId };
     } catch (err: any) {
       const msg = err?.response?.data?.errors?.[0]?.message || err?.message;
@@ -155,17 +181,25 @@ export class WildcardDomainService {
   }
 
   /**
-   * Adds *.console.squadcart.app to Railway project so it accepts traffic and provisions SSL.
+   * Adds *.console.innowavecart.app to Railway project so it accepts traffic and provisions SSL.
    */
-  async ensureRailwayWildcardDomain(): Promise<{ done: boolean; message: string }> {
-    if (!this.railwayToken || !this.railwayProjectId || !this.railwayServiceDomain) {
+  async ensureRailwayWildcardDomain(): Promise<{
+    done: boolean;
+    message: string;
+  }> {
+    if (
+      !this.railwayToken ||
+      !this.railwayProjectId ||
+      !this.railwayServiceDomain
+    ) {
       return {
         done: false,
-        message: 'Missing RAILWAY_TOKEN, RAILWAY_PROJECT_ID, or RAILWAY_SERVICE_DOMAIN',
+        message:
+          'Missing RAILWAY_TOKEN, RAILWAY_PROJECT_ID, or RAILWAY_SERVICE_DOMAIN',
       };
     }
 
-    const wildcardDomain = `*.${this.mainDomain}`; // *.console.squadcart.app
+    const wildcardDomain = `*.${this.mainDomain}`; // *.console.innowavecart.app
 
     try {
       const variables: Record<string, string> = {
@@ -204,8 +238,13 @@ export class WildcardDomainService {
       if (errors?.length) {
         const errMsg = errors[0]?.message || JSON.stringify(errors);
         // Domain might already exist
-        if (errMsg.toLowerCase().includes('already') || errMsg.toLowerCase().includes('exist')) {
-          this.logger.log(`Railway wildcard domain already exists: ${wildcardDomain}`);
+        if (
+          errMsg.toLowerCase().includes('already') ||
+          errMsg.toLowerCase().includes('exist')
+        ) {
+          this.logger.log(
+            `Railway wildcard domain already exists: ${wildcardDomain}`,
+          );
           return { done: true, message: 'Wildcard domain already in Railway' };
         }
         this.logger.error(`Railway add domain failed: ${errMsg}`);

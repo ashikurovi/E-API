@@ -37,5 +37,3 @@ export class CompanyIdService {
     return `COMP-${nextNumber.toString().padStart(6, '0')}`;
   }
 }
-
-

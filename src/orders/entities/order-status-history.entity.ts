@@ -5,10 +5,10 @@ import {
   ManyToOne,
   CreateDateColumn,
   JoinColumn,
-} from "typeorm";
-import { Order } from "./order.entity";
+} from 'typeorm';
+import { Order } from './order.entity';
 
-@Entity("order_status_history")
+@Entity('order_status_history')
 export class OrderStatusHistory {
   @PrimaryGeneratedColumn()
   id: number;
@@ -16,8 +16,8 @@ export class OrderStatusHistory {
   @Column()
   orderId: number;
 
-  @ManyToOne(() => Order, { onDelete: "CASCADE" })
-  @JoinColumn({ name: "orderId" })
+  @ManyToOne(() => Order, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'orderId' })
   order?: Order;
 
   @Column({ nullable: true })

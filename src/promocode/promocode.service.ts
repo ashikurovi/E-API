@@ -1,23 +1,32 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePromocodeDto } from './dto/create-promocode.dto';
 import { UpdatePromocodeDto } from './dto/update-promocode.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PromocodeEntity, PromocodeDiscountType } from './entities/promocode.entity';
+import {
+  PromocodeEntity,
+  PromocodeDiscountType,
+} from './entities/promocode.entity';
 
 @Injectable()
 export class PromocodeService {
   constructor(
     @InjectRepository(PromocodeEntity)
     private readonly promoRepo: Repository<PromocodeEntity>,
-  ) { }
+  ) {}
 
   async create(dto: CreatePromocodeDto, companyId: string) {
     if (!companyId) {
       throw new NotFoundException('CompanyId is required');
     }
 
-    const exists = await this.promoRepo.findOne({ where: { code: dto.code, companyId } });
+    const exists = await this.promoRepo.findOne({
+      where: { code: dto.code, companyId },
+    });
     if (exists) throw new BadRequestException('Promocode already exists');
 
     const startsAt = dto.startsAt ? new Date(dto.startsAt) : undefined;
@@ -75,23 +84,29 @@ export class PromocodeService {
     const promo = await this.findOne(id, companyId);
 
     if (dto.code && dto.code !== promo.code) {
-      const exists = await this.promoRepo.findOne({ where: { code: dto.code, companyId } });
+      const exists = await this.promoRepo.findOne({
+        where: { code: dto.code, companyId },
+      });
       if (exists) throw new BadRequestException('Promocode already exists');
       promo.code = dto.code;
     }
 
     if (dto.description !== undefined) promo.description = dto.description;
-    if (dto.discountType !== undefined) promo.discountType = dto.discountType as PromocodeDiscountType;
-    if (dto.discountValue !== undefined) promo.discountValue = dto.discountValue as any;
+    if (dto.discountType !== undefined) promo.discountType = dto.discountType;
+    if (dto.discountValue !== undefined)
+      promo.discountValue = dto.discountValue as any;
     if (dto.maxUses !== undefined) promo.maxUses = dto.maxUses as any;
-    if (dto.minOrderAmount !== undefined) promo.minOrderAmount = dto.minOrderAmount as any;
+    if (dto.minOrderAmount !== undefined)
+      promo.minOrderAmount = dto.minOrderAmount as any;
 
     if (dto.productIds !== undefined) {
       promo.productIds = dto.productIds as any;
     }
 
-    if (dto.startsAt !== undefined) promo.startsAt = dto.startsAt ? new Date(dto.startsAt) : undefined;
-    if (dto.expiresAt !== undefined) promo.expiresAt = dto.expiresAt ? new Date(dto.expiresAt) : undefined;
+    if (dto.startsAt !== undefined)
+      promo.startsAt = dto.startsAt ? new Date(dto.startsAt) : undefined;
+    if (dto.expiresAt !== undefined)
+      promo.expiresAt = dto.expiresAt ? new Date(dto.expiresAt) : undefined;
 
     if (promo.startsAt && promo.expiresAt && promo.startsAt > promo.expiresAt) {
       throw new BadRequestException('startsAt must be before expiresAt');

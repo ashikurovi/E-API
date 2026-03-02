@@ -23,7 +23,9 @@ export class ImageSearchService {
   }
 
   private initVisionClient() {
-    const credentialsPath = this.configService.get<string>('GOOGLE_APPLICATION_CREDENTIALS');
+    const credentialsPath = this.configService.get<string>(
+      'GOOGLE_APPLICATION_CREDENTIALS',
+    );
     if (credentialsPath || process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       try {
         // Dynamic import to avoid failing when @google-cloud/vision is not installed
@@ -39,7 +41,10 @@ export class ImageSearchService {
    * Extract labels/objects from image using Google Cloud Vision API.
    * Falls back to filename-based keywords when Vision is not configured.
    */
-  private async extractLabelsFromImage(imageBuffer: Buffer, filename?: string): Promise<string[]> {
+  private async extractLabelsFromImage(
+    imageBuffer: Buffer,
+    filename?: string,
+  ): Promise<string[]> {
     if (this.visionClient) {
       try {
         const [result] = await this.visionClient.labelDetection({
@@ -51,7 +56,10 @@ export class ImageSearchService {
           .map((l: any) => l.description?.toLowerCase())
           .filter(Boolean);
       } catch (err) {
-        console.warn('Vision API failed, falling back to filename:', err?.message);
+        console.warn(
+          'Vision API failed, falling back to filename:',
+          err?.message,
+        );
       }
     }
 
@@ -74,7 +82,9 @@ export class ImageSearchService {
     product: ProductEntity,
   ): number {
     const categoryName =
-      product.category && typeof product.category === 'object' && 'name' in product.category
+      product.category &&
+      typeof product.category === 'object' &&
+      'name' in product.category
         ? (product.category as { name: string }).name
         : '';
     const productText = [product.name, product.description || '', categoryName]
@@ -123,7 +133,10 @@ export class ImageSearchService {
       throw new BadRequestException('Image buffer is required');
     }
 
-    const imageLabels = await this.extractLabelsFromImage(imageBuffer, filename);
+    const imageLabels = await this.extractLabelsFromImage(
+      imageBuffer,
+      filename,
+    );
 
     const products = await this.productRepository.find({
       where: {

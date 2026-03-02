@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  BadRequestException,
+} from '@nestjs/common';
 import { SuperadminService } from './superadmin.service';
 import { CreateSuperadminDto } from './dto/create-superadmin.dto';
 import { SuperadminLoginDto } from './dto/login.dto';
@@ -21,7 +32,7 @@ export class SuperadminController {
   }
 
   /**
-   * Trigger wildcard DNS setup: Cloudflare CNAME (*.console.squadcart.app) + Railway domain.
+   * Trigger wildcard DNS setup: Cloudflare CNAME (*.console.innowavecart.app) + Railway domain.
    * Runs automatically on startup; can also be called manually for re-setup.
    */
   @Post('wildcard/setup')
@@ -32,7 +43,6 @@ export class SuperadminController {
 
   @Post()
   create(@Body() createSuperadminDto: CreateSuperadminDto, @Req() req?: any) {
-
     return this.superadminService.create(createSuperadminDto);
   }
 
@@ -58,7 +68,11 @@ export class SuperadminController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSuperadminDto: Partial<CreateSuperadminDto>, @Req() req?: any) {
+  update(
+    @Param('id') id: string,
+    @Body() updateSuperadminDto: Partial<CreateSuperadminDto>,
+    @Req() req?: any,
+  ) {
     // if (!req?.user) {
     //   throw new BadRequestException('User not authenticated');
     // }

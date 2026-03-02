@@ -5,7 +5,8 @@
 const baseStyles = {
   wrapper:
     'margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0f172a;',
-  outerTable: 'background: radial-gradient(circle at top, #1d4ed8, #020617 55%); padding: 24px 0;',
+  outerTable:
+    'background: radial-gradient(circle at top, #1d4ed8, #020617 55%); padding: 24px 0;',
   container:
     'background-color: #020617; border-radius: 18px; overflow: hidden; max-width: 640px; width: 100%; border: 1px solid rgba(148,163,184,0.45);',
   header: 'padding: 20px 26px 16px;',
@@ -98,12 +99,12 @@ export function generateOrderProcessingEmail(
         <tr>
           <td>
             <a href="${trackingUrl}" style="display: inline-block; padding: 10px 18px; border-radius: 999px; background: linear-gradient(to right, #22c55e, #22d3ee); color: #0f172a; font-size: 13px; font-weight: 600; text-decoration: none;">
-              Track your order${trackingId ? ` (#${trackingId})` : ""}
+              Track your order${trackingId ? ` (#${trackingId})` : ''}
             </a>
           </td>
         </tr>
       </table>`
-    : "";
+    : '';
   return `
 <!DOCTYPE html>
 <html>

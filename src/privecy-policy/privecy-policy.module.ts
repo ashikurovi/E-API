@@ -10,4 +10,4 @@ import { PrivecyPolicy } from './entities/privecy-policy.entity';
   providers: [PrivecyPolicyService],
   exports: [PrivecyPolicyService],
 })
-export class PrivecyPolicyModule { }
+export class PrivecyPolicyModule {}

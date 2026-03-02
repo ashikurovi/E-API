@@ -7,10 +7,7 @@ import { SystemUser } from '../systemuser/entities/systemuser.entity';
 import { SystemuserModule } from '../systemuser/systemuser.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Invoice, SystemUser]),
-    SystemuserModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Invoice, SystemUser]), SystemuserModule],
   controllers: [InvoiceController],
   providers: [InvoiceService],
   exports: [InvoiceService],

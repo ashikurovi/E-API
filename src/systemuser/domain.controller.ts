@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Request,
+  BadRequestException,
+} from '@nestjs/common';
 import { SystemuserService } from './systemuser.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
@@ -22,27 +30,32 @@ export class DomainController {
       ? this.systemUserService.normalizeCustomDomain(body.customDomain)
       : '';
 
-    const updated = await this.systemUserService.update(userId, { customDomain: domain || null } as any);
+    const updated = await this.systemUserService.update(userId, {
+      customDomain: domain || null,
+    } as any);
 
     this.systemUserService
       .provisionCustomDomainInRailway(userId)
       .catch((err) => console.error('provisionCustomDomainInRailway:', err));
 
-    const cnameTarget = 'console.squadcart.app';
+    const cnameTarget = 'console.innowavecart.app';
 
     return {
       success: true,
-      message: 'Custom domain saved. Add the DNS records below; verification and SSL will run automatically.',
+      message:
+        'Custom domain saved. Add the DNS records below; verification and SSL will run automatically.',
       data: {
         customDomain: updated.customDomain,
-        status: (updated as any).customDomainStatus,
+        status: updated.customDomainStatus,
         verificationRequired: {
           cname: { host: 'www', target: cnameTarget },
           txt: updated.customDomain
             ? {
-                name: this.dnsVerification.getTxtRecordHost(updated.customDomain),
-                value: (updated as any).customDomainVerificationCode,
-                fullName: `_squadcart-verify.${updated.customDomain}`,
+                name: this.dnsVerification.getTxtRecordHost(
+                  updated.customDomain,
+                ),
+                value: updated.customDomainVerificationCode,
+                fullName: `_innowavecart-verify.${updated.customDomain}`,
               }
             : null,
         },
@@ -55,23 +68,23 @@ export class DomainController {
     const userId = req.user.userId;
     const user = await this.systemUserService.findOne(userId);
 
-    const cnameTarget = 'console.squadcart.app';
+    const cnameTarget = 'console.innowavecart.app';
 
-    const mainDomain = 'console.squadcart.app';
+    const mainDomain = 'console.innowavecart.app';
 
     const platformSubdomain = user.subdomain
       ? `${user.subdomain}.${mainDomain}`
       : null;
 
-    const status = (user as any).customDomainStatus ?? 'pending_dns';
+    const status = user.customDomainStatus ?? 'pending_dns';
     const needsTxt = status === 'pending_dns' || status === 'pending';
 
     return {
       subdomain: user.subdomain,
-      subdomainEnabled: (user as any).subdomainEnabled ?? true,
+      subdomainEnabled: user.subdomainEnabled ?? true,
       customDomain: user.customDomain,
       customDomainStatus: status,
-      customDomainVerifiedAt: (user as any).customDomainVerifiedAt ?? null,
+      customDomainVerifiedAt: user.customDomainVerifiedAt ?? null,
       platformSubdomain,
       verificationRequired: {
         type: 'CNAME',
@@ -79,14 +92,15 @@ export class DomainController {
         host: '@',
         hostForWww: 'www',
         note: 'Point www (and optionally root) to our storefront. Then add the TXT record for automatic verification.',
-        rootNote: 'For root domain use CNAME flattening or A/ALIAS if your DNS provider supports it.',
+        rootNote:
+          'For root domain use CNAME flattening or A/ALIAS if your DNS provider supports it.',
       },
       txtVerification:
-        needsTxt && user.customDomain && (user as any).customDomainVerificationCode
+        needsTxt && user.customDomain && user.customDomainVerificationCode
           ? {
               name: this.dnsVerification.getTxtRecordHost(user.customDomain),
-              value: (user as any).customDomainVerificationCode,
-              fullName: `_squadcart-verify.${user.customDomain}`,
+              value: user.customDomainVerificationCode,
+              fullName: `_innowavecart-verify.${user.customDomain}`,
               note: 'Add this TXT record to prove domain ownership. Verification runs automatically every few minutes.',
             }
           : null,
@@ -94,15 +108,11 @@ export class DomainController {
   }
 
   @Post('subdomain/toggle')
-  async toggleSubdomain(
-    @Request() req,
-    @Body() body: { enabled: boolean },
-  ) {
+  async toggleSubdomain(@Request() req, @Body() body: { enabled: boolean }) {
     const userId = req.user.userId;
-    const updated = await this.systemUserService.update(
-      userId,
-      { subdomainEnabled: body.enabled } as any,
-    ) as any;
+    const updated = await this.systemUserService.update(userId, {
+      subdomainEnabled: body.enabled,
+    } as any);
 
     return {
       success: true,
@@ -127,7 +137,7 @@ export class DomainController {
       throw new BadRequestException('No custom domain set');
     }
 
-    const status = (user as any).customDomainStatus;
+    const status = user.customDomainStatus;
     if (status === 'active') {
       return {
         success: true,
@@ -136,19 +146,25 @@ export class DomainController {
       };
     }
 
-    const token = (user as any).customDomainVerificationCode;
+    const token = user.customDomainVerificationCode;
     if (!token) {
-      throw new BadRequestException('Verification token missing; try saving the domain again.');
+      throw new BadRequestException(
+        'Verification token missing; try saving the domain again.',
+      );
     }
 
     const domain = user.customDomain;
-    const verified = await this.dnsVerification.verifyTxtOwnership(domain, token);
+    const verified = await this.dnsVerification.verifyTxtOwnership(
+      domain,
+      token,
+    );
 
     if (!verified) {
       return {
         success: false,
         status: status || 'pending_dns',
-        message: 'TXT record not found or value does not match. Add the TXT record and try again, or wait for automatic verification.',
+        message:
+          'TXT record not found or value does not match. Add the TXT record and try again, or wait for automatic verification.',
       };
     }
 
@@ -156,14 +172,18 @@ export class DomainController {
 
     if (this.cloudflareService.isConfigured()) {
       const result = await this.cloudflareService.addCustomHostname(domain);
-      await this.systemUserService.setCustomDomainSslProvisioning(userId, result?.id ?? null);
+      await this.systemUserService.setCustomDomainSslProvisioning(
+        userId,
+        result?.id ?? null,
+      );
       if (result?.id) {
         await this.systemUserService.setCloudflareHostnameId(userId, result.id);
       }
       return {
         success: true,
         status: 'ssl_provisioning',
-        message: 'Domain verified. SSL is being provisioned; the domain will become active shortly.',
+        message:
+          'Domain verified. SSL is being provisioned; the domain will become active shortly.',
       };
     }
 

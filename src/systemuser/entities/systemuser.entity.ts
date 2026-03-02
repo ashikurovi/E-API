@@ -42,7 +42,7 @@ export class SystemUser {
   subdomain: string | null;
 
   /**
-   * Controls whether the platform subdomain (e.g. ovi.console.squadcart.app)
+   * Controls whether the platform subdomain (e.g. ovi.console.innowavecart.app)
    * should serve the project directly. When disabled and a verified custom
    * domain exists, the middleware will redirect traffic from the subdomain
    * to the custom domain.
@@ -64,7 +64,11 @@ export class SystemUser {
   @Column({ type: 'varchar', nullable: true })
   customDomainVerificationCode: string | null;
 
-  @Column({ type: 'timestamp', nullable: true, name: 'custom_domain_verified_at' })
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+    name: 'custom_domain_verified_at',
+  })
   customDomainVerifiedAt: Date | null;
 
   @Column({ type: 'timestamp', nullable: true, name: 'ssl_provisioned_at' })

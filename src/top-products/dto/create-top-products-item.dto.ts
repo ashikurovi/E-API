@@ -21,4 +21,3 @@ export class CreateTopProductsItemDto {
   @IsInt()
   order?: number;
 }
-

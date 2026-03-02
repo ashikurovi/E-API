@@ -1,4 +1,8 @@
-import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 /**
  * Decorator to extract userId from request object (from JWT token).
@@ -14,4 +18,3 @@ export const UserId = createParamDecorator(
     return userId;
   },
 );
-

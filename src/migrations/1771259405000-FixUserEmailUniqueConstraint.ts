@@ -15,11 +15,11 @@ export class FixUserEmailUniqueConstraint1771259405000 implements MigrationInter
       AND indexdef LIKE '%UNIQUE%' 
       AND indexdef LIKE '%email%'
     `);
-    
+
     for (const index of indexes) {
       await queryRunner.query(`DROP INDEX IF EXISTS "${index.indexname}";`);
     }
-    
+
     // Also try common constraint names that might exist
     await queryRunner.query(`
       DROP INDEX IF EXISTS "tbl_users_email_key";
@@ -27,7 +27,7 @@ export class FixUserEmailUniqueConstraint1771259405000 implements MigrationInter
     await queryRunner.query(`
       DROP INDEX IF EXISTS "IDX_tbl_users_email";
     `);
-    
+
     // Create composite unique index on (email, companyId)
     await queryRunner.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS "IDX_tbl_users_email_companyId" 
@@ -40,7 +40,7 @@ export class FixUserEmailUniqueConstraint1771259405000 implements MigrationInter
     await queryRunner.query(`
       DROP INDEX IF EXISTS "IDX_tbl_users_email_companyId";
     `);
-    
+
     // Restore the original unique constraint on email column
     await queryRunner.query(`
       CREATE UNIQUE INDEX IF NOT EXISTS "tbl_users_email_key" 

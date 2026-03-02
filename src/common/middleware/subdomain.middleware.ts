@@ -12,7 +12,7 @@ export class SubdomainMiddleware implements NestMiddleware {
     @InjectRepository(SystemUser)
     private readonly systemUserRepo: Repository<SystemUser>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) { }
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const hostname = req.hostname?.toLowerCase();
@@ -26,13 +26,21 @@ export class SubdomainMiddleware implements NestMiddleware {
 
     // Skip tenant resolution for the main API domain so /users/me and other API routes work
     // (companyId comes from JWT or query, not from subdomain)
-    const defaultApiHost = (process.env.DEFAULT_API_HOST || process.env.API_DOMAIN || 'e-api-omega.vercel.app').toLowerCase();
-    const normalizedHostForCompare = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+    const defaultApiHost = (
+      process.env.DEFAULT_API_HOST ||
+      process.env.API_DOMAIN ||
+      'e-api-omega.vercel.app'
+    ).toLowerCase();
+    const normalizedHostForCompare = hostname.startsWith('www.')
+      ? hostname.slice(4)
+      : hostname;
     if (normalizedHostForCompare === defaultApiHost) {
       return next();
     }
 
-    const normalizedHost = hostname.startsWith('www.') ? hostname.slice(4) : hostname;
+    const normalizedHost = hostname.startsWith('www.')
+      ? hostname.slice(4)
+      : hostname;
     const parts = normalizedHost.split('.');
     let subdomain = '';
 
@@ -62,7 +70,14 @@ export class SubdomainMiddleware implements NestMiddleware {
       return next();
     }
 
-    let tenant: (Pick<SystemUser, 'companyId' | 'subdomain' | 'customDomain' | 'customDomainStatus' | 'subdomainEnabled'>) | null = null;
+    let tenant: Pick<
+      SystemUser,
+      | 'companyId'
+      | 'subdomain'
+      | 'customDomain'
+      | 'customDomainStatus'
+      | 'subdomainEnabled'
+    > | null = null;
     let resolvedBy: 'subdomain' | 'customDomain' | null = null;
 
     // 1. Try to find by subdomain if we extracted one
@@ -70,7 +85,13 @@ export class SubdomainMiddleware implements NestMiddleware {
       try {
         tenant = await this.systemUserRepo.findOne({
           where: { subdomain },
-          select: ['companyId', 'subdomain', 'customDomain', 'customDomainStatus', 'subdomainEnabled'],
+          select: [
+            'companyId',
+            'subdomain',
+            'customDomain',
+            'customDomainStatus',
+            'subdomainEnabled',
+          ],
         });
         if (tenant) {
           resolvedBy = 'subdomain';
@@ -86,7 +107,13 @@ export class SubdomainMiddleware implements NestMiddleware {
       try {
         tenant = await this.systemUserRepo.findOne({
           where: { customDomain: normalizedHost, customDomainStatus: 'active' },
-          select: ['companyId', 'subdomain', 'customDomain', 'customDomainStatus', 'subdomainEnabled'],
+          select: [
+            'companyId',
+            'subdomain',
+            'customDomain',
+            'customDomainStatus',
+            'subdomainEnabled',
+          ],
         });
         if (tenant) {
           resolvedBy = 'customDomain';
@@ -121,7 +148,9 @@ export class SubdomainMiddleware implements NestMiddleware {
       // Also inject into request object for custom decorators/guards if needed
       (req as any).companyId = tenant.companyId;
 
-      console.log(`[SubdomainMiddleware] Resolved host '${normalizedHost}' to companyId '${tenant.companyId}' via ${resolvedBy ?? 'unknown'}`);
+      console.log(
+        `[SubdomainMiddleware] Resolved host '${normalizedHost}' to companyId '${tenant.companyId}' via ${resolvedBy ?? 'unknown'}`,
+      );
 
       try {
         await this.cacheManager.set(cacheKey, tenant.companyId, 300 * 1000); // Cache for 5 minutes

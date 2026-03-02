@@ -16,9 +16,13 @@ export class ReviewsService {
     private readonly productRepository: Repository<ProductEntity>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
-  async create(createReviewDto: CreateReviewDto, companyId: string, userId?: number) {
+  async create(
+    createReviewDto: CreateReviewDto,
+    companyId: string,
+    userId?: number,
+  ) {
     if (!companyId) {
       throw new NotFoundException('CompanyId is required');
     }
@@ -106,7 +110,11 @@ export class ReviewsService {
     return review;
   }
 
-  async update(id: number, updateReviewDto: UpdateReviewDto, companyId: string) {
+  async update(
+    id: number,
+    updateReviewDto: UpdateReviewDto,
+    companyId: string,
+  ) {
     if (!companyId) {
       throw new NotFoundException('CompanyId is required');
     }
@@ -114,7 +122,11 @@ export class ReviewsService {
 
     if (updateReviewDto.productId) {
       const product = await this.productRepository.findOne({
-        where: { id: updateReviewDto.productId, companyId, deletedAt: IsNull() },
+        where: {
+          id: updateReviewDto.productId,
+          companyId,
+          deletedAt: IsNull(),
+        },
       });
       if (!product) {
         throw new NotFoundException('Product not found');
@@ -122,10 +134,14 @@ export class ReviewsService {
       review.product = product;
     }
 
-    if (updateReviewDto.rating !== undefined) review.rating = updateReviewDto.rating;
-    if (updateReviewDto.title !== undefined) review.title = updateReviewDto.title;
-    if (updateReviewDto.comment !== undefined) review.comment = updateReviewDto.comment;
-    if (updateReviewDto.reply !== undefined) review.reply = updateReviewDto.reply;
+    if (updateReviewDto.rating !== undefined)
+      review.rating = updateReviewDto.rating;
+    if (updateReviewDto.title !== undefined)
+      review.title = updateReviewDto.title;
+    if (updateReviewDto.comment !== undefined)
+      review.comment = updateReviewDto.comment;
+    if (updateReviewDto.reply !== undefined)
+      review.reply = updateReviewDto.reply;
 
     return this.reviewRepository.save(review);
   }

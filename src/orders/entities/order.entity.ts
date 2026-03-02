@@ -1,7 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
-import { User } from "../../users/entities/user.entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
-@Entity("orders")
+@Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id: number;
@@ -36,20 +44,27 @@ export class Order {
     totalPrice: number;
   }>;
 
-  @Column("decimal", { precision: 12, scale: 2, default: 0 })
+  @Column('decimal', { precision: 12, scale: 2, default: 0 })
   totalAmount: number;
 
-  @Column("decimal", { precision: 12, scale: 2, default: 0 })
+  @Column('decimal', { precision: 12, scale: 2, default: 0 })
   paidAmount: number;
 
-  @Column({ default: "pending" })
-  status: "pending" | "processing" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
+  @Column({ default: 'pending' })
+  status:
+    | 'pending'
+    | 'processing'
+    | 'paid'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'refunded';
 
   @Column({ nullable: true })
   paymentReference?: string;
 
-  @Column({ default: "DIRECT" })
-  paymentMethod: "DIRECT" | "COD";
+  @Column({ default: 'DIRECT' })
+  paymentMethod: 'DIRECT' | 'COD';
 
   @Column({ nullable: true })
   shippingTrackingId?: string;
@@ -63,8 +78,8 @@ export class Order {
   @Column({ nullable: false })
   companyId: string;
 
-  @Column({ default: "INSIDEDHAKA" })
-  deliveryType: "INSIDEDHAKA" | "OUTSIDEDHAKA";
+  @Column({ default: 'INSIDEDHAKA' })
+  deliveryType: 'INSIDEDHAKA' | 'OUTSIDEDHAKA';
 
   @Column({ nullable: true })
   deliveryNote?: string;

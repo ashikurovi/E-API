@@ -438,6 +438,14 @@ let OrderService = class OrderService {
     async cancelOrder(id, companyId, comment, performedByUserId) {
         const order = await this.findOne(id, companyId);
         const previousStatus = order.status;
+        if (!performedByUserId) {
+            const created = new Date(order.createdAt);
+            const now = new Date();
+            const hoursDiff = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
+            if (hoursDiff > 24) {
+                throw new common_1.BadRequestException("Order can only be cancelled within 24 hours of placement");
+            }
+        }
         if (order.status === "cancelled")
             throw new common_1.BadRequestException("Already cancelled");
         if (order.status === "refunded")
@@ -860,7 +868,7 @@ let OrderService = class OrderService {
                     return;
             }
             await this.mailer.sendMail({
-                from: process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@squadcart.com",
+                from: process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@innowavecart.com",
                 to: email,
                 subject,
                 html,

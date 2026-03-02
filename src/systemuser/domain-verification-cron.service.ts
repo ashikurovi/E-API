@@ -39,14 +39,21 @@ export class DomainVerificationCronService {
             result?.id ?? null,
           );
           if (result?.id) {
-            await this.systemuserService.setCloudflareHostnameId(user.id, result.id);
+            await this.systemuserService.setCloudflareHostnameId(
+              user.id,
+              result.id,
+            );
           }
         } else {
           await this.systemuserService.setCustomDomainActive(user.id);
         }
-        this.logger.log(`Domain verified and progressing: ${domain} (userId: ${user.id})`);
+        this.logger.log(
+          `Domain verified and progressing: ${domain} (userId: ${user.id})`,
+        );
       } catch (err: any) {
-        this.logger.warn(`DNS verification failed for ${domain}: ${err?.message}`);
+        this.logger.warn(
+          `DNS verification failed for ${domain}: ${err?.message}`,
+        );
       }
     }
   }
@@ -61,13 +68,18 @@ export class DomainVerificationCronService {
         continue;
       }
       try {
-        const result = await this.cloudflareService.getCustomHostnameStatus(hostnameId);
+        const result =
+          await this.cloudflareService.getCustomHostnameStatus(hostnameId);
         if (result?.status === 'active') {
           await this.systemuserService.setCustomDomainActive(user.id);
-          this.logger.log(`Custom domain SSL active: ${(user as any).customDomain} (userId: ${user.id})`);
+          this.logger.log(
+            `Custom domain SSL active: ${(user as any).customDomain} (userId: ${user.id})`,
+          );
         }
       } catch (err: any) {
-        this.logger.warn(`SSL status check failed for user ${user.id}: ${err?.message}`);
+        this.logger.warn(
+          `SSL status check failed for user ${user.id}: ${err?.message}`,
+        );
       }
     }
   }

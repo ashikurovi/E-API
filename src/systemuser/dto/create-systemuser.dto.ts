@@ -1,4 +1,12 @@
-import { IsEmail, IsString, IsOptional, IsNumber, IsObject, IsArray, IsEnum } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsObject,
+  IsArray,
+  IsEnum,
+} from 'class-validator';
 import { FeaturePermission } from '../feature-permission.enum';
 import { SystemUserRole } from '../system-user-role.enum';
 

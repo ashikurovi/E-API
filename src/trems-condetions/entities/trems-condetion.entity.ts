@@ -1,22 +1,29 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('tbl_terms_conditions')
 export class TremsCondetion {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'text' })
-    content: string;
+  @Column({ type: 'text' })
+  content: string;
 
-    @Column({ nullable: false })
-    companyId: string;
+  @Column({ nullable: false })
+  companyId: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    @DeleteDateColumn({ nullable: true })
-    deletedAt?: Date;
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 }

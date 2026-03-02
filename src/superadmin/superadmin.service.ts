@@ -1,4 +1,10 @@
-import { Injectable, BadRequestException, NotFoundException, UnauthorizedException, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SuperAdmin } from './entities/superadmin.entity';
@@ -24,11 +30,13 @@ export class SuperadminService {
 
   async create(dto: CreateSuperadminDto) {
     // Check if superadmin with same email already exists
-    const exists = await this.superadminRepo.findOne({ 
-      where: { email: dto.email } 
+    const exists = await this.superadminRepo.findOne({
+      where: { email: dto.email },
     });
     if (exists) {
-      throw new BadRequestException('Superadmin with this email already exists');
+      throw new BadRequestException(
+        'Superadmin with this email already exists',
+      );
     }
 
     const salt = crypto.randomBytes(16).toString('hex');
@@ -52,7 +60,7 @@ export class SuperadminService {
 
     // Send login credentials to the new superadmin's email (HTML template)
     if (dto.email) {
-      const loginUrl = 'https://console.squadcart.app/login';
+      const loginUrl = 'https://console.innowavecart.app/login';
 
       const html = `
 <!DOCTYPE html>
@@ -70,7 +78,7 @@ export class SuperadminService {
           <tr>
             <td style="background:radial-gradient(circle at 0% 0%,#4f46e5,#7c3aed);padding:22px 26px 18px;text-align:left;">
               <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#e0e7ff;opacity:0.9;">
-                SquadCart · Super Admin
+                InnowaveCart · Super Admin
               </div>
               <h1 style="margin:6px 0 0;font-size:22px;font-weight:600;color:#eef2ff;">
                 Your Super Admin account is ready
@@ -84,7 +92,7 @@ export class SuperadminService {
                 Hi <span style="color:#e5e7eb;font-weight:500;">${dto.name}</span>,
               </p>
               <p style="margin:0 0 18px;font-size:14px;line-height:1.7;color:#9ca3af;">
-                Your <span style="color:#a5b4fc;font-weight:500;">SquadCart Super Admin</span> account has been created successfully. 
+                Your <span style="color:#a5b4fc;font-weight:500;">InnowaveCart Super Admin</span> account has been created successfully. 
                 Use the credentials below to sign in to your dashboard.
               </p>
 
@@ -140,10 +148,10 @@ export class SuperadminService {
           <tr>
             <td style="background-color:#020617;padding:14px 26px 18px;text-align:center;border-top:1px solid rgba(55,65,81,0.9);">
               <p style="margin:0 0 4px;font-size:11px;color:#6b7280;">
-                This is an automated message from SquadCart.
+                This is an automated message from InnowaveCart.
               </p>
               <p style="margin:0;font-size:11px;color:#6b7280;">
-                © ${new Date().getFullYear()} SquadCart. All rights reserved.
+                © ${new Date().getFullYear()} InnowaveCart. All rights reserved.
               </p>
             </td>
           </tr>
@@ -157,16 +165,19 @@ export class SuperadminService {
 
       try {
         await this.mailer.sendMail({
-          from: '"SquadCart HQ" <squadcarthq@gmail.com>',
+          from: '"InnowaveCart HQ" <innowavecarthq@gmail.com>',
           to: dto.email,
-          subject: 'Your SquadCart Super Admin account',
+          subject: 'Your InnowaveCart Super Admin account',
           text: `Your Super Admin account is ready.\nEmail: ${dto.email}\nPassword: ${dto.password}\nLogin: ${loginUrl}`,
           html,
         });
       } catch (err) {
         // Do not block creation if email sending fails
-        // eslint-disable-next-line no-console
-        console.error('[SuperadminService] Failed to send credentials email:', err);
+
+        console.error(
+          '[SuperadminService] Failed to send credentials email:',
+          err,
+        );
       }
     }
 
@@ -175,14 +186,14 @@ export class SuperadminService {
   }
 
   async findAll() {
-    const list = await this.superadminRepo.find({ 
+    const list = await this.superadminRepo.find({
       order: { id: 'DESC' },
     });
     return list.map(({ passwordHash, passwordSalt, ...safe }) => safe);
   }
 
   async findOne(id: number) {
-    const entity = await this.superadminRepo.findOne({ 
+    const entity = await this.superadminRepo.findOne({
       where: { id },
     });
     if (!entity) throw new NotFoundException('Superadmin not found');
@@ -201,11 +212,13 @@ export class SuperadminService {
     if (dto.email !== undefined) {
       // Check if email is being changed and if new email already exists
       if (dto.email !== entity.email) {
-        const exists = await this.superadminRepo.findOne({ 
-          where: { email: dto.email } 
+        const exists = await this.superadminRepo.findOne({
+          where: { email: dto.email },
         });
         if (exists) {
-          throw new BadRequestException('Superadmin with this email already exists');
+          throw new BadRequestException(
+            'Superadmin with this email already exists',
+          );
         }
         entity.email = dto.email;
       }
@@ -238,29 +251,35 @@ export class SuperadminService {
   async login(dto: SuperadminLoginDto) {
     // Normalize email: trim and lowercase for case-insensitive lookup
     const normalizedEmail = dto.email?.trim().toLowerCase();
-    
+
     if (!normalizedEmail) {
       throw new UnauthorizedException('Email is required');
     }
-    
+
     if (!dto.password) {
       throw new UnauthorizedException('Password is required');
     }
-    
+
     // Use case-insensitive email lookup using query builder
     const superadmin = await this.superadminRepo
       .createQueryBuilder('superadmin')
-      .where('LOWER(superadmin.email) = LOWER(:email)', { email: normalizedEmail })
+      .where('LOWER(superadmin.email) = LOWER(:email)', {
+        email: normalizedEmail,
+      })
       .getOne();
-    
+
     if (!superadmin) {
-      console.log(`[Superadmin Login] User not found for email: ${normalizedEmail}`);
+      console.log(
+        `[Superadmin Login] User not found for email: ${normalizedEmail}`,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const hash = this.hashPassword(dto.password, superadmin.passwordSalt);
     if (hash !== superadmin.passwordHash) {
-      console.log(`[Superadmin Login] Password mismatch for email: ${normalizedEmail}`);
+      console.log(
+        `[Superadmin Login] Password mismatch for email: ${normalizedEmail}`,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -285,7 +304,7 @@ export class SuperadminService {
     const accessToken = this.jwtService.sign(payload, { expiresIn: '24d' });
     const refreshToken = this.jwtService.sign(
       { sub: superadmin.id, userId: superadmin.id },
-      { expiresIn: '24d' }
+      { expiresIn: '24d' },
     );
 
     const { passwordHash, passwordSalt, ...safe } = superadmin as any;

@@ -6,7 +6,6 @@ import { RequestContextService } from '../common/services/request-context.servic
 
 @Injectable()
 export class FraudcheckerService {
-
   constructor(
     private readonly usersService: UsersService,
     private readonly requestContextService: RequestContextService,
@@ -72,8 +71,11 @@ export class FraudcheckerService {
   async checkUserRiskByName(name: string) {
     const companyId = this.requestContextService.getCompanyId();
     const users = await this.usersService.findByName(name, companyId);
-    if (!users.length) throw new NotFoundException('No users found with that name');
-    const results = await Promise.all(users.map((u) => this.checkUserRisk(u.id)));
+    if (!users.length)
+      throw new NotFoundException('No users found with that name');
+    const results = await Promise.all(
+      users.map((u) => this.checkUserRisk(u.id)),
+    );
     return { count: results.length, results };
   }
 

@@ -74,5 +74,3 @@ export enum FeaturePermission {
   THEME_MANAGEMENT = 'THEME_MANAGEMENT',
   CUSTOM_DOMAIN = 'CUSTOM_DOMAIN',
 }
-
-

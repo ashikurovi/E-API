@@ -9,10 +9,14 @@ import { SystemUser } from '../systemuser/entities/systemuser.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProductEntity, SaleInvoiceItem, ResellerPayout, SystemUser]),
+    TypeOrmModule.forFeature([
+      ProductEntity,
+      SaleInvoiceItem,
+      ResellerPayout,
+      SystemUser,
+    ]),
   ],
   controllers: [ResellerController],
   providers: [ResellerService],
 })
 export class ResellerModule {}
-

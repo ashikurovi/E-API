@@ -20,7 +20,10 @@ export class SaleInvoiceController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new sale invoice' })
-  create(@Body() createSaleInvoiceDto: CreateSaleInvoiceDto, @Query('companyId') companyId: string) {
+  create(
+    @Body() createSaleInvoiceDto: CreateSaleInvoiceDto,
+    @Query('companyId') companyId: string,
+  ) {
     return this.saleInvoiceService.create(createSaleInvoiceDto, companyId);
   }
 
@@ -50,7 +53,9 @@ export class SaleInvoiceController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a sale invoice (status, delivery, fulfillment)' })
+  @ApiOperation({
+    summary: 'Update a sale invoice (status, delivery, fulfillment)',
+  })
   @ApiQuery({ name: 'companyId', required: true })
   update(
     @Param('id') id: string,
