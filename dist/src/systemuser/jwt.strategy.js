@@ -15,8 +15,9 @@ const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const systemuser_service_1 = require("./systemuser.service");
 const users_service_1 = require("../users/users.service");
+const superadmin_service_1 = require("../superadmin/superadmin.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(systemuserService, usersService) {
+    constructor(systemuserService, usersService, superadminService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -24,6 +25,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         });
         this.systemuserService = systemuserService;
         this.usersService = usersService;
+        this.superadminService = superadminService;
     }
     async validate(payload) {
         const userId = payload.userId || payload.sub;
@@ -32,6 +34,24 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         }
         const role = payload.role;
         const companyId = payload.companyId;
+        if (role === 'SUPER_ADMIN') {
+            try {
+                const superadmin = await this.superadminService.findOne(Number(userId));
+                if (!superadmin || !superadmin.isActive) {
+                    return null;
+                }
+                return {
+                    userId: superadmin.id,
+                    email: superadmin.email,
+                    name: superadmin.name,
+                    permissions: superadmin.permissions || [],
+                    role: 'SUPER_ADMIN',
+                };
+            }
+            catch {
+                return null;
+            }
+        }
         if (role === 'customer' && companyId) {
             try {
                 const customer = await this.usersService.findOne(Number(userId), companyId);
@@ -72,6 +92,7 @@ exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [systemuser_service_1.SystemuserService,
-        users_service_1.UsersService])
+        users_service_1.UsersService,
+        superadmin_service_1.SuperadminService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map

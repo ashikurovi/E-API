@@ -66,7 +66,9 @@ let NotificationsService = class NotificationsService {
             if (result.status === 'rejected') {
                 failed.push({
                     userId: recipients[index].id,
-                    contact: channel === 'email' ? recipients[index].email : recipients[index].phone,
+                    contact: channel === 'email'
+                        ? recipients[index].email
+                        : recipients[index].phone,
                     reason: result.reason?.message ?? 'Unknown error',
                 });
             }
@@ -137,7 +139,9 @@ let NotificationsService = class NotificationsService {
                     message: body,
                     status: 'failed',
                     orderId,
-                    metadata: { error: error instanceof Error ? error.message : 'Unknown error' },
+                    metadata: {
+                        error: error instanceof Error ? error.message : 'Unknown error',
+                    },
                 });
             }
             return { success: false, error };
@@ -174,7 +178,9 @@ let NotificationsService = class NotificationsService {
                     message,
                     status: 'failed',
                     orderId,
-                    metadata: { error: error instanceof Error ? error.message : 'Unknown error' },
+                    metadata: {
+                        error: error instanceof Error ? error.message : 'Unknown error',
+                    },
                 });
             }
             return { success: false, error };

@@ -18,7 +18,9 @@ let TopProductsModule = class TopProductsModule {
 exports.TopProductsModule = TopProductsModule;
 exports.TopProductsModule = TopProductsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([top_products_section_entity_1.TopProductsSectionEntity, top_products_item_entity_1.TopProductsItemEntity])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([top_products_section_entity_1.TopProductsSectionEntity, top_products_item_entity_1.TopProductsItemEntity]),
+        ],
         controllers: [top_products_controller_1.TopProductsController],
         providers: [top_products_service_1.TopProductsService],
         exports: [top_products_service_1.TopProductsService],

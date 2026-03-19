@@ -1,13 +1,13 @@
-import { Repository, DataSource } from "typeorm";
-import { Order } from "./entities/order.entity";
-import { OrderStatusHistory } from "./entities/order-status-history.entity";
-import { CreateOrderDto } from "./dto/create-order.dto";
-import { ProductEntity } from "../products/entities/product.entity";
-import { User } from "../users/entities/user.entity";
-import { PaymentsService } from "../payments/payments.service";
-import { NotificationsService } from "../notifications/notifications.service";
-import { ActivityLogService } from "../systemuser/activity-log.service";
-import { SystemuserService } from "../systemuser/systemuser.service";
+import { Repository, DataSource } from 'typeorm';
+import { Order } from './entities/order.entity';
+import { OrderStatusHistory } from './entities/order-status-history.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { ProductEntity } from '../products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
+import { PaymentsService } from '../payments/payments.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { ActivityLogService } from '../systemuser/activity-log.service';
+import { SystemuserService } from '../systemuser/systemuser.service';
 export declare class OrderService {
     private orderRepo;
     private statusHistoryRepo;

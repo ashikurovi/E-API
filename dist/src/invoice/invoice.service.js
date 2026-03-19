@@ -30,10 +30,13 @@ let InvoiceService = class InvoiceService {
         this.mailerTransport = mailerTransport;
         this.systemuserService = systemuserService;
         this.bkashAppKey = this.configService.get('BKASH_APP_KEY') || '';
-        this.bkashAppSecret = this.configService.get('BKASH_APP_SECRET') || '';
+        this.bkashAppSecret =
+            this.configService.get('BKASH_APP_SECRET') || '';
         this.bkashUsername = this.configService.get('BKASH_USERNAME') || '';
         this.bkashPassword = this.configService.get('BKASH_PASSWORD') || '';
-        this.bkashBaseURL = this.configService.get('BKASH_BASE_URL') || 'https://checkout.sandbox.bka.sh/v1.2.0-beta';
+        this.bkashBaseURL =
+            this.configService.get('BKASH_BASE_URL') ||
+                'https://checkout.sandbox.bka.sh/v1.2.0-beta';
         this.bkashGrantTokenURL = `${this.bkashBaseURL}/checkout/token/grant`;
         this.bkashCreatePaymentURL = `${this.bkashBaseURL}/checkout/payment/create`;
         this.bkashExecutePaymentURL = `${this.bkashBaseURL}/checkout/payment/execute`;
@@ -71,7 +74,7 @@ let InvoiceService = class InvoiceService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
             }), customer.companyName || '');
             await this.mailerTransport.sendMail({
                 to: adminEmail,
@@ -91,10 +94,10 @@ let InvoiceService = class InvoiceService {
         });
     }
     async findOne(id) {
-        const invoice = await this.invoiceRepository.findOne({
+        const invoice = (await this.invoiceRepository.findOne({
             where: { id },
             relations: ['customer'],
-        });
+        }));
         if (!invoice) {
             throw new common_1.NotFoundException(`Invoice with ID ${id} not found`);
         }
@@ -119,7 +122,8 @@ let InvoiceService = class InvoiceService {
     }
     async update(id, updateInvoiceDto) {
         const invoice = await this.findOne(id);
-        if (updateInvoiceDto.customerId && updateInvoiceDto.customerId !== invoice.customerId) {
+        if (updateInvoiceDto.customerId &&
+            updateInvoiceDto.customerId !== invoice.customerId) {
             const customer = await this.systemUserRepository.findOne({
                 where: { id: updateInvoiceDto.customerId },
             });
@@ -245,7 +249,10 @@ let InvoiceService = class InvoiceService {
             const dueAmount = parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
             invoice.paidAmount = newTotalPaidAmount;
             invoice.dueAmount = dueAmount < 0 ? 0 : dueAmount;
-            invoice.status = newTotalPaidAmount >= invoice.totalAmount ? invoice_entity_1.InvoiceStatus.PAID : invoice_entity_1.InvoiceStatus.PENDING;
+            invoice.status =
+                newTotalPaidAmount >= invoice.totalAmount
+                    ? invoice_entity_1.InvoiceStatus.PAID
+                    : invoice_entity_1.InvoiceStatus.PENDING;
             invoice.bkashTrxID = data.trxID;
             const savedInvoice = await this.invoiceRepository.save(invoice);
             if (savedInvoice.status === invoice_entity_1.InvoiceStatus.PAID) {
@@ -293,11 +300,15 @@ let InvoiceService = class InvoiceService {
             status: bankPaymentDto.status || bank_payment_dto_1.BankPaymentStatus.PENDING,
         };
         if (bankPaymentDto.status === bank_payment_dto_1.BankPaymentStatus.VERIFIED) {
-            const newTotalPaidAmount = parseFloat(String(invoice.paidAmount)) + parseFloat(String(invoice.totalAmount));
+            const newTotalPaidAmount = parseFloat(String(invoice.paidAmount)) +
+                parseFloat(String(invoice.totalAmount));
             const dueAmount = parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
             invoice.paidAmount = newTotalPaidAmount;
             invoice.dueAmount = dueAmount < 0 ? 0 : dueAmount;
-            invoice.status = newTotalPaidAmount >= invoice.totalAmount ? invoice_entity_1.InvoiceStatus.PAID : invoice_entity_1.InvoiceStatus.PENDING;
+            invoice.status =
+                newTotalPaidAmount >= invoice.totalAmount
+                    ? invoice_entity_1.InvoiceStatus.PAID
+                    : invoice_entity_1.InvoiceStatus.PENDING;
         }
         const savedInvoice = await this.invoiceRepository.save(invoice);
         if (savedInvoice.status === invoice_entity_1.InvoiceStatus.PAID) {
@@ -311,7 +322,7 @@ let InvoiceService = class InvoiceService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
             }), customer.companyName || '');
             await this.mailerTransport.sendMail({
                 to: adminEmail,
@@ -338,7 +349,10 @@ let InvoiceService = class InvoiceService {
         const dueAmount = parseFloat(String(invoice.totalAmount)) - newTotalPaidAmount;
         invoice.paidAmount = newTotalPaidAmount;
         invoice.dueAmount = dueAmount < 0 ? 0 : dueAmount;
-        invoice.status = newTotalPaidAmount >= invoice.totalAmount ? invoice_entity_1.InvoiceStatus.PAID : invoice_entity_1.InvoiceStatus.PENDING;
+        invoice.status =
+            newTotalPaidAmount >= invoice.totalAmount
+                ? invoice_entity_1.InvoiceStatus.PAID
+                : invoice_entity_1.InvoiceStatus.PENDING;
         const updatedInvoice = await this.invoiceRepository.save(invoice);
         if (updatedInvoice.status === invoice_entity_1.InvoiceStatus.PAID) {
             await this.handleInvoicePaid(updatedInvoice);
@@ -350,7 +364,7 @@ let InvoiceService = class InvoiceService {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
             }), customer.companyName || '');
             await this.mailerTransport.sendMail({
                 to: customer.email,
@@ -394,7 +408,9 @@ let InvoiceService = class InvoiceService {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const lastInvoice = await this.invoiceRepository
             .createQueryBuilder('invoice')
-            .where('invoice.invoiceNumber LIKE :prefix', { prefix: `INV-${year}${month}%` })
+            .where('invoice.invoiceNumber LIKE :prefix', {
+            prefix: `INV-${year}${month}%`,
+        })
             .orderBy('invoice.id', 'DESC')
             .getOne();
         let sequence = 1;
@@ -406,16 +422,21 @@ let InvoiceService = class InvoiceService {
     }
     generateTransactionId() {
         const timestamp = Date.now();
-        const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const random = Math.floor(Math.random() * 10000)
+            .toString()
+            .padStart(4, '0');
+        const randomChars = Math.random()
+            .toString(36)
+            .substring(2, 8)
+            .toUpperCase();
         return `TXN${timestamp}${random}${randomChars}`;
     }
     async handleInvoicePaid(invoice) {
         try {
-            const fullInvoice = await this.invoiceRepository.findOne({
+            const fullInvoice = (await this.invoiceRepository.findOne({
                 where: { id: invoice.id },
                 relations: ['customer'],
-            });
+            }));
             if (!fullInvoice || !fullInvoice.customer) {
                 return;
             }

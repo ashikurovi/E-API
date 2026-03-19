@@ -87,7 +87,7 @@ let PaymentsService = class PaymentsService {
                 return {
                     success: true,
                     userId: user.id,
-                    companyId: user.companyId
+                    companyId: user.companyId,
                 };
             }
             else {
@@ -99,7 +99,7 @@ let PaymentsService = class PaymentsService {
         }
         return {
             success: false,
-            message: 'User activation failed'
+            message: 'User activation failed',
         };
     }
     async createCashOnDelivery(orderId, amount, address) {

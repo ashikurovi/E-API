@@ -50,8 +50,8 @@ let CartproductsService = class CartproductsService {
             where: {
                 id: dto.productId,
                 companyId,
-                deletedAt: (0, typeorm_2.IsNull)()
-            }
+                deletedAt: (0, typeorm_2.IsNull)(),
+            },
         });
         if (!product)
             throw new common_1.NotFoundException('Product not found');
@@ -151,7 +151,10 @@ let CartproductsService = class CartproductsService {
         const companyId = this.requestContextService.getCompanyId();
         const orderDto = {
             customerId: userId,
-            items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+            items: items.map((i) => ({
+                productId: i.product.id,
+                quantity: i.quantity,
+            })),
             paymentMethod: payload?.paymentMethod,
             pickupPoint: payload?.pickupPoint,
         };

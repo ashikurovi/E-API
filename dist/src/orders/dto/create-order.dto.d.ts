@@ -10,9 +10,9 @@ export declare class CreateOrderDto {
     customerAddress?: string;
     items: OrderItemDto[];
     shippingAddress?: string;
-    paymentMethod?: "DIRECT" | "COD";
+    paymentMethod?: 'DIRECT' | 'COD';
     pickupPoint?: any;
-    deliveryType?: "INSIDEDHAKA" | "OUTSIDEDHAKA";
+    deliveryType?: 'INSIDEDHAKA' | 'OUTSIDEDHAKA';
     ownerEmail?: string;
     ownerWhatsapp?: string;
 }

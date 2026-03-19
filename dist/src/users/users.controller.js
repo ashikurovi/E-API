@@ -38,11 +38,20 @@ let UsersController = class UsersController {
             throw new common_1.BadRequestException('Password is required');
         }
         const user = await this.usersService.create(createUserDto, companyId);
-        return { statusCode: common_1.HttpStatus.CREATED, message: 'User registered successfully', data: user };
+        return {
+            statusCode: common_1.HttpStatus.CREATED,
+            message: 'User registered successfully',
+            data: user,
+        };
     }
     async login(loginDto) {
         const { accessToken, user } = await this.usersService.login(loginDto.email, loginDto.password, loginDto.companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Login successful', accessToken, user };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Login successful',
+            accessToken,
+            user,
+        };
     }
     async create(body, companyIdFromQuery) {
         const companyId = body.companyId || companyIdFromQuery;
@@ -51,15 +60,27 @@ let UsersController = class UsersController {
             throw new common_1.BadRequestException('CompanyId is required');
         }
         const user = await this.usersService.create(createUserDto, companyId);
-        return { statusCode: common_1.HttpStatus.CREATED, message: 'User created', data: user };
+        return {
+            statusCode: common_1.HttpStatus.CREATED,
+            message: 'User created',
+            data: user,
+        };
     }
     async getCurrentUser(userId, companyId) {
         const user = await this.usersService.findOne(userId, companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Current user fetched', data: user };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Current user fetched',
+            data: user,
+        };
     }
     async updateCurrentUser(userId, updateUserDto, companyId) {
         const updated = await this.usersService.update(userId, updateUserDto, companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Profile updated', data: updated };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Profile updated',
+            data: updated,
+        };
     }
     async findAll(companyId, query) {
         const filters = {};
@@ -72,7 +93,11 @@ let UsersController = class UsersController {
         if (query.cancelledOrders)
             filters.cancelledOrders = query.cancelledOrders;
         const users = await this.usersService.findAll(companyId, Object.keys(filters).length ? filters : undefined);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Users list fetched', data: users };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Users list fetched',
+            data: users,
+        };
     }
     async findOne(id, companyId) {
         const user = await this.usersService.findOne(id, companyId);
@@ -80,7 +105,11 @@ let UsersController = class UsersController {
     }
     async update(id, updateUserDto, companyId) {
         const updated = await this.usersService.update(id, updateUserDto, companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: 'User updated', data: updated };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'User updated',
+            data: updated,
+        };
     }
     async ban(id, dto, companyId) {
         const banned = await this.usersService.ban(id, companyId, dto?.reason);
@@ -88,7 +117,11 @@ let UsersController = class UsersController {
     }
     async unban(id, companyId) {
         const unbanned = await this.usersService.unban(id, companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: 'User unbanned', data: unbanned };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'User unbanned',
+            data: unbanned,
+        };
     }
     async remove(id, companyId) {
         await this.usersService.remove(id, companyId);

@@ -33,7 +33,7 @@ let ThemeService = class ThemeService {
     async findAll() {
         try {
             return await this.themeRepository.find({
-                order: { createdAt: 'DESC' }
+                order: { createdAt: 'DESC' },
             });
         }
         catch (error) {
@@ -57,7 +57,8 @@ let ThemeService = class ThemeService {
             return await this.themeRepository.save(theme);
         }
         catch (error) {
-            if (error instanceof common_1.NotFoundException || error instanceof common_1.BadRequestException) {
+            if (error instanceof common_1.NotFoundException ||
+                error instanceof common_1.BadRequestException) {
                 throw error;
             }
             throw new common_1.InternalServerErrorException('Failed to update theme', error.message);
@@ -69,7 +70,8 @@ let ThemeService = class ThemeService {
             await this.themeRepository.remove(theme);
         }
         catch (error) {
-            if (error instanceof common_1.NotFoundException || error instanceof common_1.BadRequestException) {
+            if (error instanceof common_1.NotFoundException ||
+                error instanceof common_1.BadRequestException) {
                 throw error;
             }
             throw new common_1.InternalServerErrorException('Failed to delete theme', error.message);

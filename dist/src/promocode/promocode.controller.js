@@ -38,7 +38,11 @@ let PromocodeController = class PromocodeController {
             throw new common_1.BadRequestException('companyId is required');
         }
         const promo = await this.promocodeService.create(dto, companyId);
-        return { statusCode: common_1.HttpStatus.CREATED, message: 'Promocode created', data: promo };
+        return {
+            statusCode: common_1.HttpStatus.CREATED,
+            message: 'Promocode created',
+            data: promo,
+        };
     }
     async findAll(companyIdFromQuery, companyIdFromToken) {
         const companyId = companyIdFromQuery || companyIdFromToken;
@@ -62,7 +66,11 @@ let PromocodeController = class PromocodeController {
             throw new common_1.BadRequestException('companyId is required');
         }
         const promo = await this.promocodeService.update(id, dto, companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Promocode updated', data: promo };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Promocode updated',
+            data: promo,
+        };
     }
     async remove(id, companyIdFromQuery, companyIdFromToken) {
         const companyId = companyIdFromQuery || companyIdFromToken;
@@ -79,7 +87,11 @@ let PromocodeController = class PromocodeController {
         }
         const isActive = active === 'true';
         const promo = await this.promocodeService.toggleActive(id, isActive, companyId);
-        return { statusCode: common_1.HttpStatus.OK, message: `Promocode ${isActive ? 'activated' : 'disabled'}`, data: promo };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: `Promocode ${isActive ? 'activated' : 'disabled'}`,
+            data: promo,
+        };
     }
 };
 exports.PromocodeController = PromocodeController;

@@ -66,8 +66,7 @@ let MediaService = class MediaService {
         const rawName = path.basename(file.originalname, ext);
         const title = rawName.replace(/[^a-zA-Z0-9-_]/g, '_') || `image_${Date.now()}`;
         const size = this.formatFileSize(file.size);
-        const cdnUploadUrl = process.env.CDN_UPLOAD_URL ||
-            'https://e-cdn.vercel.app/upload/image';
+        const cdnUploadUrl = process.env.CDN_UPLOAD_URL || 'https://e-cdn.vercel.app/upload/image';
         let cdnUrl;
         try {
             const formData = new form_data_1.default();

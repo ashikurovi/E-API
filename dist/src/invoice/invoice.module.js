@@ -19,10 +19,7 @@ let InvoiceModule = class InvoiceModule {
 exports.InvoiceModule = InvoiceModule;
 exports.InvoiceModule = InvoiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([invoice_entity_1.Invoice, systemuser_entity_1.SystemUser]),
-            systemuser_module_1.SystemuserModule,
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([invoice_entity_1.Invoice, systemuser_entity_1.SystemUser]), systemuser_module_1.SystemuserModule],
         controllers: [invoice_controller_1.InvoiceController],
         providers: [invoice_service_1.InvoiceService],
         exports: [invoice_service_1.InvoiceService],

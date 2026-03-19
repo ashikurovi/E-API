@@ -63,7 +63,9 @@ let ImageSearchService = class ImageSearchService {
         return [];
     }
     computeSimilarity(imageLabels, product) {
-        const categoryName = product.category && typeof product.category === 'object' && 'name' in product.category
+        const categoryName = product.category &&
+            typeof product.category === 'object' &&
+            'name' in product.category
             ? product.category.name
             : '';
         const productText = [product.name, product.description || '', categoryName]

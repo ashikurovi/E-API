@@ -44,15 +44,15 @@ __decorate([
     __metadata("design:type", Array)
 ], Order.prototype, "items", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 12, scale: 2, default: 0 }),
+    (0, typeorm_1.Column)('decimal', { precision: 12, scale: 2, default: 0 }),
     __metadata("design:type", Number)
 ], Order.prototype, "totalAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 12, scale: 2, default: 0 }),
+    (0, typeorm_1.Column)('decimal', { precision: 12, scale: 2, default: 0 }),
     __metadata("design:type", Number)
 ], Order.prototype, "paidAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: "pending" }),
+    (0, typeorm_1.Column)({ default: 'pending' }),
     __metadata("design:type", String)
 ], Order.prototype, "status", void 0);
 __decorate([
@@ -60,7 +60,7 @@ __decorate([
     __metadata("design:type", String)
 ], Order.prototype, "paymentReference", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: "DIRECT" }),
+    (0, typeorm_1.Column)({ default: 'DIRECT' }),
     __metadata("design:type", String)
 ], Order.prototype, "paymentMethod", void 0);
 __decorate([
@@ -80,7 +80,7 @@ __decorate([
     __metadata("design:type", String)
 ], Order.prototype, "companyId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: "INSIDEDHAKA" }),
+    (0, typeorm_1.Column)({ default: 'INSIDEDHAKA' }),
     __metadata("design:type", String)
 ], Order.prototype, "deliveryType", void 0);
 __decorate([
@@ -104,6 +104,6 @@ __decorate([
     __metadata("design:type", Date)
 ], Order.prototype, "deletedAt", void 0);
 exports.Order = Order = __decorate([
-    (0, typeorm_1.Entity)("orders")
+    (0, typeorm_1.Entity)('orders')
 ], Order);
 //# sourceMappingURL=order.entity.js.map

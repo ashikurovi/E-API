@@ -62,11 +62,19 @@ let CartproductsController = class CartproductsController {
             throw new common_1.BadRequestException('Invalid companyId for cart item');
         }
         const updated = await this.cartproductsService.update(id, dto);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Cart item updated', data: updated };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Cart item updated',
+            data: updated,
+        };
     }
     async orderFromCart(userId, payload) {
         const data = await this.cartproductsService.orderFromUserCart(userId, payload);
-        return { statusCode: common_1.HttpStatus.CREATED, message: 'Order created from cart', data };
+        return {
+            statusCode: common_1.HttpStatus.CREATED,
+            message: 'Order created from cart',
+            data,
+        };
     }
 };
 exports.CartproductsController = CartproductsController;

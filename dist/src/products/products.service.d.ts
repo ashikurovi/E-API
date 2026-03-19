@@ -1,12 +1,12 @@
-import { Repository } from "typeorm";
-import { ProductEntity } from "./entities/product.entity";
-import { CreateProductDto } from "./dto/create-product.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
-import { CategoryEntity } from "../category/entities/category.entity";
-import { Order } from "../orders/entities/order.entity";
-import { ActivityLogService } from "../systemuser/activity-log.service";
-import { NotificationsService } from "../notifications/notifications.service";
-import { Cache } from "cache-manager";
+import { Repository } from 'typeorm';
+import { ProductEntity } from './entities/product.entity';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { CategoryEntity } from '../category/entities/category.entity';
+import { Order } from '../orders/entities/order.entity';
+import { ActivityLogService } from '../systemuser/activity-log.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { Cache } from 'cache-manager';
 export declare class ProductService {
     private productRepository;
     private categoryRepository;
@@ -28,7 +28,7 @@ export declare class ProductService {
         offset?: number;
         search?: string;
     }): Promise<ProductEntity[]>;
-    findPublicByCategory(companyId: string, categoryName?: string | undefined, categoryId?: number | undefined, options?: {
+    findPublicByCategory(companyId: string, categoryName?: string, categoryId?: number, options?: {
         limit?: number;
         offset?: number;
     }): Promise<ProductEntity[]>;

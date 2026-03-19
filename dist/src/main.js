@@ -18,7 +18,9 @@ async function bootstrap() {
         });
         await app.init();
         app.use(compression());
-        app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), { prefix: '/uploads/' });
+        app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), {
+            prefix: '/uploads/',
+        });
         app.useWebSocketAdapter(new platform_socket_io_1.IoAdapter(app));
         cachedApp = app;
     }

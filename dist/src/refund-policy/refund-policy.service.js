@@ -38,7 +38,9 @@ let RefundPolicyService = class RefundPolicyService {
         });
     }
     async findOne(id, companyId) {
-        const entity = await this.refundPolicyRepo.findOne({ where: { id, companyId, deletedAt: (0, typeorm_2.IsNull)() } });
+        const entity = await this.refundPolicyRepo.findOne({
+            where: { id, companyId, deletedAt: (0, typeorm_2.IsNull)() },
+        });
         if (!entity)
             throw new common_1.NotFoundException(`Refund Policy ${id} not found`);
         return entity;

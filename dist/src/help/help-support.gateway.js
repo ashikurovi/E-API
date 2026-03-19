@@ -17,7 +17,9 @@ const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
 let HelpSupportGateway = class HelpSupportGateway {
     emitNewReply(ticketId, reply) {
-        this.server?.to(`ticket:${ticketId}`).emit('help:reply', { ticketId, reply });
+        this.server
+            ?.to(`ticket:${ticketId}`)
+            .emit('help:reply', { ticketId, reply });
     }
     handleJoin(data, client) {
         if (data?.ticketId) {

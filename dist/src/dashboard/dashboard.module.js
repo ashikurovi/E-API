@@ -21,12 +21,7 @@ exports.DashboardModule = DashboardModule;
 exports.DashboardModule = DashboardModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([
-                order_entity_1.Order,
-                user_entity_1.User,
-                product_entity_1.ProductEntity,
-                category_entity_1.CategoryEntity,
-            ]),
+            typeorm_1.TypeOrmModule.forFeature([order_entity_1.Order, user_entity_1.User, product_entity_1.ProductEntity, category_entity_1.CategoryEntity]),
         ],
         controllers: [dashboard_controller_1.DashboardController],
         providers: [dashboard_service_1.DashboardService],

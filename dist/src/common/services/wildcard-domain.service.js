@@ -40,7 +40,8 @@ let WildcardDomainService = WildcardDomainService_1 = class WildcardDomainServic
             null);
     }
     get mainDomain() {
-        return this.configService.get('MAIN_DOMAIN') ?? 'console.innowavecart.app';
+        return (this.configService.get('MAIN_DOMAIN') ??
+            'console.innowavecart.app');
     }
     isConfigured() {
         return Boolean(this.zoneId &&
@@ -66,7 +67,9 @@ let WildcardDomainService = WildcardDomainService_1 = class WildcardDomainServic
                 params: { type: 'CNAME' },
             });
             const records = listRes.data?.result ?? [];
-            const zoneApex = mainDomain.includes('.') ? mainDomain.split('.').slice(-2).join('.') : 'innowavecart.app';
+            const zoneApex = mainDomain.includes('.')
+                ? mainDomain.split('.').slice(-2).join('.')
+                : 'innowavecart.app';
             const wildcardFqdn = `${wildcardName}.${zoneApex}`;
             const existing = Array.isArray(records)
                 ? records.find((r) => r.name === wildcardFqdn)
@@ -74,11 +77,19 @@ let WildcardDomainService = WildcardDomainService_1 = class WildcardDomainServic
             if (existing) {
                 if (existing.content === target) {
                     this.logger.log(`Cloudflare wildcard DNS already exists: ${wildcardName} -> ${target}`);
-                    return { done: true, message: 'Wildcard CNAME already exists', recordId: existing.id };
+                    return {
+                        done: true,
+                        message: 'Wildcard CNAME already exists',
+                        recordId: existing.id,
+                    };
                 }
                 await axios_1.default.patch(`https://api.cloudflare.com/client/v4/zones/${this.zoneId}/dns_records/${existing.id}`, { type: 'CNAME', content: target, ttl: 1, proxied: false }, { headers: { Authorization: `Bearer ${this.cloudflareToken}` } });
                 this.logger.log(`Cloudflare wildcard DNS updated: ${wildcardName} -> ${target}`);
-                return { done: true, message: 'Wildcard CNAME updated', recordId: existing.id };
+                return {
+                    done: true,
+                    message: 'Wildcard CNAME updated',
+                    recordId: existing.id,
+                };
             }
             const createRes = await axios_1.default.post(`https://api.cloudflare.com/client/v4/zones/${this.zoneId}/dns_records`, {
                 type: 'CNAME',
@@ -93,7 +104,8 @@ let WildcardDomainService = WildcardDomainService_1 = class WildcardDomainServic
                 },
             });
             if (!createRes.data?.success) {
-                const errMsg = createRes.data?.errors?.[0]?.message || JSON.stringify(createRes.data);
+                const errMsg = createRes.data?.errors?.[0]?.message ||
+                    JSON.stringify(createRes.data);
                 this.logger.error(`Cloudflare create wildcard failed: ${errMsg}`);
                 return { done: false, message: errMsg };
             }
@@ -108,7 +120,9 @@ let WildcardDomainService = WildcardDomainService_1 = class WildcardDomainServic
         }
     }
     async ensureRailwayWildcardDomain() {
-        if (!this.railwayToken || !this.railwayProjectId || !this.railwayServiceDomain) {
+        if (!this.railwayToken ||
+            !this.railwayProjectId ||
+            !this.railwayServiceDomain) {
             return {
                 done: false,
                 message: 'Missing RAILWAY_TOKEN, RAILWAY_PROJECT_ID, or RAILWAY_SERVICE_DOMAIN',
@@ -144,7 +158,8 @@ let WildcardDomainService = WildcardDomainService_1 = class WildcardDomainServic
             const errors = res.data?.errors;
             if (errors?.length) {
                 const errMsg = errors[0]?.message || JSON.stringify(errors);
-                if (errMsg.toLowerCase().includes('already') || errMsg.toLowerCase().includes('exist')) {
+                if (errMsg.toLowerCase().includes('already') ||
+                    errMsg.toLowerCase().includes('exist')) {
                     this.logger.log(`Railway wildcard domain already exists: ${wildcardDomain}`);
                     return { done: true, message: 'Wildcard domain already in Railway' };
                 }

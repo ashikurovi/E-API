@@ -28,11 +28,11 @@ __decorate([
     __metadata("design:type", String)
 ], ProductEntity.prototype, "sku", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2 }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "price", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "discountPrice", void 0);
 __decorate([
@@ -52,7 +52,11 @@ __decorate([
     __metadata("design:type", Boolean)
 ], ProductEntity.prototype, "isActive", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['draft', 'published', 'trashed'], default: 'published' }),
+    (0, typeorm_1.Column)({
+        type: 'enum',
+        enum: ['draft', 'published', 'trashed'],
+        default: 'published',
+    }),
     __metadata("design:type", String)
 ], ProductEntity.prototype, "status", void 0);
 __decorate([
@@ -68,23 +72,23 @@ __decorate([
     __metadata("design:type", Date)
 ], ProductEntity.prototype, "flashSellEndTime", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "flashSellPrice", void 0);
 __decorate([
-    (0, typeorm_1.Column)("int", { default: 0 }),
+    (0, typeorm_1.Column)('int', { default: 0 }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "stock", void 0);
 __decorate([
-    (0, typeorm_1.Column)("int", { default: 0 }),
+    (0, typeorm_1.Column)('int', { default: 0 }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "newStock", void 0);
 __decorate([
-    (0, typeorm_1.Column)("int", { default: 0 }),
+    (0, typeorm_1.Column)('int', { default: 0 }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "sold", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 12, scale: 2, default: 0 }),
+    (0, typeorm_1.Column)('decimal', { precision: 12, scale: 2, default: 0 }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "totalIncome", void 0);
 __decorate([
@@ -100,19 +104,19 @@ __decorate([
     __metadata("design:type", Array)
 ], ProductEntity.prototype, "variants", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "weight", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "length", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "breadth", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "width", void 0);
 __decorate([
@@ -144,6 +148,6 @@ __decorate([
     __metadata("design:type", Date)
 ], ProductEntity.prototype, "deletedAt", void 0);
 exports.ProductEntity = ProductEntity = __decorate([
-    (0, typeorm_1.Entity)("tbl_products")
+    (0, typeorm_1.Entity)('tbl_products')
 ], ProductEntity);
 //# sourceMappingURL=product.entity.js.map

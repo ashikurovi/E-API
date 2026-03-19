@@ -164,11 +164,11 @@ let QueryBuilderService = class QueryBuilderService {
             qb.andWhere('order.status = :status', { status: filters.status });
         }
         if (filters.fromDate) {
-            qb.andWhere('order.createdAt >= :fromDate', { fromDate: filters.fromDate });
+            qb.andWhere('order.createdAt >= :fromDate', {
+                fromDate: filters.fromDate,
+            });
         }
-        return qb
-            .orderBy('order.createdAt', 'DESC')
-            .getMany();
+        return qb.orderBy('order.createdAt', 'DESC').getMany();
     }
     async getOrderStats(companyId) {
         return this.orderRepo
@@ -206,7 +206,7 @@ let TransactionService = class TransactionService {
             }
             const order = new OrderEntity();
             order.companyId = companyId;
-            order.items = dto.items.map(item => ({
+            order.items = dto.items.map((item) => ({
                 productId: item.productId,
                 quantity: item.quantity,
                 unitPrice: 0,

@@ -1,9 +1,9 @@
-import { DataSource, Repository } from "typeorm";
-import { CreateCategoryDto } from "./dto/create-category.dto";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { CategoryEntity } from "./entities/category.entity";
-import { ActivityLogService } from "../systemuser/activity-log.service";
-import { Cache } from "cache-manager";
+import { DataSource, Repository } from 'typeorm';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryEntity } from './entities/category.entity';
+import { ActivityLogService } from '../systemuser/activity-log.service';
+import { Cache } from 'cache-manager';
 export declare class CategoryService {
     private categoryRepository;
     private readonly activityLogService;

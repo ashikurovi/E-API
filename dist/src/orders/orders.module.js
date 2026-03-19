@@ -28,12 +28,7 @@ exports.OrdersModule = OrdersModule = __decorate([
             payments_module_1.PaymentsModule,
             notifications_module_1.NotificationsModule,
             systemuser_module_1.SystemuserModule,
-            typeorm_1.TypeOrmModule.forFeature([
-                order_entity_1.Order,
-                order_status_history_entity_1.OrderStatusHistory,
-                product_entity_1.ProductEntity,
-                user_entity_1.User,
-            ]),
+            typeorm_1.TypeOrmModule.forFeature([order_entity_1.Order, order_status_history_entity_1.OrderStatusHistory, product_entity_1.ProductEntity, user_entity_1.User]),
         ],
         controllers: [orders_controller_1.OrderController, track_order_controller_1.TrackOrderController],
         providers: [orders_service_1.OrderService],

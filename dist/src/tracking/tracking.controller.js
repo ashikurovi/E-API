@@ -24,21 +24,21 @@ let TrackingController = class TrackingController {
         const data = await this.trackingService.trackAnywhere(trackingId);
         return {
             statusCode: 200,
-            message: data.courier !== "Unknown" ? "Tracking found" : "Tracking not found",
+            message: data.courier !== 'Unknown' ? 'Tracking found' : 'Tracking not found',
             data,
         };
     }
 };
 exports.TrackingController = TrackingController;
 __decorate([
-    (0, common_1.Get)(":trackingId"),
-    __param(0, (0, common_1.Param)("trackingId")),
+    (0, common_1.Get)(':trackingId'),
+    __param(0, (0, common_1.Param)('trackingId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TrackingController.prototype, "track", null);
 exports.TrackingController = TrackingController = __decorate([
-    (0, common_1.Controller)("track"),
+    (0, common_1.Controller)('track'),
     (0, public_decorator_1.Public)(),
     __metadata("design:paramtypes", [tracking_service_1.TrackingService])
 ], TrackingController);

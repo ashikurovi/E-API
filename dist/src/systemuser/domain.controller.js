@@ -31,7 +31,9 @@ let DomainController = class DomainController {
         const domain = body.customDomain
             ? this.systemUserService.normalizeCustomDomain(body.customDomain)
             : '';
-        const updated = await this.systemUserService.update(userId, { customDomain: domain || null });
+        const updated = await this.systemUserService.update(userId, {
+            customDomain: domain || null,
+        });
         this.systemUserService
             .provisionCustomDomainInRailway(userId)
             .catch((err) => console.error('provisionCustomDomainInRailway:', err));
@@ -92,7 +94,9 @@ let DomainController = class DomainController {
     }
     async toggleSubdomain(req, body) {
         const userId = req.user.userId;
-        const updated = await this.systemUserService.update(userId, { subdomainEnabled: body.enabled });
+        const updated = await this.systemUserService.update(userId, {
+            subdomainEnabled: body.enabled,
+        });
         return {
             success: true,
             message: 'Platform subdomain preference updated',

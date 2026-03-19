@@ -41,7 +41,9 @@ let BannerService = class BannerService {
         return this.bannerRepository.findOne({ where: { id, companyId } });
     }
     async update(id, dto, companyId) {
-        const banner = await this.bannerRepository.findOne({ where: { id, companyId } });
+        const banner = await this.bannerRepository.findOne({
+            where: { id, companyId },
+        });
         if (!banner) {
             throw new common_1.NotFoundException('Banner not found');
         }

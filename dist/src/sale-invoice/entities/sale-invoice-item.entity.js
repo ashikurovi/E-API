@@ -30,7 +30,9 @@ __decorate([
     __metadata("design:type", Number)
 ], SaleInvoiceItem.prototype, "invoiceId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => sale_invoice_entity_1.SaleInvoice, (invoice) => invoice.items, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => sale_invoice_entity_1.SaleInvoice, (invoice) => invoice.items, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)({ name: 'invoiceId' }),
     __metadata("design:type", sale_invoice_entity_1.SaleInvoice)
 ], SaleInvoiceItem.prototype, "invoice", void 0);

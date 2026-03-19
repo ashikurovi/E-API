@@ -27,27 +27,51 @@ let RefundPolicyController = class RefundPolicyController {
     }
     async create(createRefundPolicyDto, companyId) {
         const data = await this.refundPolicyService.create(createRefundPolicyDto, companyId);
-        return { status: 'success', message: 'Refund Policy created successfully', data };
+        return {
+            status: 'success',
+            message: 'Refund Policy created successfully',
+            data,
+        };
     }
     async findAll(companyId) {
         const data = await this.refundPolicyService.findAll(companyId);
-        return { status: 'success', message: 'Refund Policies fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Refund Policies fetched successfully',
+            data,
+        };
     }
     async findAllPublic(companyId) {
         const data = await this.refundPolicyService.findAll(companyId);
-        return { status: 'success', message: 'Refund Policies fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Refund Policies fetched successfully',
+            data,
+        };
     }
     async findOnePublic(id, companyId) {
         const data = await this.refundPolicyService.findOne(id, companyId);
-        return { status: 'success', message: 'Refund Policy fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Refund Policy fetched successfully',
+            data,
+        };
     }
     async findOne(id, companyId) {
         const data = await this.refundPolicyService.findOne(id, companyId);
-        return { status: 'success', message: 'Refund Policy fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Refund Policy fetched successfully',
+            data,
+        };
     }
     async update(id, updateRefundPolicyDto, companyId) {
         const data = await this.refundPolicyService.update(id, updateRefundPolicyDto, companyId);
-        return { status: 'success', message: 'Refund Policy updated successfully', data };
+        return {
+            status: 'success',
+            message: 'Refund Policy updated successfully',
+            data,
+        };
     }
     async remove(id, companyId) {
         await this.refundPolicyService.remove(id, companyId);

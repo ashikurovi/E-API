@@ -25,7 +25,9 @@ let PromocodeService = class PromocodeService {
         if (!companyId) {
             throw new common_1.NotFoundException('CompanyId is required');
         }
-        const exists = await this.promoRepo.findOne({ where: { code: dto.code, companyId } });
+        const exists = await this.promoRepo.findOne({
+            where: { code: dto.code, companyId },
+        });
         if (exists)
             throw new common_1.BadRequestException('Promocode already exists');
         const startsAt = dto.startsAt ? new Date(dto.startsAt) : undefined;
@@ -76,7 +78,9 @@ let PromocodeService = class PromocodeService {
     async update(id, dto, companyId) {
         const promo = await this.findOne(id, companyId);
         if (dto.code && dto.code !== promo.code) {
-            const exists = await this.promoRepo.findOne({ where: { code: dto.code, companyId } });
+            const exists = await this.promoRepo.findOne({
+                where: { code: dto.code, companyId },
+            });
             if (exists)
                 throw new common_1.BadRequestException('Promocode already exists');
             promo.code = dto.code;

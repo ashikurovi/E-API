@@ -1,4 +1,4 @@
-import { ProductImageDto } from "./product-image.dto";
+import { ProductImageDto } from './product-image.dto';
 export declare class UpdateProductDto {
     name?: string;
     sku?: string;

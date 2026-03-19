@@ -21,7 +21,10 @@ let CartproductsModule = class CartproductsModule {
 exports.CartproductsModule = CartproductsModule;
 exports.CartproductsModule = CartproductsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([cartproduct_entity_1.Cartproduct, product_entity_1.ProductEntity, user_entity_1.User]), orders_module_1.OrdersModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([cartproduct_entity_1.Cartproduct, product_entity_1.ProductEntity, user_entity_1.User]),
+            orders_module_1.OrdersModule,
+        ],
         controllers: [cartproducts_controller_1.CartproductsController],
         providers: [cartproducts_service_1.CartproductsService, request_context_service_1.RequestContextService],
     })

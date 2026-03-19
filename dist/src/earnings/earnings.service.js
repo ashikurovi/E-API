@@ -31,11 +31,11 @@ let EarningsService = class EarningsService {
             where: { deletedAt: (0, typeorm_2.IsNull)() },
             relations: ['customer'],
         });
-        const yearInvoices = allInvoices.filter(invoice => invoice.createdAt >= yearStart);
+        const yearInvoices = allInvoices.filter((invoice) => invoice.createdAt >= yearStart);
         const totalEarningsYTD = yearInvoices
-            .filter(invoice => invoice.status === invoice_entity_1.InvoiceStatus.PAID)
+            .filter((invoice) => invoice.status === invoice_entity_1.InvoiceStatus.PAID)
             .reduce((sum, invoice) => sum + Number(invoice.paidAmount || 0), 0);
-        const allPayments = allInvoices.map(invoice => ({
+        const allPayments = allInvoices.map((invoice) => ({
             amount: Number(invoice.totalAmount || 0),
             paidAmount: Number(invoice.paidAmount || 0),
             status: invoice.status,
@@ -60,8 +60,8 @@ let EarningsService = class EarningsService {
         const paidPercentage = totalAmount > 0 ? (paidAmount / totalAmount) * 100 : 0;
         const pendingPercentage = totalAmount > 0 ? (pendingAmount / totalAmount) * 100 : 0;
         const activeMarkets = new Set(allInvoices
-            .filter(invoice => invoice.status === invoice_entity_1.InvoiceStatus.PAID)
-            .map(invoice => invoice.customerId)).size;
+            .filter((invoice) => invoice.status === invoice_entity_1.InvoiceStatus.PAID)
+            .map((invoice) => invoice.customerId)).size;
         const monthlyEarnings = [];
         for (let i = 7; i >= 0; i--) {
             const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -92,14 +92,19 @@ let EarningsService = class EarningsService {
         allInvoices.forEach((invoice) => {
             if (invoice.status === invoice_entity_1.InvoiceStatus.PAID) {
                 const channel = invoice.amountType || 'Other';
-                channelBreakdown[channel] = (channelBreakdown[channel] || 0) + Number(invoice.paidAmount || 0);
+                channelBreakdown[channel] =
+                    (channelBreakdown[channel] || 0) + Number(invoice.paidAmount || 0);
             }
         });
         const lastMonthTotal = monthlyEarnings[monthlyEarnings.length - 1]?.totalPNL || 0;
         const previousMonthTotal = monthlyEarnings[monthlyEarnings.length - 2]?.totalPNL || 0;
-        const earningsDelta = previousMonthTotal > 0 ? ((lastMonthTotal - previousMonthTotal) / previousMonthTotal) * 100 : 0;
+        const earningsDelta = previousMonthTotal > 0
+            ? ((lastMonthTotal - previousMonthTotal) / previousMonthTotal) * 100
+            : 0;
         const avgDailyDelta = recentPayments.length > 0
-            ? ((avgDailyRevenue - (totalRecentRevenue / 60)) / (totalRecentRevenue / 60)) * 100
+            ? ((avgDailyRevenue - totalRecentRevenue / 60) /
+                (totalRecentRevenue / 60)) *
+                100
             : 0;
         return {
             kpis: {

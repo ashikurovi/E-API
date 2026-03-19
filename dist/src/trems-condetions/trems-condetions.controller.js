@@ -27,27 +27,50 @@ let TremsCondetionsController = class TremsCondetionsController {
     }
     async create(createTremsCondetionDto, companyId) {
         const data = await this.tremsCondetionsService.create(createTremsCondetionDto, companyId);
-        return { status: 'success', message: 'Terms & Conditions created successfully', data };
+        return {
+            status: 'success',
+            message: 'Terms & Conditions created successfully',
+            data,
+        };
     }
     async findPublic(companyId) {
         const data = await this.tremsCondetionsService.findPublic(companyId);
-        return { status: 'success', message: 'Terms & Conditions fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Terms & Conditions fetched successfully',
+            data,
+        };
     }
     async findAll(companyId) {
         const data = await this.tremsCondetionsService.findAll(companyId);
-        return { status: 'success', message: 'Terms & Conditions fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Terms & Conditions fetched successfully',
+            data,
+        };
     }
     async findOne(id, companyId) {
         const data = await this.tremsCondetionsService.findOne(id, companyId);
-        return { status: 'success', message: 'Terms & Conditions fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Terms & Conditions fetched successfully',
+            data,
+        };
     }
     async update(id, updateTremsCondetionDto, companyId) {
         const data = await this.tremsCondetionsService.update(id, updateTremsCondetionDto, companyId);
-        return { status: 'success', message: 'Terms & Conditions updated successfully', data };
+        return {
+            status: 'success',
+            message: 'Terms & Conditions updated successfully',
+            data,
+        };
     }
     async remove(id, companyId) {
         await this.tremsCondetionsService.remove(id, companyId);
-        return { status: 'success', message: 'Terms & Conditions removed successfully' };
+        return {
+            status: 'success',
+            message: 'Terms & Conditions removed successfully',
+        };
     }
 };
 exports.TremsCondetionsController = TremsCondetionsController;

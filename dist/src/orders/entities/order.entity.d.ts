@@ -1,4 +1,4 @@
-import { User } from "../../users/entities/user.entity";
+import { User } from '../../users/entities/user.entity';
 export declare class Order {
     id: number;
     customer?: User;
@@ -24,14 +24,14 @@ export declare class Order {
     }>;
     totalAmount: number;
     paidAmount: number;
-    status: "pending" | "processing" | "paid" | "shipped" | "delivered" | "cancelled" | "refunded";
+    status: 'pending' | 'processing' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
     paymentReference?: string;
-    paymentMethod: "DIRECT" | "COD";
+    paymentMethod: 'DIRECT' | 'COD';
     shippingTrackingId?: string;
     shippingProvider?: string;
     isPaid: boolean;
     companyId: string;
-    deliveryType: "INSIDEDHAKA" | "OUTSIDEDHAKA";
+    deliveryType: 'INSIDEDHAKA' | 'OUTSIDEDHAKA';
     deliveryNote?: string;
     cancelNote?: string;
     createdAt: Date;

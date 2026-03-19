@@ -114,6 +114,15 @@ export class EmailTemplates {
                   }
                 </div>
 
+                <div style="margin-top: 16px; text-align: center;">
+                  <a href="https://cart-nexoviasoft.vercel.app/" style="display: inline-block; padding: 10px 22px; border-radius: 999px; background: linear-gradient(90deg,#1d4ed8,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
+                    Login to Console
+                  </a>
+                  <p style="margin: 8px 0 0; font-size: 11px; color: #6b7280;">
+                    Or open: <span style="color:#1d4ed8;">https://cart-nexoviasoft.vercel.app/</span>
+                  </p>
+                </div>
+
                 ${
                   user.package
                     ? `
@@ -240,6 +249,15 @@ export class EmailTemplates {
                     </td>
                   </tr>
                 </table>
+
+                <div style="margin: 16px 0 0; text-align: center;">
+                  <a href="https://cart-nexoviasoft.vercel.app/" style="display: inline-block; padding: 10px 22px; border-radius: 999px; background: linear-gradient(90deg,#1d4ed8,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
+                    Login to Console
+                  </a>
+                  <p style="margin: 8px 0 0; font-size: 11px; color: #9ca3af;">
+                    Or open: <span style="color:#93c5fd;">https://cart-nexoviasoft.vercel.app/</span>
+                  </p>
+                </div>
 
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 18px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(55, 65, 81, 0.8); background-color: #020617;">
                   <tr>

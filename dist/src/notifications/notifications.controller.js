@@ -63,7 +63,9 @@ let NotificationsController = class NotificationsController {
     async getOrderStatusNotifications(queryCompanyId) {
         const companyId = queryCompanyId || this.requestContextService.getCompanyId();
         const allNotifications = await this.notificationsService.getNotificationsByCompany(companyId);
-        const orderNotifications = allNotifications.filter(n => n.type.startsWith('order_') || n.type === notification_entity_1.NotificationType.PAYMENT_RECEIVED || n.type === notification_entity_1.NotificationType.PAYMENT_FAILED);
+        const orderNotifications = allNotifications.filter((n) => n.type.startsWith('order_') ||
+            n.type === notification_entity_1.NotificationType.PAYMENT_RECEIVED ||
+            n.type === notification_entity_1.NotificationType.PAYMENT_FAILED);
         return {
             statusCode: common_1.HttpStatus.OK,
             message: 'Order status notifications retrieved successfully',
@@ -82,7 +84,8 @@ let NotificationsController = class NotificationsController {
     async getLowStockNotifications(queryCompanyId) {
         const companyId = queryCompanyId || this.requestContextService.getCompanyId();
         const allNotifications = await this.notificationsService.getNotificationsByCompany(companyId);
-        const stockNotifications = allNotifications.filter(n => n.type === notification_entity_1.NotificationType.LOW_STOCK || n.type === notification_entity_1.NotificationType.OUT_OF_STOCK);
+        const stockNotifications = allNotifications.filter((n) => n.type === notification_entity_1.NotificationType.LOW_STOCK ||
+            n.type === notification_entity_1.NotificationType.OUT_OF_STOCK);
         return {
             statusCode: common_1.HttpStatus.OK,
             message: 'Stock notifications retrieved successfully',

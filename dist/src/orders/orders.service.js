@@ -51,7 +51,7 @@ let OrderService = class OrderService {
             await this.statusHistoryRepo.save(history);
         }
         catch (err) {
-            console.error("[OrderService] Failed to save status history:", {
+            console.error('[OrderService] Failed to save status history:', {
                 orderId,
                 previousStatus,
                 newStatus,
@@ -67,12 +67,15 @@ let OrderService = class OrderService {
             await queryRunner.startTransaction();
             transactionStarted = true;
             let customer = null;
-            if (typeof createDto.customerId === "number") {
-                customer = await this.userRepo.findOneBy({ id: createDto.customerId, companyId });
+            if (typeof createDto.customerId === 'number') {
+                customer = await this.userRepo.findOneBy({
+                    id: createDto.customerId,
+                    companyId,
+                });
                 if (!customer)
-                    throw new common_1.NotFoundException("Customer not found");
+                    throw new common_1.NotFoundException('Customer not found');
                 if (customer.isBanned) {
-                    throw new common_1.BadRequestException("Your account has been banned. You cannot create orders.");
+                    throw new common_1.BadRequestException('Your account has been banned. You cannot create orders.');
                 }
             }
             else if (createDto.customerEmail?.trim()) {
@@ -80,18 +83,23 @@ let OrderService = class OrderService {
                     where: { email: createDto.customerEmail.trim(), companyId },
                 });
                 if (userByEmail?.isBanned) {
-                    throw new common_1.BadRequestException("Your account has been banned. You cannot create orders.");
+                    throw new common_1.BadRequestException('Your account has been banned. You cannot create orders.');
                 }
             }
             const order = new order_entity_1.Order();
             order.customer = customer ?? undefined;
-            order.customerName = customer?.name ?? createDto.customerName ?? "";
-            order.customerPhone = customer?.phone ?? createDto.customerPhone ?? "";
-            order.customerEmail = customer?.email ?? createDto.customerEmail ?? undefined;
-            order.customerAddress = createDto.shippingAddress ?? customer?.address ?? createDto.customerAddress ?? "";
-            order.status = "pending";
-            order.paymentMethod = createDto.paymentMethod ?? "DIRECT";
-            order.deliveryType = createDto.deliveryType ?? "INSIDEDHAKA";
+            order.customerName = customer?.name ?? createDto.customerName ?? '';
+            order.customerPhone = customer?.phone ?? createDto.customerPhone ?? '';
+            order.customerEmail =
+                customer?.email ?? createDto.customerEmail ?? undefined;
+            order.customerAddress =
+                createDto.shippingAddress ??
+                    customer?.address ??
+                    createDto.customerAddress ??
+                    '';
+            order.status = 'pending';
+            order.paymentMethod = createDto.paymentMethod ?? 'DIRECT';
+            order.deliveryType = createDto.deliveryType ?? 'INSIDEDHAKA';
             order.companyId = companyId;
             const items = [];
             let total = 0;
@@ -100,8 +108,8 @@ let OrderService = class OrderService {
                     where: {
                         id: it.productId,
                         companyId,
-                        deletedAt: (0, typeorm_2.IsNull)()
-                    }
+                        deletedAt: (0, typeorm_2.IsNull)(),
+                    },
                 });
                 if (!product)
                     throw new common_1.NotFoundException(`Product ${it.productId} not found`);
@@ -118,10 +126,10 @@ let OrderService = class OrderService {
                         id: product.id,
                         name: product.name,
                         sku: product.sku,
-                        images: product.images?.map(img => ({
+                        images: product.images?.map((img) => ({
                             url: img.url,
-                            isPrimary: img.isPrimary
-                        })) || []
+                            isPrimary: img.isPrimary,
+                        })) || [],
                     },
                     quantity: it.quantity,
                     unitPrice: +finalPrice,
@@ -135,22 +143,22 @@ let OrderService = class OrderService {
             const savedOrder = await queryRunner.manager.save(order);
             await queryRunner.commitTransaction();
             transactionStarted = false;
-            await this.addStatusHistory(savedOrder.id, null, "pending");
+            await this.addStatusHistory(savedOrder.id, null, 'pending');
             const fullOrder = await this.orderRepo.findOne({
                 where: { id: savedOrder.id, companyId },
-                relations: ["customer"],
+                relations: ['customer'],
             });
-            const customerAddress = fullOrder?.customerAddress ?? "";
+            const customerAddress = fullOrder?.customerAddress ?? '';
             let payment = null;
             try {
-                if (fullOrder.paymentMethod === "DIRECT") {
+                if (fullOrder.paymentMethod === 'DIRECT') {
                     payment = await this.paymentsService.initiateSslPayment({
                         amount: fullOrder ? +fullOrder.totalAmount : 0,
-                        currency: "BDT",
+                        currency: 'BDT',
                         orderId: fullOrder.id.toString(),
-                        customerName: fullOrder.customer?.name ?? fullOrder.customerName ?? "",
-                        customerEmail: fullOrder.customer?.email ?? "",
-                        customerPhone: fullOrder.customer?.phone ?? fullOrder.customerPhone ?? "",
+                        customerName: fullOrder.customer?.name ?? fullOrder.customerName ?? '',
+                        customerEmail: fullOrder.customer?.email ?? '',
+                        customerPhone: fullOrder.customer?.phone ?? fullOrder.customerPhone ?? '',
                         customerAddress,
                     });
                 }
@@ -183,7 +191,7 @@ let OrderService = class OrderService {
                 console.error('Error checking low stock after order:', stockNotifyErr);
             }
             try {
-                await this.sendOrderStatusEmail(fullOrder, "placed");
+                await this.sendOrderStatusEmail(fullOrder, 'placed');
             }
             catch (emailErr) {
                 console.error('Error sending order confirmation email:', emailErr);
@@ -197,7 +205,11 @@ let OrderService = class OrderService {
                         entityId: fullOrder.id,
                         entityName: `Order #${fullOrder.id}`,
                         description: `Created order #${fullOrder.id} - ${fullOrder.customerName || 'Customer'}`,
-                        newValues: { orderId: fullOrder.id, status: fullOrder.status, totalAmount: fullOrder.totalAmount },
+                        newValues: {
+                            orderId: fullOrder.id,
+                            status: fullOrder.status,
+                            totalAmount: fullOrder.totalAmount,
+                        },
                         performedByUserId,
                     });
                 }
@@ -235,7 +247,7 @@ let OrderService = class OrderService {
                 companyId,
                 deletedAt: (0, typeorm_2.IsNull)(),
             },
-            relations: ["customer"],
+            relations: ['customer'],
             order: { createdAt: 'DESC' },
         });
         if (!resellerId) {
@@ -257,16 +269,16 @@ let OrderService = class OrderService {
             where: { companyId, deletedAt: (0, typeorm_2.IsNull)() },
         });
         const total = orders.length;
-        const pending = orders.filter((o) => (o.status?.toLowerCase() || "") === "pending").length;
-        const processing = orders.filter((o) => (o.status?.toLowerCase() || "") === "processing").length;
-        const paid = orders.filter((o) => (o.status?.toLowerCase() || "") === "paid").length;
-        const shipped = orders.filter((o) => (o.status?.toLowerCase() || "") === "shipped").length;
-        const delivered = orders.filter((o) => (o.status?.toLowerCase() || "") === "delivered").length;
-        const cancelled = orders.filter((o) => (o.status?.toLowerCase() || "") === "cancelled").length;
-        const refunded = orders.filter((o) => (o.status?.toLowerCase() || "") === "refunded").length;
-        const paidOrders = orders.filter((o) => o.isPaid || o.status === "paid" || o.status === "delivered");
+        const pending = orders.filter((o) => (o.status?.toLowerCase() || '') === 'pending').length;
+        const processing = orders.filter((o) => (o.status?.toLowerCase() || '') === 'processing').length;
+        const paid = orders.filter((o) => (o.status?.toLowerCase() || '') === 'paid').length;
+        const shipped = orders.filter((o) => (o.status?.toLowerCase() || '') === 'shipped').length;
+        const delivered = orders.filter((o) => (o.status?.toLowerCase() || '') === 'delivered').length;
+        const cancelled = orders.filter((o) => (o.status?.toLowerCase() || '') === 'cancelled').length;
+        const refunded = orders.filter((o) => (o.status?.toLowerCase() || '') === 'refunded').length;
+        const paidOrders = orders.filter((o) => o.isPaid || o.status === 'paid' || o.status === 'delivered');
         const totalRevenue = paidOrders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
-        const unpaidCount = orders.filter((o) => !o.isPaid && o.status !== "cancelled" && o.status !== "refunded").length;
+        const unpaidCount = orders.filter((o) => !o.isPaid && o.status !== 'cancelled' && o.status !== 'refunded').length;
         return {
             total,
             pending,
@@ -285,28 +297,28 @@ let OrderService = class OrderService {
             where: {
                 customer: { id: customerId },
                 companyId,
-                deletedAt: (0, typeorm_2.IsNull)()
+                deletedAt: (0, typeorm_2.IsNull)(),
             },
-            relations: ["customer"],
-            order: { createdAt: 'DESC' }
+            relations: ['customer'],
+            order: { createdAt: 'DESC' },
         });
     }
     async findByTrackingId(trackingId) {
-        const trimmed = (trackingId || "").trim();
+        const trimmed = (trackingId || '').trim();
         if (!trimmed)
-            throw new common_1.BadRequestException("Tracking number is required");
+            throw new common_1.BadRequestException('Tracking number is required');
         const order = await this.orderRepo.findOne({
             where: {
                 shippingTrackingId: trimmed,
                 deletedAt: (0, typeorm_2.IsNull)(),
             },
-            relations: ["customer"],
+            relations: ['customer'],
         });
         if (!order)
-            throw new common_1.NotFoundException("Order not found for this tracking number");
+            throw new common_1.NotFoundException('Order not found for this tracking number');
         let statusHistory = await this.statusHistoryRepo.find({
             where: { orderId: order.id },
-            order: { createdAt: "ASC" },
+            order: { createdAt: 'ASC' },
         });
         if (statusHistory.length === 0 && order.createdAt) {
             statusHistory = [
@@ -321,15 +333,15 @@ let OrderService = class OrderService {
             ];
         }
         const statusMessages = {
-            pending: "Your order has been received and is awaiting confirmation.",
-            processing: "Your order is being prepared for shipment.",
-            paid: "Payment received. Your order is being processed.",
-            shipped: "Your order has been shipped and is on its way.",
-            delivered: "Your order has been delivered successfully.",
-            cancelled: "This order has been cancelled.",
-            refunded: "This order has been refunded.",
+            pending: 'Your order has been received and is awaiting confirmation.',
+            processing: 'Your order is being prepared for shipment.',
+            paid: 'Payment received. Your order is being processed.',
+            shipped: 'Your order has been shipped and is on its way.',
+            delivered: 'Your order has been delivered successfully.',
+            cancelled: 'This order has been cancelled.',
+            refunded: 'This order has been refunded.',
         };
-        const message = statusMessages[order.status] ?? "Your order status is being updated.";
+        const message = statusMessages[order.status] ?? 'Your order status is being updated.';
         return {
             orderId: order.id,
             status: order.status,
@@ -341,7 +353,7 @@ let OrderService = class OrderService {
             updatedAt: order.updatedAt,
             statusHistory,
             items: order.items?.map((it) => ({
-                name: it.product?.name ?? "Product",
+                name: it.product?.name ?? 'Product',
                 quantity: it.quantity,
             })) ?? [],
         };
@@ -351,28 +363,28 @@ let OrderService = class OrderService {
             where: {
                 id,
                 companyId,
-                deletedAt: (0, typeorm_2.IsNull)()
+                deletedAt: (0, typeorm_2.IsNull)(),
             },
-            relations: ["customer"]
+            relations: ['customer'],
         });
         if (!o)
-            throw new common_1.NotFoundException("Order not found");
+            throw new common_1.NotFoundException('Order not found');
         return o;
     }
     async recordBarcodeScan(trackingId, companyId, performedByUserId) {
-        const trimmed = (trackingId || "").trim();
+        const trimmed = (trackingId || '').trim();
         if (!trimmed)
-            throw new common_1.BadRequestException("Tracking number is required");
+            throw new common_1.BadRequestException('Tracking number is required');
         const order = await this.orderRepo.findOne({
             where: {
                 shippingTrackingId: trimmed,
                 companyId,
                 deletedAt: (0, typeorm_2.IsNull)(),
             },
-            relations: ["customer"],
+            relations: ['customer'],
         });
         if (!order)
-            throw new common_1.NotFoundException("Order not found for this tracking number");
+            throw new common_1.NotFoundException('Order not found for this tracking number');
         if (performedByUserId) {
             try {
                 await this.activityLogService.logActivity({
@@ -388,27 +400,31 @@ let OrderService = class OrderService {
                 });
             }
             catch (e) {
-                console.error("Failed to log barcode scan:", e);
+                console.error('Failed to log barcode scan:', e);
             }
         }
-        return { orderId: order.id, trackingId: trimmed, message: "Barcode scan recorded" };
+        return {
+            orderId: order.id,
+            trackingId: trimmed,
+            message: 'Barcode scan recorded',
+        };
     }
     async completeOrder(id, companyId, paymentRef, performedByUserId) {
         const order = await this.findOne(id, companyId);
         if (!order)
-            throw new common_1.NotFoundException("Order not found");
-        if (order.status === "cancelled")
-            throw new common_1.BadRequestException("Order cancelled");
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status === 'cancelled')
+            throw new common_1.BadRequestException('Order cancelled');
         const previousStatus = order.status;
-        await this.addStatusHistory(order.id, order.status, "paid");
+        await this.addStatusHistory(order.id, order.status, 'paid');
         order.isPaid = true;
         order.paidAmount = Number(order.totalAmount);
         order.paymentReference = paymentRef ?? undefined;
-        order.status = "paid";
+        order.status = 'paid';
         await this.orderRepo.save(order);
         for (const it of order.items) {
             const product = await this.productRepo.findOne({
-                where: { id: it.productId, companyId }
+                where: { id: it.productId, companyId },
             });
             if (product) {
                 product.sold += it.quantity;
@@ -443,15 +459,15 @@ let OrderService = class OrderService {
             const now = new Date();
             const hoursDiff = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
             if (hoursDiff > 24) {
-                throw new common_1.BadRequestException("Order can only be cancelled within 24 hours of placement");
+                throw new common_1.BadRequestException('Order can only be cancelled within 24 hours of placement');
             }
         }
-        if (order.status === "cancelled")
-            throw new common_1.BadRequestException("Already cancelled");
-        if (order.status === "refunded")
-            throw new common_1.BadRequestException("Already refunded");
-        await this.addStatusHistory(order.id, order.status, "cancelled", comment);
-        order.status = "cancelled";
+        if (order.status === 'cancelled')
+            throw new common_1.BadRequestException('Already cancelled');
+        if (order.status === 'refunded')
+            throw new common_1.BadRequestException('Already refunded');
+        await this.addStatusHistory(order.id, order.status, 'cancelled', comment);
+        order.status = 'cancelled';
         if (comment) {
             order.cancelNote = comment;
         }
@@ -470,7 +486,7 @@ let OrderService = class OrderService {
         }
         if (order.customer?.id) {
             const user = await this.userRepo.findOne({
-                where: { id: order.customer.id, companyId }
+                where: { id: order.customer.id, companyId },
             });
             if (user) {
                 user.cancelledOrdersCount = (user.cancelledOrdersCount ?? 0) + 1;
@@ -481,7 +497,7 @@ let OrderService = class OrderService {
                     if (cancelRatio >= 0.95) {
                         user.isBanned = true;
                         user.bannedAt = new Date();
-                        user.banReason = "Auto-banned: cancel ratio exceeds 95%";
+                        user.banReason = 'Auto-banned: cancel ratio exceeds 95%';
                         await this.userRepo.save(user);
                     }
                 }
@@ -505,32 +521,32 @@ let OrderService = class OrderService {
                 console.error('Failed to log activity:', e);
             }
         }
-        return { message: "Order cancelled" };
+        return { message: 'Order cancelled' };
     }
     generateTrackingId(orderId) {
-        const suffix = (0, crypto_1.randomBytes)(4).toString("hex").toUpperCase();
+        const suffix = (0, crypto_1.randomBytes)(4).toString('hex').toUpperCase();
         return `SC-${orderId}-${suffix}`;
     }
     async processOrder(id, companyId, performedByUserId) {
         const order = await this.findOne(id, companyId);
         if (!order)
-            throw new common_1.NotFoundException("Order not found");
-        if (order.status === "cancelled")
-            throw new common_1.BadRequestException("Order cancelled");
-        if (order.status === "processing")
-            throw new common_1.BadRequestException("Order is already being processed");
-        await this.addStatusHistory(order.id, order.status, "processing");
-        order.status = "processing";
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status === 'cancelled')
+            throw new common_1.BadRequestException('Order cancelled');
+        if (order.status === 'processing')
+            throw new common_1.BadRequestException('Order is already being processed');
+        await this.addStatusHistory(order.id, order.status, 'processing');
+        order.status = 'processing';
         if (!order.shippingTrackingId) {
             order.shippingTrackingId = this.generateTrackingId(order.id);
-            order.shippingProvider = order.shippingProvider || "Own Delivery";
+            order.shippingProvider = order.shippingProvider || 'Own Delivery';
         }
         await this.orderRepo.save(order);
         try {
-            await this.sendOrderStatusEmail(order, "processing");
+            await this.sendOrderStatusEmail(order, 'processing');
         }
         catch (e) {
-            console.error("Failed to send processing email:", e);
+            console.error('Failed to send processing email:', e);
         }
         if (performedByUserId) {
             try {
@@ -555,27 +571,27 @@ let OrderService = class OrderService {
     async deliverOrder(id, companyId, systemUserId, permissions, comment, markAsPaid, performedByUserId) {
         const order = await this.findOne(id, companyId);
         if (!order)
-            throw new common_1.NotFoundException("Order not found");
-        if (order.status === "cancelled")
-            throw new common_1.BadRequestException("Order cancelled");
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status === 'cancelled')
+            throw new common_1.BadRequestException('Order cancelled');
         const previousStatus = order.status;
-        await this.addStatusHistory(order.id, order.status, "delivered", comment);
-        order.status = "delivered";
+        await this.addStatusHistory(order.id, order.status, 'delivered', comment);
+        order.status = 'delivered';
         if (comment)
             order.deliveryNote = comment;
         order.isPaid = true;
         order.paidAmount = Number(order.totalAmount);
         await this.orderRepo.save(order);
         try {
-            await this.sendOrderStatusEmail(order, "delivered");
+            await this.sendOrderStatusEmail(order, 'delivered');
         }
         catch (e) {
-            console.error("Failed to send delivered email:", e);
+            console.error('Failed to send delivered email:', e);
         }
         const LOW_STOCK_THRESHOLD = +(process.env.LOW_STOCK_THRESHOLD ?? 5);
         for (const it of order.items) {
             const product = await this.productRepo.findOne({
-                where: { id: it.productId, companyId }
+                where: { id: it.productId, companyId },
             });
             if (!product)
                 continue;
@@ -590,7 +606,7 @@ let OrderService = class OrderService {
         }
         if (order.customer?.id) {
             const user = await this.userRepo.findOne({
-                where: { id: order.customer.id, companyId }
+                where: { id: order.customer.id, companyId },
             });
             if (user) {
                 user.successfulOrdersCount = (user.successfulOrdersCount ?? 0) + 1;
@@ -623,23 +639,25 @@ let OrderService = class OrderService {
     async shipOrder(id, companyId, trackingId, provider, performedByUserId) {
         const order = await this.findOne(id, companyId);
         if (!order)
-            throw new common_1.NotFoundException("Order not found");
-        if (order.status === "cancelled")
-            throw new common_1.BadRequestException("Order cancelled");
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status === 'cancelled')
+            throw new common_1.BadRequestException('Order cancelled');
         const previousStatus = order.status;
-        const wasAlreadyShipped = order.status === "shipped";
-        await this.addStatusHistory(order.id, order.status, "shipped");
-        order.status = "shipped";
-        const finalTrackingId = trackingId || order.shippingTrackingId || this.generateTrackingId(order.id);
-        const finalProvider = provider || order.shippingProvider || "Custom";
+        const wasAlreadyShipped = order.status === 'shipped';
+        await this.addStatusHistory(order.id, order.status, 'shipped');
+        order.status = 'shipped';
+        const finalTrackingId = trackingId ||
+            order.shippingTrackingId ||
+            this.generateTrackingId(order.id);
+        const finalProvider = provider || order.shippingProvider || 'Custom';
         order.shippingTrackingId = finalTrackingId;
         order.shippingProvider = finalProvider;
         await this.orderRepo.save(order);
         try {
-            await this.sendOrderStatusEmail(order, "shipped");
+            await this.sendOrderStatusEmail(order, 'shipped');
         }
         catch (e) {
-            console.error("Failed to send shipped email:", e);
+            console.error('Failed to send shipped email:', e);
         }
         if (performedByUserId) {
             try {
@@ -651,7 +669,11 @@ let OrderService = class OrderService {
                     entityName: `Order #${order.id}`,
                     description: `Order #${order.id} shipped${finalTrackingId ? ` - Tracking: ${finalTrackingId}` : ''}`,
                     oldValues: { status: previousStatus },
-                    newValues: { status: 'shipped', trackingId: finalTrackingId, provider: finalProvider },
+                    newValues: {
+                        status: 'shipped',
+                        trackingId: finalTrackingId,
+                        provider: finalProvider,
+                    },
                     performedByUserId,
                 });
             }
@@ -663,7 +685,7 @@ let OrderService = class OrderService {
             const LOW_STOCK_THRESHOLD = +(process.env.LOW_STOCK_THRESHOLD ?? 5);
             for (const it of order.items) {
                 const product = await this.productRepo.findOne({
-                    where: { id: it.productId, companyId }
+                    where: { id: it.productId, companyId },
                 });
                 if (!product)
                     continue;
@@ -682,13 +704,13 @@ let OrderService = class OrderService {
     async refundOrder(id, companyId, performedByUserId) {
         const order = await this.findOne(id, companyId);
         if (!order)
-            throw new common_1.NotFoundException("Order not found");
-        if (order.status === "refunded")
-            throw new common_1.BadRequestException("Already refunded");
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status === 'refunded')
+            throw new common_1.BadRequestException('Already refunded');
         const previousStatus = order.status;
-        const wasCancelled = order.status === "cancelled";
-        await this.addStatusHistory(order.id, order.status, "refunded");
-        order.status = "refunded";
+        const wasCancelled = order.status === 'cancelled';
+        await this.addStatusHistory(order.id, order.status, 'refunded');
+        order.status = 'refunded';
         order.isPaid = false;
         await this.orderRepo.save(order);
         if (!wasCancelled) {
@@ -728,16 +750,16 @@ let OrderService = class OrderService {
     async recordPartialPayment(id, companyId, amount, paymentRef, performedByUserId) {
         const order = await this.findOne(id, companyId);
         if (!order)
-            throw new common_1.NotFoundException("Order not found");
-        if (order.status === "cancelled")
-            throw new common_1.BadRequestException("Order cancelled");
-        if (order.status === "refunded")
-            throw new common_1.BadRequestException("Order refunded");
+            throw new common_1.NotFoundException('Order not found');
+        if (order.status === 'cancelled')
+            throw new common_1.BadRequestException('Order cancelled');
+        if (order.status === 'refunded')
+            throw new common_1.BadRequestException('Order refunded');
         if (order.isPaid)
-            throw new common_1.BadRequestException("Order is already fully paid");
+            throw new common_1.BadRequestException('Order is already fully paid');
         const numAmount = Number(amount);
         if (isNaN(numAmount) || numAmount <= 0) {
-            throw new common_1.BadRequestException("Amount must be a positive number");
+            throw new common_1.BadRequestException('Amount must be a positive number');
         }
         const totalAmount = Number(order.totalAmount);
         const currentPaid = Number(order.paidAmount ?? 0);
@@ -751,8 +773,8 @@ let OrderService = class OrderService {
             order.paymentReference = paymentRef;
         if (newPaid >= totalAmount) {
             order.isPaid = true;
-            order.status = "paid";
-            await this.addStatusHistory(order.id, previousStatus, "paid", `Partial payment completed. Total paid: ${newPaid}`);
+            order.status = 'paid';
+            await this.addStatusHistory(order.id, previousStatus, 'paid', `Partial payment completed. Total paid: ${newPaid}`);
         }
         else {
             await this.addStatusHistory(order.id, previousStatus, previousStatus, `Partial payment: +${numAmount}. Paid: ${newPaid}/${totalAmount}`);
@@ -773,7 +795,7 @@ let OrderService = class OrderService {
                 });
             }
             catch (e) {
-                console.error("Failed to log activity:", e);
+                console.error('Failed to log activity:', e);
             }
         }
         return this.findOne(id, companyId);
@@ -792,12 +814,12 @@ let OrderService = class OrderService {
             }
         }
         catch (e) {
-            console.error("Failed to save low stock notification:", e);
+            console.error('Failed to save low stock notification:', e);
         }
         try {
             const adminEmail = process.env.ADMIN_EMAIL;
             if (!adminEmail) {
-                console.warn("ADMIN_EMAIL is not set. Low stock alert:", {
+                console.warn('ADMIN_EMAIL is not set. Low stock alert:', {
                     productId: product.id,
                     sku: product.sku,
                     stock: product.stock,
@@ -810,26 +832,26 @@ let OrderService = class OrderService {
                 subject: `Low Stock Alert: ${productName} (${sku})`,
                 text: `Product ${productName} (${sku}) is low on stock.\nCurrent stock: ${stock}\nThreshold: ${process.env.LOW_STOCK_THRESHOLD ?? 5}`,
             });
-            if (process.env.NODE_ENV !== "production") {
-                console.log("Low stock email sent:", info?.id);
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('Low stock email sent:', info?.id);
             }
         }
         catch (e) {
-            console.error("Failed to send low stock email:", e);
+            console.error('Failed to send low stock email:', e);
         }
     }
     async sendOrderStatusEmail(order, status) {
         const email = order.customer?.email ?? order.customerEmail;
         if (!email)
             return;
-        const customerName = order.customer?.name ?? order.customerName ?? "Customer";
+        const customerName = order.customer?.name ?? order.customerName ?? 'Customer';
         const productList = order.items
-            ?.map((it) => `${it.product?.name ?? "Product"} x ${it.quantity}`)
-            .join("<br>") ?? "";
+            ?.map((it) => `${it.product?.name ?? 'Product'} x ${it.quantity}`)
+            .join('<br>') ?? '';
         try {
             let subject;
             let html;
-            let storeName = "";
+            let storeName = '';
             try {
                 if (order.companyId) {
                     const companyUser = await this.systemuserService.findOneByCompanyId(order.companyId);
@@ -839,28 +861,28 @@ let OrderService = class OrderService {
                 }
             }
             catch (e) {
-                console.error("Failed to resolve store name for order email:", e);
+                console.error('Failed to resolve store name for order email:', e);
             }
             switch (status) {
-                case "placed":
+                case 'placed':
                     subject = `Order #${order.id} received - thank you for your order`;
                     html = (0, order_status_email_templates_1.generateOrderPlacedEmail)(customerName, order.id, Number(order.totalAmount), productList, storeName);
                     break;
-                case "processing": {
+                case 'processing': {
                     subject = `Order #${order.id} is now being processed`;
                     const frontendBase = 'https://xinzo.shop';
                     const trackingId = order.shippingTrackingId ?? undefined;
                     const trackingUrl = frontendBase && trackingId
-                        ? `${frontendBase.replace(/\/+$/, "")}/order-tracking?trackingId=${encodeURIComponent(trackingId)}`
+                        ? `${frontendBase.replace(/\/+$/, '')}/order-tracking?trackingId=${encodeURIComponent(trackingId)}`
                         : undefined;
                     html = (0, order_status_email_templates_1.generateOrderProcessingEmail)(customerName, order.id, storeName, trackingUrl, trackingId);
                     break;
                 }
-                case "shipped":
+                case 'shipped':
                     subject = `Order #${order.id} has been shipped`;
                     html = (0, order_status_email_templates_1.generateOrderShippedEmail)(customerName, order.id, order.shippingTrackingId ?? undefined, order.shippingProvider ?? undefined, storeName);
                     break;
-                case "delivered":
+                case 'delivered':
                     subject = `Order #${order.id} has been delivered`;
                     html = (0, order_status_email_templates_1.generateOrderDeliveredEmail)(customerName, order.id, storeName);
                     break;
@@ -868,7 +890,9 @@ let OrderService = class OrderService {
                     return;
             }
             await this.mailer.sendMail({
-                from: process.env.SMTP_FROM ?? process.env.SMTP_USER ?? "noreply@innowavecart.com",
+                from: process.env.SMTP_FROM ??
+                    process.env.SMTP_USER ??
+                    'noreply@innowavecart.com',
                 to: email,
                 subject,
                 html,
@@ -880,10 +904,10 @@ let OrderService = class OrderService {
     }
     async sendOwnerNotifications(createDto, order) {
         try {
-            const customerName = order.customer?.name ?? order.customerName ?? "N/A";
-            const customerPhone = order.customer?.phone ?? order.customerPhone ?? "N/A";
+            const customerName = order.customer?.name ?? order.customerName ?? 'N/A';
+            const customerPhone = order.customer?.phone ?? order.customerPhone ?? 'N/A';
             const productList = order.items
-                .map(item => `${item.product?.name || 'Product'} x ${item.quantity} = ${item.totalPrice} BDT`)
+                .map((item) => `${item.product?.name || 'Product'} x ${item.quantity} = ${item.totalPrice} BDT`)
                 .join('\n');
             const message = `New Order Received!
 
@@ -908,7 +932,7 @@ Please process this order promptly.`;
             }
         }
         catch (error) {
-            console.error("Failed to send owner notifications:", error);
+            console.error('Failed to send owner notifications:', error);
         }
     }
     async softDelete(id, companyId, performedByUserId) {
@@ -916,7 +940,7 @@ Please process this order promptly.`;
             where: {
                 id,
                 companyId,
-                deletedAt: (0, typeorm_2.IsNull)()
+                deletedAt: (0, typeorm_2.IsNull)(),
             },
         });
         if (!order)

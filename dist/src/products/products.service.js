@@ -45,26 +45,26 @@ let ProductService = class ProductService {
     }
     async create(createDto, companyId, performedByUserId, resellerId) {
         if (!companyId) {
-            throw new common_1.BadRequestException("CompanyId is required");
+            throw new common_1.BadRequestException('CompanyId is required');
         }
         let sku = createDto.sku?.trim();
         if (!sku) {
             sku = `PROD-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
         }
         const existingProduct = await this.productRepository.findOne({
-            where: { sku, companyId }
+            where: { sku, companyId },
         });
         if (existingProduct) {
             throw new common_1.BadRequestException(`Product with SKU "${sku}" already exists`);
         }
         if (createDto.categoryId == null || createDto.categoryId === undefined) {
-            throw new common_1.BadRequestException("Category is required");
+            throw new common_1.BadRequestException('Category is required');
         }
         const category = await this.categoryRepository.findOne({
-            where: { id: createDto.categoryId, companyId }
+            where: { id: createDto.categoryId, companyId },
         });
         if (!category)
-            throw new common_1.NotFoundException("Category not found");
+            throw new common_1.NotFoundException('Category not found');
         try {
             const product = this.productRepository.create({
                 name: createDto.name,
@@ -78,8 +78,12 @@ let ProductService = class ProductService {
                 images: createDto.images,
                 thumbnail: createDto.thumbnail,
                 isFlashSell: createDto.isFlashSell ?? false,
-                flashSellStartTime: createDto.flashSellStartTime ? new Date(createDto.flashSellStartTime) : undefined,
-                flashSellEndTime: createDto.flashSellEndTime ? new Date(createDto.flashSellEndTime) : undefined,
+                flashSellStartTime: createDto.flashSellStartTime
+                    ? new Date(createDto.flashSellStartTime)
+                    : undefined,
+                flashSellEndTime: createDto.flashSellEndTime
+                    ? new Date(createDto.flashSellEndTime)
+                    : undefined,
                 flashSellPrice: createDto.flashSellPrice,
                 stock: createDto.stock ?? 0,
                 newStock: createDto.newStock ?? 0,
@@ -147,7 +151,7 @@ let ProductService = class ProductService {
         catch (e) {
             console.error('Cache get error:', e);
         }
-        const relations = options?.relations || ["category"];
+        const relations = options?.relations || ['category'];
         const where = { deletedAt: (0, typeorm_2.IsNull)(), companyId };
         if (options?.status) {
             where.status = options.status;
@@ -160,7 +164,9 @@ let ProductService = class ProductService {
         }
         const result = await this.productRepository.find({
             where,
-            relations: relations.includes("category") ? relations : [...relations, "category"],
+            relations: relations.includes('category')
+                ? relations
+                : [...relations, 'category'],
         });
         try {
             await this.cacheManager.set(cacheKey, result, 300 * 1000);
@@ -354,7 +360,7 @@ let ProductService = class ProductService {
         let categoryIdToFilter;
         if (categoryId) {
             const category = await this.categoryRepository.findOne({
-                where: { id: categoryId, companyId, deletedAt: (0, typeorm_2.IsNull)() }
+                where: { id: categoryId, companyId, deletedAt: (0, typeorm_2.IsNull)() },
             });
             if (!category) {
                 return [];
@@ -363,7 +369,7 @@ let ProductService = class ProductService {
         }
         else if (categoryName) {
             const category = await this.categoryRepository.findOne({
-                where: { name: categoryName, companyId, deletedAt: (0, typeorm_2.IsNull)() }
+                where: { name: categoryName, companyId, deletedAt: (0, typeorm_2.IsNull)() },
             });
             if (!category) {
                 return [];
@@ -373,13 +379,15 @@ let ProductService = class ProductService {
         else {
             return [];
         }
-        const relations = options?.relations || ["category"];
-        const finalRelations = relations.includes("category") ? relations : [...relations, "category"];
+        const relations = options?.relations || ['category'];
+        const finalRelations = relations.includes('category')
+            ? relations
+            : [...relations, 'category'];
         const result = await this.productRepository.find({
             where: {
                 deletedAt: (0, typeorm_2.IsNull)(),
                 companyId,
-                category: { id: categoryIdToFilter }
+                category: { id: categoryIdToFilter },
             },
             relations: finalRelations,
         });
@@ -398,10 +406,10 @@ let ProductService = class ProductService {
         }
         const product = await this.productRepository.findOne({
             where,
-            relations: options?.relations || ["category"],
+            relations: options?.relations || ['category'],
         });
         if (!product)
-            throw new common_1.NotFoundException("Product not found");
+            throw new common_1.NotFoundException('Product not found');
         return product;
     }
     async update(id, updateDto, companyId, performedByUserId) {
@@ -418,7 +426,7 @@ let ProductService = class ProductService {
             product.name = updateDto.name;
         if (updateDto.sku) {
             const existingProduct = await this.productRepository.findOne({
-                where: { sku: updateDto.sku, companyId }
+                where: { sku: updateDto.sku, companyId },
             });
             if (existingProduct && existingProduct.id !== id) {
                 throw new common_1.BadRequestException(`Product with SKU "${updateDto.sku}" already exists`);
@@ -442,10 +450,14 @@ let ProductService = class ProductService {
         if (updateDto.isFlashSell !== undefined)
             product.isFlashSell = updateDto.isFlashSell;
         if (updateDto.flashSellStartTime !== undefined) {
-            product.flashSellStartTime = updateDto.flashSellStartTime ? new Date(updateDto.flashSellStartTime) : undefined;
+            product.flashSellStartTime = updateDto.flashSellStartTime
+                ? new Date(updateDto.flashSellStartTime)
+                : undefined;
         }
         if (updateDto.flashSellEndTime !== undefined) {
-            product.flashSellEndTime = updateDto.flashSellEndTime ? new Date(updateDto.flashSellEndTime) : undefined;
+            product.flashSellEndTime = updateDto.flashSellEndTime
+                ? new Date(updateDto.flashSellEndTime)
+                : undefined;
         }
         if (updateDto.flashSellPrice !== undefined)
             product.flashSellPrice = updateDto.flashSellPrice;
@@ -466,10 +478,10 @@ let ProductService = class ProductService {
             product.isLowStock = updateDto.isLowStock;
         if (updateDto.categoryId) {
             const category = await this.categoryRepository.findOne({
-                where: { id: updateDto.categoryId, companyId }
+                where: { id: updateDto.categoryId, companyId },
             });
             if (!category)
-                throw new common_1.NotFoundException("Category not found");
+                throw new common_1.NotFoundException('Category not found');
             product.category = category;
         }
         if (updateDto.sizes !== undefined)
@@ -552,7 +564,7 @@ let ProductService = class ProductService {
             where: { id, companyId, deletedAt: (0, typeorm_2.IsNull)() },
         });
         if (!product)
-            throw new common_1.NotFoundException("Product not found");
+            throw new common_1.NotFoundException('Product not found');
         product.status = 'trashed';
         product.deletedAt = new Date();
         await this.productRepository.save(product);
@@ -581,7 +593,7 @@ let ProductService = class ProductService {
                 companyId,
                 ...(resellerId ? { resellerId } : {}),
             },
-            relations: ["category"],
+            relations: ['category'],
             withDeleted: true,
         });
     }
@@ -593,19 +605,19 @@ let ProductService = class ProductService {
                 companyId,
                 ...(resellerId ? { resellerId } : {}),
             },
-            relations: ["category"],
+            relations: ['category'],
         });
     }
     async recoverFromTrash(id, companyId) {
         const product = await this.productRepository.findOne({
             where: { id, companyId },
-            relations: ["category"],
+            relations: ['category'],
             withDeleted: true,
         });
         if (!product)
-            throw new common_1.NotFoundException("Product not found");
+            throw new common_1.NotFoundException('Product not found');
         if (product.status !== 'trashed') {
-            throw new common_1.BadRequestException("Product is not in trash");
+            throw new common_1.BadRequestException('Product is not in trash');
         }
         await this.productRepository
             .createQueryBuilder()
@@ -616,10 +628,10 @@ let ProductService = class ProductService {
             .execute();
         const recovered = await this.productRepository.findOne({
             where: { id, companyId },
-            relations: ["category"],
+            relations: ['category'],
         });
         if (!recovered)
-            throw new common_1.NotFoundException("Product not found after recovery");
+            throw new common_1.NotFoundException('Product not found after recovery');
         await this.clearCache(companyId);
         return recovered;
     }
@@ -629,7 +641,7 @@ let ProductService = class ProductService {
             withDeleted: true,
         });
         if (!product)
-            throw new common_1.NotFoundException("Product not found in trash");
+            throw new common_1.NotFoundException('Product not found in trash');
         if (performedByUserId) {
             try {
                 await this.activityLogService.logActivity({
@@ -658,7 +670,7 @@ let ProductService = class ProductService {
             .andWhere('product.deletedAt < :date', { date: thirtyDaysAgo })
             .getMany();
         if (productsToDelete.length > 0) {
-            const companyIds = new Set(productsToDelete.map(p => p.companyId));
+            const companyIds = new Set(productsToDelete.map((p) => p.companyId));
             await this.productRepository.remove(productsToDelete);
             for (const companyId of companyIds) {
                 await this.clearCache(companyId);
@@ -671,9 +683,9 @@ let ProductService = class ProductService {
             where: { id, companyId, deletedAt: (0, typeorm_2.IsNull)() },
         });
         if (!product)
-            throw new common_1.NotFoundException("Product not found");
+            throw new common_1.NotFoundException('Product not found');
         if (product.status !== 'draft') {
-            throw new common_1.BadRequestException("Product is not a draft");
+            throw new common_1.BadRequestException('Product is not a draft');
         }
         product.status = 'published';
         const saved = await this.productRepository.save(product);
@@ -695,13 +707,13 @@ let ProductService = class ProductService {
                 where: {
                     companyId,
                     deletedAt: (0, typeorm_2.IsNull)(),
-                    createdAt: (0, typeorm_2.MoreThanOrEqual)(dateThreshold)
-                }
+                    createdAt: (0, typeorm_2.MoreThanOrEqual)(dateThreshold),
+                },
             });
             const productSales = new Map();
-            recentOrders.forEach(order => {
+            recentOrders.forEach((order) => {
                 if (order.items && Array.isArray(order.items)) {
-                    order.items.forEach(item => {
+                    order.items.forEach((item) => {
                         if (item.productId) {
                             const currentSales = productSales.get(item.productId) || 0;
                             productSales.set(item.productId, currentSales + item.quantity);
@@ -718,7 +730,12 @@ let ProductService = class ProductService {
                 return [];
             }
             const products = await this.productRepository.find({
-                where: { id: (0, typeorm_2.In)(productIds), deletedAt: (0, typeorm_2.IsNull)(), companyId, isActive: true },
+                where: {
+                    id: (0, typeorm_2.In)(productIds),
+                    deletedAt: (0, typeorm_2.IsNull)(),
+                    companyId,
+                    isActive: true,
+                },
                 relations: ['category'],
             });
             const productMap = new Map(products.map((p) => [p.id, p]));
@@ -734,10 +751,10 @@ let ProductService = class ProductService {
             where: { id: (0, typeorm_2.In)(productIds), deletedAt: (0, typeorm_2.IsNull)(), companyId },
         });
         if (products.length !== productIds.length) {
-            throw new common_1.NotFoundException("One or more products not found");
+            throw new common_1.NotFoundException('One or more products not found');
         }
         if (flashSellEndTime <= flashSellStartTime) {
-            throw new Error("Flash sell end time must be after start time");
+            throw new Error('Flash sell end time must be after start time');
         }
         products.forEach((product) => {
             product.isFlashSell = true;
@@ -754,7 +771,7 @@ let ProductService = class ProductService {
             where: { id: (0, typeorm_2.In)(productIds), deletedAt: (0, typeorm_2.IsNull)(), companyId },
         });
         if (products.length !== productIds.length) {
-            throw new common_1.NotFoundException("One or more products not found");
+            throw new common_1.NotFoundException('One or more products not found');
         }
         products.forEach((product) => {
             product.isFlashSell = false;
@@ -766,19 +783,21 @@ let ProductService = class ProductService {
     }
     async getActiveFlashSellProducts(companyId) {
         const now = new Date();
-        return this.productRepository.find({
+        return this.productRepository
+            .find({
             where: {
                 isFlashSell: true,
                 deletedAt: (0, typeorm_2.IsNull)(),
                 companyId,
             },
-            relations: ["category"],
-        }).then(products => {
-            return products.filter(product => {
+            relations: ['category'],
+        })
+            .then((products) => {
+            return products.filter((product) => {
                 if (!product.flashSellStartTime || !product.flashSellEndTime) {
                     return false;
                 }
-                return now >= product.flashSellStartTime && now <= product.flashSellEndTime;
+                return (now >= product.flashSellStartTime && now <= product.flashSellEndTime);
             });
         });
     }
@@ -829,29 +848,32 @@ let ProductService = class ProductService {
     }
     async bulkCreate(products, companyId) {
         if (!companyId) {
-            throw new common_1.BadRequestException("CompanyId is required");
+            throw new common_1.BadRequestException('CompanyId is required');
         }
         const success = [];
         const failed = [];
         const categories = await this.categoryRepository.find({
             where: { companyId, deletedAt: (0, typeorm_2.IsNull)() },
         });
-        const categoryMap = new Map(categories.map(cat => [cat.id, cat]));
+        const categoryMap = new Map(categories.map((cat) => [cat.id, cat]));
         const skuSet = new Set();
         const existingProducts = await this.productRepository.find({
             where: { companyId, deletedAt: (0, typeorm_2.IsNull)() },
             select: ['sku'],
         });
-        const existingSkus = new Set(existingProducts.map(p => p.sku));
+        const existingSkus = new Set(existingProducts.map((p) => p.sku));
         for (let i = 0; i < products.length; i++) {
             const productData = products[i];
             const rowNumber = i + 2;
             try {
-                if (!productData.name || !productData.sku || !productData.price || !productData.categoryId) {
+                if (!productData.name ||
+                    !productData.sku ||
+                    !productData.price ||
+                    !productData.categoryId) {
                     failed.push({
                         row: rowNumber,
                         data: productData,
-                        error: "Missing required fields: name, sku, price, or categoryId",
+                        error: 'Missing required fields: name, sku, price, or categoryId',
                     });
                     continue;
                 }
@@ -882,7 +904,10 @@ let ProductService = class ProductService {
                 }
                 let images = undefined;
                 if (productData.images) {
-                    const imageUrls = productData.images.split(',').map(url => url.trim()).filter(url => url);
+                    const imageUrls = productData.images
+                        .split(',')
+                        .map((url) => url.trim())
+                        .filter((url) => url);
                     if (imageUrls.length > 0) {
                         images = imageUrls.map((url, index) => ({
                             url,
@@ -918,7 +943,7 @@ let ProductService = class ProductService {
                 failed.push({
                     row: rowNumber,
                     data: productData,
-                    error: error.message || "Unknown error occurred",
+                    error: error.message || 'Unknown error occurred',
                 });
             }
         }

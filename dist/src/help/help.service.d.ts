@@ -13,20 +13,20 @@ export declare class HelpService {
             id?: string;
         }>;
     }, helpSupportGateway: HelpSupportGateway);
-    create(createHelpDto: CreateHelpDto, companyId?: string | undefined): Promise<Help>;
-    findAll(companyId?: string | undefined): Promise<Help[]>;
-    getStats(companyId?: string | undefined): Promise<{
+    create(createHelpDto: CreateHelpDto, companyId?: string): Promise<Help>;
+    findAll(companyId?: string): Promise<Help[]>;
+    getStats(companyId?: string): Promise<{
         total: number;
         pending: number;
         in_progress: number;
         resolved: number;
         active: number;
     }>;
-    findOne(id: number, companyId?: string | undefined): Promise<Help>;
-    update(id: number, updateHelpDto: UpdateHelpDto, companyId?: string | undefined): Promise<Help>;
-    remove(id: number, companyId?: string | undefined): Promise<{
+    findOne(id: number, companyId?: string): Promise<Help>;
+    update(id: number, updateHelpDto: UpdateHelpDto, companyId?: string): Promise<Help>;
+    remove(id: number, companyId?: string): Promise<{
         success: boolean;
     }>;
-    addReply(id: number, replyDto: ReplyHelpDto, companyId?: string | undefined): Promise<Help>;
+    addReply(id: number, replyDto: ReplyHelpDto, companyId?: string): Promise<Help>;
     private sendSupportEmail;
 }

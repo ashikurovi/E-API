@@ -19,7 +19,10 @@ let PermissionGuard = class PermissionGuard {
         this.reflector = reflector;
     }
     canActivate(context) {
-        const requiredPermission = this.reflector.getAllAndOverride(permission_decorator_1.PERMISSION_KEY, [context.getHandler(), context.getClass()]);
+        const requiredPermission = this.reflector.getAllAndOverride(permission_decorator_1.PERMISSION_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
         if (!requiredPermission) {
             return true;
         }
@@ -32,7 +35,9 @@ let PermissionGuard = class PermissionGuard {
             return true;
         }
         const userRole = user.role;
-        if (userRole === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN || userRole === 'SUPER_ADMIN') {
+        if (userRole === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER ||
+            userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN ||
+            userRole === 'SUPER_ADMIN') {
             return true;
         }
         if (!user?.permissions || !Array.isArray(user.permissions)) {

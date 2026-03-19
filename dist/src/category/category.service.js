@@ -37,7 +37,10 @@ let CategoryService = class CategoryService {
         }
     }
     generateSlug(name) {
-        return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+        return name
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
     }
     async create(createDto, companyId, performedByUserId, resellerId) {
         const category = this.categoryRepository.create({
@@ -50,10 +53,10 @@ let CategoryService = class CategoryService {
         });
         if (createDto.parentId) {
             const parent = await this.categoryRepository.findOne({
-                where: { id: createDto.parentId, companyId }
+                where: { id: createDto.parentId, companyId },
             });
             if (!parent)
-                throw new common_1.NotFoundException("Parent category not found");
+                throw new common_1.NotFoundException('Parent category not found');
             category.parent = parent;
         }
         const saved = await this.categoryRepository.save(category);
@@ -93,9 +96,9 @@ let CategoryService = class CategoryService {
         }
         const categories = await this.categoryRepository.find({
             where,
-            relations: ["parent", "children"],
+            relations: ['parent', 'children'],
         });
-        const result = categories.map(cat => ({
+        const result = categories.map((cat) => ({
             ...cat,
             slug: cat.slug ? cat.slug.toLowerCase() : this.generateSlug(cat.name),
         }));
@@ -137,7 +140,7 @@ let CategoryService = class CategoryService {
                 isActive: true,
                 parent: (0, typeorm_2.IsNull)(),
             },
-            relations: ["children"],
+            relations: ['children'],
         });
         try {
             await this.cacheManager.set(cacheKey, categories, 3600 * 1000);
@@ -150,16 +153,22 @@ let CategoryService = class CategoryService {
     async findOne(id, companyId) {
         const category = await this.categoryRepository.findOne({
             where: { id, deletedAt: (0, typeorm_2.IsNull)(), companyId },
-            relations: ["parent", "children"],
+            relations: ['parent', 'children'],
         });
         if (!category)
-            throw new common_1.NotFoundException("Category not found");
-        category.slug = category.slug ? category.slug.toLowerCase() : this.generateSlug(category.name);
+            throw new common_1.NotFoundException('Category not found');
+        category.slug = category.slug
+            ? category.slug.toLowerCase()
+            : this.generateSlug(category.name);
         return category;
     }
     async update(id, updateDto, companyId, performedByUserId) {
         const category = await this.findOne(id, companyId);
-        const oldValues = { name: category.name, slug: category.slug, isActive: category.isActive };
+        const oldValues = {
+            name: category.name,
+            slug: category.slug,
+            isActive: category.isActive,
+        };
         if (updateDto.name !== undefined) {
             category.name = updateDto.name;
             category.slug = this.generateSlug(updateDto.name);
@@ -174,12 +183,12 @@ let CategoryService = class CategoryService {
             }
             else {
                 const parent = await this.categoryRepository.findOne({
-                    where: { id: updateDto.parentId, companyId }
+                    where: { id: updateDto.parentId, companyId },
                 });
                 if (!parent)
-                    throw new common_1.NotFoundException("Parent category not found");
+                    throw new common_1.NotFoundException('Parent category not found');
                 if (parent.id === id)
-                    throw new common_1.BadRequestException("Category cannot be its own parent");
+                    throw new common_1.BadRequestException('Category cannot be its own parent');
                 category.parent = parent;
             }
         }
@@ -194,7 +203,11 @@ let CategoryService = class CategoryService {
                     entityName: saved.name,
                     description: `Updated category: ${saved.name}`,
                     oldValues,
-                    newValues: { name: saved.name, slug: saved.slug, isActive: saved.isActive },
+                    newValues: {
+                        name: saved.name,
+                        slug: saved.slug,
+                        isActive: saved.isActive,
+                    },
                     performedByUserId,
                 });
             }
@@ -228,23 +241,23 @@ let CategoryService = class CategoryService {
     }
     async listTrashed(companyId) {
         return this.categoryRepository
-            .createQueryBuilder("category")
+            .createQueryBuilder('category')
             .withDeleted()
-            .leftJoinAndSelect("category.parent", "parent")
-            .leftJoinAndSelect("category.children", "children")
-            .where("category.companyId = :companyId", { companyId })
-            .andWhere("category.deletedAt IS NOT NULL")
-            .orderBy("category.deletedAt", "DESC")
+            .leftJoinAndSelect('category.parent', 'parent')
+            .leftJoinAndSelect('category.children', 'children')
+            .where('category.companyId = :companyId', { companyId })
+            .andWhere('category.deletedAt IS NOT NULL')
+            .orderBy('category.deletedAt', 'DESC')
             .getMany();
     }
     async restore(id, companyId, performedByUserId) {
         const category = await this.categoryRepository.findOne({
             where: { id, companyId },
             withDeleted: true,
-            relations: ["parent", "children"],
+            relations: ['parent', 'children'],
         });
         if (!category)
-            throw new common_1.NotFoundException("Category not found");
+            throw new common_1.NotFoundException('Category not found');
         if (!category.deletedAt)
             return category;
         await this.categoryRepository.recover(category);
@@ -272,13 +285,15 @@ let CategoryService = class CategoryService {
         const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
         const repo = this.dataSource.getRepository(category_entity_1.CategoryEntity);
         const rawIds = await repo
-            .createQueryBuilder("category")
+            .createQueryBuilder('category')
             .withDeleted()
-            .select("category.id", "id")
-            .where("category.deletedAt IS NOT NULL")
-            .andWhere("category.deletedAt < :cutoff", { cutoff })
+            .select('category.id', 'id')
+            .where('category.deletedAt IS NOT NULL')
+            .andWhere('category.deletedAt < :cutoff', { cutoff })
             .getRawMany();
-        const idsToDelete = rawIds.map((r) => +r.id).filter((id) => Number.isFinite(id));
+        const idsToDelete = rawIds
+            .map((r) => +r.id)
+            .filter((id) => Number.isFinite(id));
         if (idsToDelete.length === 0)
             return 0;
         return await this.dataSource.transaction(async (manager) => {
@@ -286,13 +301,13 @@ let CategoryService = class CategoryService {
                 .createQueryBuilder()
                 .update(category_entity_1.CategoryEntity)
                 .set({ parent: null })
-                .where("parentId IN (:...ids)", { ids: idsToDelete })
+                .where('parentId IN (:...ids)', { ids: idsToDelete })
                 .execute();
             const res = await manager
                 .createQueryBuilder()
                 .delete()
                 .from(category_entity_1.CategoryEntity)
-                .where("id IN (:...ids)", { ids: idsToDelete })
+                .where('id IN (:...ids)', { ids: idsToDelete })
                 .execute();
             return res.affected ?? 0;
         });

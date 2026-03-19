@@ -1,4 +1,4 @@
-import { PromocodeDiscountType } from "../entities/promocode.entity";
+import { PromocodeDiscountType } from '../entities/promocode.entity';
 export declare class CreatePromocodeDto {
     code: string;
     description?: string;

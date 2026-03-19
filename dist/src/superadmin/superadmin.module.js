@@ -30,8 +30,17 @@ exports.SuperadminModule = SuperadminModule = __decorate([
             }),
         ],
         controllers: [superadmin_controller_1.SuperadminController],
-        providers: [superadmin_service_1.SuperadminService, wildcard_domain_service_1.WildcardDomainService, wildcard_bootstrap_service_1.WildcardBootstrapService],
-        exports: [superadmin_service_1.SuperadminService, jwt_1.JwtModule, passport_1.PassportModule, wildcard_domain_service_1.WildcardDomainService],
+        providers: [
+            superadmin_service_1.SuperadminService,
+            wildcard_domain_service_1.WildcardDomainService,
+            wildcard_bootstrap_service_1.WildcardBootstrapService,
+        ],
+        exports: [
+            superadmin_service_1.SuperadminService,
+            jwt_1.JwtModule,
+            passport_1.PassportModule,
+            wildcard_domain_service_1.WildcardDomainService,
+        ],
     })
 ], SuperadminModule);
 //# sourceMappingURL=superadmin.module.js.map

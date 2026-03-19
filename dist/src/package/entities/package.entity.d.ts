@@ -1,6 +1,6 @@
-import { SystemUser } from "../../systemuser/entities/systemuser.entity";
-import { Theme } from "../../theme/entities/theme.entity";
-import { FeaturePermission } from "../../systemuser/feature-permission.enum";
+import { SystemUser } from '../../systemuser/entities/systemuser.entity';
+import { Theme } from '../../theme/entities/theme.entity';
+import { FeaturePermission } from '../../systemuser/feature-permission.enum';
 export declare class Package {
     id: number;
     name: string;

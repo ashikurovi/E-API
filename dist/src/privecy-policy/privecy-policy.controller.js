@@ -27,27 +27,50 @@ let PrivecyPolicyController = class PrivecyPolicyController {
     }
     async create(createPrivecyPolicyDto, companyId) {
         const data = await this.privecyPolicyService.create(createPrivecyPolicyDto, companyId);
-        return { status: 'success', message: 'Privacy Policy created successfully', data };
+        return {
+            status: 'success',
+            message: 'Privacy Policy created successfully',
+            data,
+        };
     }
     async findPublic(companyId) {
         const data = await this.privecyPolicyService.findPublic(companyId);
-        return { status: 'success', message: 'Privacy Policies fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Privacy Policies fetched successfully',
+            data,
+        };
     }
     async findAll(companyId) {
         const data = await this.privecyPolicyService.findAll(companyId);
-        return { status: 'success', message: 'Privacy Policies fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Privacy Policies fetched successfully',
+            data,
+        };
     }
     async findOne(id, companyId) {
         const data = await this.privecyPolicyService.findOne(id, companyId);
-        return { status: 'success', message: 'Privacy Policy fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Privacy Policy fetched successfully',
+            data,
+        };
     }
     async update(id, updatePrivecyPolicyDto, companyId) {
         const data = await this.privecyPolicyService.update(id, updatePrivecyPolicyDto, companyId);
-        return { status: 'success', message: 'Privacy Policy updated successfully', data };
+        return {
+            status: 'success',
+            message: 'Privacy Policy updated successfully',
+            data,
+        };
     }
     async remove(id, companyId) {
         await this.privecyPolicyService.remove(id, companyId);
-        return { status: 'success', message: 'Privacy Policy removed successfully' };
+        return {
+            status: 'success',
+            message: 'Privacy Policy removed successfully',
+        };
     }
 };
 exports.PrivecyPolicyController = PrivecyPolicyController;

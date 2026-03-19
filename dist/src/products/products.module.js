@@ -34,7 +34,13 @@ exports.ProductModule = ProductModule = __decorate([
             dashboard_module_1.DashboardModule,
         ],
         controllers: [products_controller_1.ProductController, public_products_controller_1.PublicProductController],
-        providers: [products_service_1.ProductService, products_scheduler_service_1.ProductsSchedulerService, image_search_service_1.ImageSearchService, jwt_auth_guard_1.JwtAuthGuard, permission_guard_1.PermissionGuard],
+        providers: [
+            products_service_1.ProductService,
+            products_scheduler_service_1.ProductsSchedulerService,
+            image_search_service_1.ImageSearchService,
+            jwt_auth_guard_1.JwtAuthGuard,
+            permission_guard_1.PermissionGuard,
+        ],
     })
 ], ProductModule);
 //# sourceMappingURL=products.module.js.map

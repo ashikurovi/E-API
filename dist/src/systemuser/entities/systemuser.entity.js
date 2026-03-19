@@ -71,7 +71,11 @@ __decorate([
     __metadata("design:type", String)
 ], SystemUser.prototype, "customDomainVerificationCode", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true, name: 'custom_domain_verified_at' }),
+    (0, typeorm_1.Column)({
+        type: 'timestamp',
+        nullable: true,
+        name: 'custom_domain_verified_at',
+    }),
     __metadata("design:type", Date)
 ], SystemUser.prototype, "customDomainVerifiedAt", void 0);
 __decorate([

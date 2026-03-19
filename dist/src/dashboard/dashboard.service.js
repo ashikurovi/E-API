@@ -102,7 +102,9 @@ let DashboardService = class DashboardService {
         const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
         const previousPeriodOrders = allOrders.filter((order) => order.createdAt >= sixtyDaysAgo && order.createdAt < thirtyDaysAgo);
         const previousRevenue = previousPeriodOrders
-            .filter((order) => order.isPaid || order.status === 'paid' || order.status === 'delivered')
+            .filter((order) => order.isPaid ||
+            order.status === 'paid' ||
+            order.status === 'delivered')
             .reduce((sum, order) => sum + Number(order.totalAmount || 0), 0);
         const revenueDelta = previousRevenue > 0
             ? (((totalRevenue - previousRevenue) / previousRevenue) * 100).toFixed(1)
@@ -153,10 +155,10 @@ let DashboardService = class DashboardService {
                 parseFloat(previousRepeatRate)) *
                 100).toFixed(1)
             : '0.0';
-        const repeatDeltaSign = parseFloat(repeatPurchaseRate) >= parseFloat(previousRepeatRate) ? '+' : '';
-        const avgOrderValue = paidOrders.length > 0
-            ? totalRevenue / paidOrders.length
-            : 0;
+        const repeatDeltaSign = parseFloat(repeatPurchaseRate) >= parseFloat(previousRepeatRate)
+            ? '+'
+            : '';
+        const avgOrderValue = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
         const previousAvgOrderValue = previousPeriodOrders.length > 0
             ? previousPeriodOrders
                 .filter((order) => order.isPaid ||
@@ -214,7 +216,9 @@ let DashboardService = class DashboardService {
         });
         const dailyRevenue = new Map();
         orders
-            .filter((order) => order.isPaid || order.status === 'paid' || order.status === 'delivered')
+            .filter((order) => order.isPaid ||
+            order.status === 'paid' ||
+            order.status === 'delivered')
             .forEach((order) => {
             const dateKey = order.createdAt.toISOString().split('T')[0];
             const current = dailyRevenue.get(dateKey) || 0;
@@ -230,7 +234,9 @@ let DashboardService = class DashboardService {
     }
     getRadialChartData(orders) {
         const paidCount = orders.filter((order) => order.isPaid || order.status === 'paid' || order.status === 'delivered').length;
-        const unpaidCount = orders.filter((order) => !order.isPaid && order.status !== 'paid' && order.status !== 'delivered').length;
+        const unpaidCount = orders.filter((order) => !order.isPaid &&
+            order.status !== 'paid' &&
+            order.status !== 'delivered').length;
         const total = paidCount + unpaidCount;
         if (total === 0) {
             return [{ paid: 0, unpaid: 0 }];
@@ -324,7 +330,20 @@ let DashboardService = class DashboardService {
     generatePeriodLabels(period, start, end) {
         const labels = [];
         const dayMs = 24 * 60 * 60 * 1000;
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec',
+        ];
         if (period === 'daily') {
             for (let d = new Date(start); d <= end; d.setTime(d.getTime() + dayMs)) {
                 labels.push(d.toISOString().split('T')[0]);
@@ -433,7 +452,11 @@ let DashboardService = class DashboardService {
         const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
         return orders.map((order) => {
             const d = new Date(order.createdAt);
-            const dateLabel = d >= todayStart ? 'Today' : d >= yesterdayStart ? 'Yesterday' : d.toLocaleDateString();
+            const dateLabel = d >= todayStart
+                ? 'Today'
+                : d >= yesterdayStart
+                    ? 'Yesterday'
+                    : d.toLocaleDateString();
             const isPaid = order.isPaid || order.status === 'paid' || order.status === 'delivered';
             return {
                 id: order.id,
@@ -481,7 +504,9 @@ let DashboardService = class DashboardService {
         return result;
     }
     getSalesDistribution(orders) {
-        const paid = orders.filter((o) => o.isPaid || o.status === 'paid' || o.status === 'delivered').reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+        const paid = orders
+            .filter((o) => o.isPaid || o.status === 'paid' || o.status === 'delivered')
+            .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
         const pending = orders
             .filter((o) => !o.isPaid &&
             o.status !== 'paid' &&
@@ -494,8 +519,16 @@ let DashboardService = class DashboardService {
             .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
         return [
             { name: 'Paid', value: Math.round(paid * 100) / 100, color: '#5347CE' },
-            { name: 'Pending', value: Math.round(pending * 100) / 100, color: '#16C8C7' },
-            { name: 'Other', value: Math.round(cancelled * 100) / 100, color: '#E2E8F0' },
+            {
+                name: 'Pending',
+                value: Math.round(pending * 100) / 100,
+                color: '#16C8C7',
+            },
+            {
+                name: 'Other',
+                value: Math.round(cancelled * 100) / 100,
+                color: '#E2E8F0',
+            },
         ];
     }
     async getStatistics(companyId) {
@@ -503,7 +536,7 @@ let DashboardService = class DashboardService {
         const orders = await this.orderRepo.find({
             where: { companyId },
             relations: ['customer'],
-            order: { createdAt: 'DESC' }
+            order: { createdAt: 'DESC' },
         });
         const paidOrders = orders.filter((o) => o.isPaid || o.status === 'paid' || o.status === 'delivered');
         const chartData = [];
@@ -605,7 +638,8 @@ let DashboardService = class DashboardService {
         });
         return orders.map((order) => {
             const firstItem = order.items?.[0];
-            const productName = firstItem?.product?.name || (firstItem?.productId ? `Product ${firstItem.productId}` : 'N/A');
+            const productName = firstItem?.product?.name ||
+                (firstItem?.productId ? `Product ${firstItem.productId}` : 'N/A');
             const customerName = order.customer?.name || order.customerName || 'Guest';
             const orderId = `#${order.id.toString().padStart(6, '0')}`;
             const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
@@ -627,9 +661,7 @@ let DashboardService = class DashboardService {
         const orders = await this.orderRepo.find({
             where: { companyId },
         });
-        const paidOrders = orders.filter((order) => order.isPaid ||
-            order.status === 'paid' ||
-            order.status === 'delivered');
+        const paidOrders = orders.filter((order) => order.isPaid || order.status === 'paid' || order.status === 'delivered');
         const productSales = new Map();
         paidOrders.forEach((order) => {
             if (order.items && Array.isArray(order.items)) {
@@ -651,7 +683,9 @@ let DashboardService = class DashboardService {
             .slice(0, limit)
             .map((product) => ({
             name: product.name,
-            sales: product.sales >= 1000 ? `${(product.sales / 1000).toFixed(1)}k+ Sales` : `${product.sales} Sales`,
+            sales: product.sales >= 1000
+                ? `${(product.sales / 1000).toFixed(1)}k+ Sales`
+                : `${product.sales} Sales`,
             id: product.id.toString(),
         }));
         return topProducts;
@@ -755,15 +789,19 @@ let DashboardService = class DashboardService {
     }
     async getProductStats(companyId) {
         const baseWhere = { companyId, deletedAt: (0, typeorm_2.IsNull)() };
-        const [publishedProducts, draftProducts, trashedProducts, activeProducts, lowStockProducts, outOfStockProducts] = await Promise.all([
+        const [publishedProducts, draftProducts, trashedProducts, activeProducts, lowStockProducts, outOfStockProducts,] = await Promise.all([
             this.productRepo.count({ where: { ...baseWhere, status: 'published' } }),
             this.productRepo.count({ where: { ...baseWhere, status: 'draft' } }),
             this.productRepo.count({
                 where: { companyId, status: 'trashed' },
                 withDeleted: true,
             }),
-            this.productRepo.count({ where: { ...baseWhere, status: 'published', isActive: true } }),
-            this.productRepo.count({ where: { ...baseWhere, status: 'published', isLowStock: true } }),
+            this.productRepo.count({
+                where: { ...baseWhere, status: 'published', isActive: true },
+            }),
+            this.productRepo.count({
+                where: { ...baseWhere, status: 'published', isLowStock: true },
+            }),
             this.productRepo
                 .createQueryBuilder('p')
                 .where('p.companyId = :companyId', { companyId })
@@ -838,7 +876,9 @@ Generate a brief daily report with: 1) Executive summary, 2) Key highlights, 3) 
             };
         }
         catch (error) {
-            const errMsg = error?.response?.data?.error?.message || error?.message || 'Unknown error';
+            const errMsg = error?.response?.data?.error?.message ||
+                error?.message ||
+                'Unknown error';
             console.error('AI report generation failed:', errMsg);
             return {
                 report: `AI report generation failed: ${errMsg}. Please ensure AIDAILYREPORT is valid. Get a free key at https://console.groq.com`,
@@ -850,7 +890,13 @@ Generate a brief daily report with: 1) Executive summary, 2) Key highlights, 3) 
         const groqApiKey = process.env.AINESSAGE ?? '';
         if (!groqApiKey) {
             return {
-                messages: [{ text: 'AI messages require AINESSAGE in your environment. Get a free key at console.groq.com', type: 'info', timestamp: new Date().toISOString() }],
+                messages: [
+                    {
+                        text: 'AI messages require AINESSAGE in your environment. Get a free key at console.groq.com',
+                        type: 'info',
+                        timestamp: new Date().toISOString(),
+                    },
+                ],
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -867,7 +913,10 @@ Best sellers: ${JSON.stringify(bestSellers)}`;
             const response = await axios_1.default.post('https://api.groq.com/openai/v1/chat/completions', {
                 model: 'llama-3.1-8b-instant',
                 messages: [
-                    { role: 'system', content: 'You output only valid JSON arrays. No markdown, no explanation.' },
+                    {
+                        role: 'system',
+                        content: 'You output only valid JSON arrays. No markdown, no explanation.',
+                    },
                     { role: 'user', content: prompt },
                 ],
                 max_tokens: 400,
@@ -882,27 +931,48 @@ Best sellers: ${JSON.stringify(bestSellers)}`;
             const content = response.data?.choices?.[0]?.message?.content?.trim() || '[]';
             let parsed = [];
             try {
-                const cleaned = content.replace(/```json?\s*/g, '').replace(/```\s*/g, '').trim();
+                const cleaned = content
+                    .replace(/```json?\s*/g, '')
+                    .replace(/```\s*/g, '')
+                    .trim();
                 parsed = JSON.parse(cleaned);
             }
             catch {
                 parsed = [{ text: content || 'No messages available', type: 'info' }];
             }
-            const messages = (Array.isArray(parsed) ? parsed : []).slice(0, 6).map((m) => ({
+            const messages = (Array.isArray(parsed) ? parsed : [])
+                .slice(0, 6)
+                .map((m) => ({
                 text: m.text || 'Update',
                 type: m.type || 'info',
                 timestamp: new Date().toISOString(),
             }));
             return {
-                messages: messages.length ? messages : [{ text: 'No updates at the moment. Check back soon.', type: 'info', timestamp: new Date().toISOString() }],
+                messages: messages.length
+                    ? messages
+                    : [
+                        {
+                            text: 'No updates at the moment. Check back soon.',
+                            type: 'info',
+                            timestamp: new Date().toISOString(),
+                        },
+                    ],
                 generatedAt: new Date().toISOString(),
             };
         }
         catch (error) {
-            const errMsg = error?.response?.data?.error?.message || error?.message || 'Unknown error';
+            const errMsg = error?.response?.data?.error?.message ||
+                error?.message ||
+                'Unknown error';
             console.error('AI live messages failed:', errMsg);
             return {
-                messages: [{ text: `AI messages unavailable: ${errMsg}`, type: 'info', timestamp: new Date().toISOString() }],
+                messages: [
+                    {
+                        text: `AI messages unavailable: ${errMsg}`,
+                        type: 'info',
+                        timestamp: new Date().toISOString(),
+                    },
+                ],
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -911,7 +981,13 @@ Best sellers: ${JSON.stringify(bestSellers)}`;
         const groqApiKey = process.env.AISALE ?? '';
         if (!groqApiKey) {
             return {
-                directions: [{ title: 'Configure AI', action: 'Add AISALE to your environment to enable sales direction. Get free key at console.groq.com', priority: 'info' }],
+                directions: [
+                    {
+                        title: 'Configure AI',
+                        action: 'Add AISALE to your environment to enable sales direction. Get free key at console.groq.com',
+                        priority: 'info',
+                    },
+                ],
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -933,7 +1009,10 @@ Recent orders: ${JSON.stringify(recentOrders.slice(0, 3))}`;
             const response = await axios_1.default.post('https://api.groq.com/openai/v1/chat/completions', {
                 model: 'llama-3.1-8b-instant',
                 messages: [
-                    { role: 'system', content: 'You output only valid JSON arrays. Be practical and actionable for store owners.' },
+                    {
+                        role: 'system',
+                        content: 'You output only valid JSON arrays. Be practical and actionable for store owners.',
+                    },
                     { role: 'user', content: prompt },
                 ],
                 max_tokens: 500,
@@ -948,27 +1027,54 @@ Recent orders: ${JSON.stringify(recentOrders.slice(0, 3))}`;
             const content = response.data?.choices?.[0]?.message?.content?.trim() || '[]';
             let parsed = [];
             try {
-                const cleaned = content.replace(/```json?\s*/g, '').replace(/```\s*/g, '').trim();
+                const cleaned = content
+                    .replace(/```json?\s*/g, '')
+                    .replace(/```\s*/g, '')
+                    .trim();
                 parsed = JSON.parse(cleaned);
             }
             catch {
-                parsed = [{ title: 'Tip', action: content || 'Review your dashboard for insights', priority: 'medium' }];
+                parsed = [
+                    {
+                        title: 'Tip',
+                        action: content || 'Review your dashboard for insights',
+                        priority: 'medium',
+                    },
+                ];
             }
-            const directions = (Array.isArray(parsed) ? parsed : []).slice(0, 5).map((d) => ({
+            const directions = (Array.isArray(parsed) ? parsed : [])
+                .slice(0, 5)
+                .map((d) => ({
                 title: d.title || 'Action',
                 action: d.action || 'Check your store',
                 priority: d.priority || 'medium',
             }));
             return {
-                directions: directions.length ? directions : [{ title: 'Stay active', action: 'Monitor your dashboard and respond to new orders promptly', priority: 'medium' }],
+                directions: directions.length
+                    ? directions
+                    : [
+                        {
+                            title: 'Stay active',
+                            action: 'Monitor your dashboard and respond to new orders promptly',
+                            priority: 'medium',
+                        },
+                    ],
                 generatedAt: new Date().toISOString(),
             };
         }
         catch (error) {
-            const errMsg = error?.response?.data?.error?.message || error?.message || 'Unknown error';
+            const errMsg = error?.response?.data?.error?.message ||
+                error?.message ||
+                'Unknown error';
             console.error('AI sales direction failed:', errMsg);
             return {
-                directions: [{ title: 'AI unavailable', action: `Sales direction unavailable. ${errMsg}`, priority: 'low' }],
+                directions: [
+                    {
+                        title: 'AI unavailable',
+                        action: `Sales direction unavailable. ${errMsg}`,
+                        priority: 'low',
+                    },
+                ],
                 generatedAt: new Date().toISOString(),
             };
         }
@@ -1027,7 +1133,9 @@ Return ONLY the description text, no quotes or extra formatting.`;
             };
         }
         catch (error) {
-            const errMsg = error?.response?.data?.error?.message || error?.message || 'Unknown error';
+            const errMsg = error?.response?.data?.error?.message ||
+                error?.message ||
+                'Unknown error';
             console.error('AI description suggestion failed:', errMsg);
             return {
                 suggestion: '',
@@ -1058,7 +1166,10 @@ Return ONLY the description text, no quotes or extra formatting.`;
             const response = await axios_1.default.post('https://api.groq.com/openai/v1/chat/completions', {
                 model: 'llama-3.1-8b-instant',
                 messages: [
-                    { role: 'system', content: 'You are a translator. Return only the translated text, nothing else.' },
+                    {
+                        role: 'system',
+                        content: 'You are a translator. Return only the translated text, nothing else.',
+                    },
                     { role: 'user', content: `${instruction}\n\n${text}` },
                 ],
                 max_tokens: 1000,
@@ -1077,7 +1188,9 @@ Return ONLY the description text, no quotes or extra formatting.`;
             };
         }
         catch (error) {
-            const errMsg = error?.response?.data?.error?.message || error?.message || 'Unknown error';
+            const errMsg = error?.response?.data?.error?.message ||
+                error?.message ||
+                'Unknown error';
             console.error('Report translation failed:', errMsg);
             return {
                 translatedText: text,

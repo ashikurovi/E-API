@@ -22,19 +22,19 @@ let TrackOrderController = class TrackOrderController {
     }
     async track(trackingId) {
         const data = await this.orderService.findByTrackingId(trackingId);
-        return { statusCode: 200, message: "Order found", data };
+        return { statusCode: 200, message: 'Order found', data };
     }
 };
 exports.TrackOrderController = TrackOrderController;
 __decorate([
-    (0, common_1.Get)("track/:trackingId"),
-    __param(0, (0, common_1.Param)("trackingId")),
+    (0, common_1.Get)('track/:trackingId'),
+    __param(0, (0, common_1.Param)('trackingId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TrackOrderController.prototype, "track", null);
 exports.TrackOrderController = TrackOrderController = __decorate([
-    (0, common_1.Controller)("orders"),
+    (0, common_1.Controller)('orders'),
     (0, public_decorator_1.Public)(),
     __metadata("design:paramtypes", [orders_service_1.OrderService])
 ], TrackOrderController);

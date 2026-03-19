@@ -41,7 +41,9 @@ let TremsCondetionsService = class TremsCondetionsService {
         return this.findAll(companyId);
     }
     async findOne(id, companyId) {
-        const entity = await this.termsConditionsRepo.findOne({ where: { id, companyId } });
+        const entity = await this.termsConditionsRepo.findOne({
+            where: { id, companyId },
+        });
         if (!entity)
             throw new common_1.NotFoundException(`Terms & Conditions ${id} not found`);
         return entity;

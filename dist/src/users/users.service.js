@@ -39,7 +39,7 @@ let UsersService = class UsersService {
                 throw new common_1.BadRequestException('CompanyId is required');
             }
             const existing = await this.repository.findOne({
-                where: { email: createUserDto.email, companyId }
+                where: { email: createUserDto.email, companyId },
             });
             if (existing)
                 throw new common_1.BadRequestException('Email already exists');
@@ -78,7 +78,9 @@ let UsersService = class UsersService {
                 const pgError = error;
                 const errorCode = pgError.code;
                 const message = pgError.detail || pgError.message || '';
-                if (errorCode === '23505' || message?.toLowerCase().includes('unique') || message?.toLowerCase().includes('duplicate')) {
+                if (errorCode === '23505' ||
+                    message?.toLowerCase().includes('unique') ||
+                    message?.toLowerCase().includes('duplicate')) {
                     throw new common_1.BadRequestException('Email already exists');
                 }
             }
@@ -126,7 +128,7 @@ let UsersService = class UsersService {
         const dto = updateUserDto ?? {};
         if (dto.email && dto.email !== user.email) {
             const exists = await this.repository.findOne({
-                where: { email: dto.email, companyId }
+                where: { email: dto.email, companyId },
             });
             if (exists)
                 throw new common_1.BadRequestException('Email already exists');
@@ -196,7 +198,8 @@ let UsersService = class UsersService {
         return user;
     }
     async findCustomers(companyId, filter) {
-        const qb = this.repository.createQueryBuilder('user')
+        const qb = this.repository
+            .createQueryBuilder('user')
             .where('user.role = :role', { role: 'customer' })
             .andWhere('user.companyId = :companyId', { companyId });
         if (!filter?.includeInactive) {
@@ -210,7 +213,7 @@ let UsersService = class UsersService {
     }
     async login(email, password, companyId) {
         const user = await this.repository.findOne({
-            where: { email, companyId }
+            where: { email, companyId },
         });
         if (!user)
             throw new common_1.NotFoundException('Invalid credentials');

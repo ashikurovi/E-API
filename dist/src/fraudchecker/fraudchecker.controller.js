@@ -29,22 +29,42 @@ let FraudcheckerController = class FraudcheckerController {
         }
         if (email) {
             const risk = await this.fraudcheckerService.checkUserRiskByEmail(email);
-            return { statusCode: common_1.HttpStatus.OK, message: 'User risk evaluated by email', data: risk };
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'User risk evaluated by email',
+                data: risk,
+            };
         }
         if (phone) {
             const risk = await this.fraudcheckerService.checkUserRiskByPhone(phone);
-            return { statusCode: common_1.HttpStatus.OK, message: 'User risk evaluated by phone', data: risk };
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'User risk evaluated by phone',
+                data: risk,
+            };
         }
         const risks = await this.fraudcheckerService.checkUserRiskByName(name);
-        return { statusCode: common_1.HttpStatus.OK, message: 'Users risk evaluated by name', data: risks };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'Users risk evaluated by name',
+            data: risks,
+        };
     }
     async flagUser(id, dto) {
         const banned = await this.fraudcheckerService.flagUser(id, dto?.reason);
-        return { statusCode: common_1.HttpStatus.OK, message: 'User flagged (banned)', data: banned };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'User flagged (banned)',
+            data: banned,
+        };
     }
     async unflagUser(id) {
         const unbanned = await this.fraudcheckerService.unflagUser(id);
-        return { statusCode: common_1.HttpStatus.OK, message: 'User unflagged (unbanned)', data: unbanned };
+        return {
+            statusCode: common_1.HttpStatus.OK,
+            message: 'User unflagged (unbanned)',
+            data: unbanned,
+        };
     }
 };
 exports.FraudcheckerController = FraudcheckerController;

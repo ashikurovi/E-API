@@ -20,15 +20,18 @@ let DeliveryConfigService = class DeliveryConfigService {
         return {
             clientId: this.configService.get('PATHAO_CLIENT_ID') || '',
             clientSecret: this.configService.get('PATHAO_CLIENT_SECRET') || '',
-            baseUrl: this.configService.get('PATHAO_BASE_URL') || 'https://api.pathao.com/v1',
-            grantType: this.configService.get('PATHAO_GRANT_TYPE') || 'client_credentials',
+            baseUrl: this.configService.get('PATHAO_BASE_URL') ||
+                'https://api.pathao.com/v1',
+            grantType: this.configService.get('PATHAO_GRANT_TYPE') ||
+                'client_credentials',
         };
     }
     get steadfast() {
         return {
             apiKey: this.configService.get('STEADFAST_API_KEY') || '',
             secretKey: this.configService.get('STEADFAST_SECRET_KEY') || '',
-            baseUrl: this.configService.get('STEADFAST_BASE_URL') || 'https://portal.steadfast.com.bd/api/v1',
+            baseUrl: this.configService.get('STEADFAST_BASE_URL') ||
+                'https://portal.steadfast.com.bd/api/v1',
         };
     }
     get redx() {
@@ -37,7 +40,8 @@ let DeliveryConfigService = class DeliveryConfigService {
             token: this.configService.get('REDX_TOKEN') || '',
             baseUrl: sandbox
                 ? 'https://sandbox.redx.com.bd/v1.0.0-beta'
-                : this.configService.get('REDX_BASE_URL') || 'https://openapi.redx.com.bd/v1.0.0-beta',
+                : this.configService.get('REDX_BASE_URL') ||
+                    'https://openapi.redx.com.bd/v1.0.0-beta',
             sandbox,
         };
     }

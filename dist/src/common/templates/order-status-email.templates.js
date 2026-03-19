@@ -83,12 +83,12 @@ function generateOrderProcessingEmail(customerName, orderId, storeName, tracking
         <tr>
           <td>
             <a href="${trackingUrl}" style="display: inline-block; padding: 10px 18px; border-radius: 999px; background: linear-gradient(to right, #22c55e, #22d3ee); color: #0f172a; font-size: 13px; font-weight: 600; text-decoration: none;">
-              Track your order${trackingId ? ` (#${trackingId})` : ""}
+              Track your order${trackingId ? ` (#${trackingId})` : ''}
             </a>
           </td>
         </tr>
       </table>`
-        : "";
+        : '';
     return `
 <!DOCTYPE html>
 <html>

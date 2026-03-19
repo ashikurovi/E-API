@@ -92,7 +92,9 @@ let SystemuserService = class SystemuserService {
         try {
             const html = email_templates_1.EmailTemplates.getWelcomeEmailTemplate(user, password);
             const displayCompany = user?.companyName;
-            const subjectPrefix = displayCompany ? `Welcome to ${displayCompany} - ` : 'Welcome - ';
+            const subjectPrefix = displayCompany
+                ? `Welcome to ${displayCompany} - `
+                : 'Welcome - ';
             await this.mailer.sendMail({
                 to: user.email,
                 subject: `${subjectPrefix}Your Account Credentials`,
@@ -152,9 +154,7 @@ let SystemuserService = class SystemuserService {
                 companyId: user.companyId,
             };
         }
-        const seed = user.companyName ||
-            user.companyId ||
-            `shop-${user.id}`;
+        const seed = user.companyName || user.companyId || `shop-${user.id}`;
         const base = this.slugifyForSubdomain(seed);
         let candidate = base;
         let counter = 1;
@@ -211,7 +211,12 @@ let SystemuserService = class SystemuserService {
         return crypto.randomBytes(16).toString('hex');
     }
     normalizeCustomDomain(domain) {
-        let d = domain.toLowerCase().trim().replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0];
+        let d = domain
+            .toLowerCase()
+            .trim()
+            .replace(/^https?:\/\//, '')
+            .replace(/\/$/, '')
+            .split('/')[0];
         if (d.startsWith('www.')) {
             d = d.slice(4);
         }
@@ -220,7 +225,12 @@ let SystemuserService = class SystemuserService {
     async findPendingDnsDomains() {
         return this.systemUserRepo.find({
             where: { customDomainStatus: 'pending_dns' },
-            select: ['id', 'companyId', 'customDomain', 'customDomainVerificationCode'],
+            select: [
+                'id',
+                'companyId',
+                'customDomain',
+                'customDomainVerificationCode',
+            ],
         });
     }
     async findSslProvisioningDomains() {
@@ -248,13 +258,19 @@ let SystemuserService = class SystemuserService {
         });
     }
     async setCustomDomainFailed(userId) {
-        await this.systemUserRepo.update({ id: userId }, { customDomainStatus: 'failed' });
+        await this.systemUserRepo.update({ id: userId }, {
+            customDomainStatus: 'failed',
+        });
     }
     async setCloudflareHostnameId(userId, hostnameId) {
-        await this.systemUserRepo.update({ id: userId }, { cloudflareHostnameId: hostnameId });
+        await this.systemUserRepo.update({ id: userId }, {
+            cloudflareHostnameId: hostnameId,
+        });
     }
     async create(dto, creatorCompanyId, creatorRole, performedByUserId) {
-        const exists = await this.systemUserRepo.findOne({ where: { email: dto.email } });
+        const exists = await this.systemUserRepo.findOne({
+            where: { email: dto.email },
+        });
         if (exists)
             throw new common_1.BadRequestException('Email already exists');
         let role = dto.role;
@@ -280,11 +296,15 @@ let SystemuserService = class SystemuserService {
         }
         const dtoCompanyId = dto.companyId;
         let companyId;
-        if (role === system_user_role_enum_1.SystemUserRole.RESELLER && dtoCompanyId && typeof dtoCompanyId === 'string') {
+        if (role === system_user_role_enum_1.SystemUserRole.RESELLER &&
+            dtoCompanyId &&
+            typeof dtoCompanyId === 'string') {
             companyId = dtoCompanyId.trim();
         }
         else {
-            companyId = creatorCompanyId || (await this.companyIdService.generateNextCompanyId());
+            companyId =
+                creatorCompanyId ||
+                    (await this.companyIdService.generateNextCompanyId());
         }
         const salt = crypto.randomBytes(16).toString('hex');
         const hash = this.hashPassword(dto.password, salt);
@@ -299,11 +319,15 @@ let SystemuserService = class SystemuserService {
         }
         if (dto.packageId) {
             const packageEntity = await this.packageRepo.findOne({
-                where: { id: dto.packageId }
+                where: { id: dto.packageId },
             });
-            if (packageEntity && packageEntity.features && Array.isArray(packageEntity.features)) {
+            if (packageEntity &&
+                packageEntity.features &&
+                Array.isArray(packageEntity.features)) {
                 const packageFeatures = packageEntity.features;
-                const mergedPermissions = [...new Set([...packageFeatures, ...permissions])];
+                const mergedPermissions = [
+                    ...new Set([...packageFeatures, ...permissions]),
+                ];
                 if (role === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
                     if (!mergedPermissions.includes(feature_permission_enum_1.FeaturePermission.MANAGE_USERS)) {
                         mergedPermissions.push(feature_permission_enum_1.FeaturePermission.MANAGE_USERS);
@@ -364,7 +388,9 @@ let SystemuserService = class SystemuserService {
                 console.error('Failed to log activity:', error);
             }
         }
-        if (role === system_user_role_enum_1.SystemUserRole.EMPLOYEE && creatorRole === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER && createdUser) {
+        if (role === system_user_role_enum_1.SystemUserRole.EMPLOYEE &&
+            creatorRole === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER &&
+            createdUser) {
             await this.sendWelcomeEmail(createdUser, dto.password);
         }
         if (role === system_user_role_enum_1.SystemUserRole.RESELLER && createdUser) {
@@ -412,7 +438,9 @@ let SystemuserService = class SystemuserService {
         let passwordUpdated = false;
         let newPassword;
         if (dto.email && dto.email !== entity.email) {
-            const exists = await this.systemUserRepo.findOne({ where: { email: dto.email } });
+            const exists = await this.systemUserRepo.findOne({
+                where: { email: dto.email },
+            });
             if (exists)
                 throw new common_1.BadRequestException('Email already exists');
             entity.email = dto.email;
@@ -437,13 +465,16 @@ let SystemuserService = class SystemuserService {
                 if (!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i.test(newDomain)) {
                     throw new common_1.BadRequestException('Invalid domain format');
                 }
-                const existing = await this.systemUserRepo.findOne({ where: { customDomain: newDomain } });
+                const existing = await this.systemUserRepo.findOne({
+                    where: { customDomain: newDomain },
+                });
                 if (existing && existing.id !== id) {
                     throw new common_1.BadRequestException('This domain is already in use by another store');
                 }
                 entity.customDomain = newDomain;
                 entity.customDomainStatus = 'pending_dns';
-                entity.customDomainVerificationCode = this.generateCustomDomainVerificationToken();
+                entity.customDomainVerificationCode =
+                    this.generateCustomDomainVerificationToken();
                 entity.customDomainVerifiedAt = null;
                 entity.sslProvisionedAt = null;
                 entity.cloudflareHostnameId = null;
@@ -504,15 +535,19 @@ let SystemuserService = class SystemuserService {
         if (dto.packageId !== undefined) {
             const newPackageId = dto.packageId;
             const currentPackageId = entity.packageId ?? entity.packageId;
-            if (newPackageId != null && currentPackageId != null && Number(newPackageId) !== Number(currentPackageId)) {
+            if (newPackageId != null &&
+                currentPackageId != null &&
+                Number(newPackageId) !== Number(currentPackageId)) {
                 entity.previousPackageId = currentPackageId;
             }
             entity.packageId = newPackageId;
             if (dto.packageId) {
                 const packageEntity = await this.packageRepo.findOne({
-                    where: { id: dto.packageId }
+                    where: { id: dto.packageId },
                 });
-                if (packageEntity && packageEntity.features && Array.isArray(packageEntity.features)) {
+                if (packageEntity &&
+                    packageEntity.features &&
+                    Array.isArray(packageEntity.features)) {
                     const packageFeatures = packageEntity.features;
                     if (entity.role === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
                         const mergedPermissions = [...new Set([...packageFeatures])];
@@ -526,14 +561,17 @@ let SystemuserService = class SystemuserService {
                     }
                     else {
                         const existingPermissions = entity.permissions || [];
-                        const validPermissions = existingPermissions.filter(p => packageFeatures.includes(p));
+                        const validPermissions = existingPermissions.filter((p) => packageFeatures.includes(p));
                         entity.permissions = validPermissions;
                     }
                 }
             }
             else if (dto.packageId === null) {
                 if (entity.role === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
-                    entity.permissions = [feature_permission_enum_1.FeaturePermission.MANAGE_USERS, feature_permission_enum_1.FeaturePermission.STAFF];
+                    entity.permissions = [
+                        feature_permission_enum_1.FeaturePermission.MANAGE_USERS,
+                        feature_permission_enum_1.FeaturePermission.STAFF,
+                    ];
                 }
                 else {
                     entity.permissions = [];
@@ -576,7 +614,8 @@ let SystemuserService = class SystemuserService {
         }
         if (!previousIsActive && updatedUser?.isActive && updatedUser.email) {
             try {
-                const displayCompany = updatedUser?.companyName;
+                const displayCompany = updatedUser
+                    ?.companyName;
                 const subjectPrefix = displayCompany ? `${displayCompany} - ` : '';
                 const subject = `${subjectPrefix}Your account is now active`;
                 const greetingName = updatedUser.name || updatedUser.email;
@@ -672,7 +711,9 @@ let SystemuserService = class SystemuserService {
         const currentPackageId = entity.packageId ?? entity.packageId;
         entity.packageId = previousId;
         entity.previousPackageId = null;
-        const packageEntity = await this.packageRepo.findOne({ where: { id: previousId } });
+        const packageEntity = await this.packageRepo.findOne({
+            where: { id: previousId },
+        });
         if (packageEntity?.features && Array.isArray(packageEntity.features)) {
             const packageFeatures = packageEntity.features;
             if (entity.role === system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER) {
@@ -829,22 +870,27 @@ let SystemuserService = class SystemuserService {
             permissions: user.permissions || [],
             role: user.role || system_user_role_enum_1.SystemUserRole.EMPLOYEE,
         };
-        const accessToken = this.jwtService.sign(tokenPayload, { expiresIn: '24d' });
+        const accessToken = this.jwtService.sign(tokenPayload, {
+            expiresIn: '24d',
+        });
         const newRefreshToken = this.jwtService.sign({ sub: user.id, userId: user.id }, { expiresIn: '24d' });
         return { accessToken, refreshToken: newRefreshToken };
     }
     async forgotPassword(dto) {
         const user = await this.systemUserRepo.findOne({
-            where: { email: dto.email }
+            where: { email: dto.email },
         });
         if (!user) {
             return {
                 success: true,
-                message: 'If the email exists, a password reset link has been sent.'
+                message: 'If the email exists, a password reset link has been sent.',
             };
         }
         const resetToken = crypto.randomBytes(32).toString('hex');
-        const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+        const resetTokenHash = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
         const resetTokenExpiry = new Date();
         resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1);
         user.resetPasswordToken = resetTokenHash;
@@ -863,7 +909,7 @@ let SystemuserService = class SystemuserService {
             });
             return {
                 success: true,
-                message: 'Password reset link has been sent to your email.'
+                message: 'Password reset link has been sent to your email.',
             };
         }
         catch (error) {
@@ -875,12 +921,15 @@ let SystemuserService = class SystemuserService {
         if (dto.password !== dto.confirmPassword) {
             throw new common_1.BadRequestException('Passwords do not match');
         }
-        const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
+        const resetTokenHash = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
         const user = await this.systemUserRepo.findOne({
             where: {
                 id: userId,
-                resetPasswordToken: resetTokenHash
-            }
+                resetPasswordToken: resetTokenHash,
+            },
         });
         if (!user) {
             throw new common_1.BadRequestException('Invalid or expired reset token');
@@ -897,7 +946,7 @@ let SystemuserService = class SystemuserService {
         await this.systemUserRepo.save(user);
         return {
             success: true,
-            message: 'Password has been reset successfully. You can now login with your new password.'
+            message: 'Password has been reset successfully. You can now login with your new password.',
         };
     }
     async assignPermissions(userId, permissions, companyId, assignerPermissions, performedByUserId) {
@@ -912,14 +961,14 @@ let SystemuserService = class SystemuserService {
         if (!entity)
             throw new common_1.NotFoundException('System user not found');
         if (assignerPermissions && assignerPermissions.length > 0) {
-            const invalidPermissions = permissions.filter(p => !assignerPermissions.includes(p));
+            const invalidPermissions = permissions.filter((p) => !assignerPermissions.includes(p));
             if (invalidPermissions.length > 0) {
                 throw new common_1.BadRequestException(`Cannot assign permissions you don't have: ${invalidPermissions.join(', ')}`);
             }
         }
         if (entity.role === system_user_role_enum_1.SystemUserRole.EMPLOYEE && entity.package) {
             const packageFeatures = entity.package.features || [];
-            const validPermissions = permissions.filter(p => packageFeatures.includes(p));
+            const validPermissions = permissions.filter((p) => packageFeatures.includes(p));
             entity.permissions = validPermissions;
         }
         else {

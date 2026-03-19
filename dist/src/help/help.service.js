@@ -36,7 +36,9 @@ let HelpService = class HelpService {
             companyId: companyId,
             priority: createHelpDto.priority ?? 'medium',
             tags: Array.isArray(createHelpDto.tags) ? createHelpDto.tags : [],
-            attachments: Array.isArray(createHelpDto.attachments) ? createHelpDto.attachments : [],
+            attachments: Array.isArray(createHelpDto.attachments)
+                ? createHelpDto.attachments
+                : [],
         });
         const saved = await this.helpRepo.save(entity);
         await this.sendSupportEmail(saved, createHelpDto.email);
@@ -53,9 +55,15 @@ let HelpService = class HelpService {
         const baseWhere = companyId != null ? { companyId } : {};
         const [all, pending, inProgress, resolved] = await Promise.all([
             this.helpRepo.count({ where: baseWhere }),
-            this.helpRepo.count({ where: { ...baseWhere, status: help_entity_1.SupportStatus.PENDING } }),
-            this.helpRepo.count({ where: { ...baseWhere, status: help_entity_1.SupportStatus.IN_PROGRESS } }),
-            this.helpRepo.count({ where: { ...baseWhere, status: help_entity_1.SupportStatus.RESOLVED } }),
+            this.helpRepo.count({
+                where: { ...baseWhere, status: help_entity_1.SupportStatus.PENDING },
+            }),
+            this.helpRepo.count({
+                where: { ...baseWhere, status: help_entity_1.SupportStatus.IN_PROGRESS },
+            }),
+            this.helpRepo.count({
+                where: { ...baseWhere, status: help_entity_1.SupportStatus.RESOLVED },
+            }),
         ]);
         const active = pending + inProgress;
         return {

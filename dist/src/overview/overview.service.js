@@ -58,7 +58,8 @@ let OverviewService = class OverviewService {
             invoice.createdAt <= previousYearEnd)
             .reduce((sum, invoice) => sum + Number(invoice.paidAmount || 0), 0);
         const earningsDelta = previousYearEarnings > 0
-            ? ((totalEarningsYTD - previousYearEarnings) / previousYearEarnings) * 100
+            ? ((totalEarningsYTD - previousYearEarnings) / previousYearEarnings) *
+                100
             : totalEarningsYTD > 0
                 ? 100
                 : 0;
@@ -79,7 +80,9 @@ let OverviewService = class OverviewService {
             },
         });
         const customersDelta = previousActiveCustomers > 0
-            ? ((activeCustomers - previousActiveCustomers) / previousActiveCustomers) * 100
+            ? ((activeCustomers - previousActiveCustomers) /
+                previousActiveCustomers) *
+                100
             : activeCustomers > 0
                 ? 100
                 : 0;
@@ -135,16 +138,16 @@ let OverviewService = class OverviewService {
             where: { deletedAt: (0, typeorm_2.IsNull)() },
         });
         const totalInvoices = allInvoices.length;
-        const paidInvoices = allInvoices.filter(inv => inv.status === invoice_entity_1.InvoiceStatus.PAID).length;
-        const pendingInvoices = allInvoices.filter(inv => inv.status === invoice_entity_1.InvoiceStatus.PENDING).length;
-        const cancelledInvoices = allInvoices.filter(inv => inv.status === invoice_entity_1.InvoiceStatus.CANCELLED).length;
-        const failedInvoices = allInvoices.filter(inv => inv.status === invoice_entity_1.InvoiceStatus.FAILED).length;
-        const newInvoicesLast7Days = allInvoices.filter(inv => inv.createdAt >= sevenDaysAgo).length;
+        const paidInvoices = allInvoices.filter((inv) => inv.status === invoice_entity_1.InvoiceStatus.PAID).length;
+        const pendingInvoices = allInvoices.filter((inv) => inv.status === invoice_entity_1.InvoiceStatus.PENDING).length;
+        const cancelledInvoices = allInvoices.filter((inv) => inv.status === invoice_entity_1.InvoiceStatus.CANCELLED).length;
+        const failedInvoices = allInvoices.filter((inv) => inv.status === invoice_entity_1.InvoiceStatus.FAILED).length;
+        const newInvoicesLast7Days = allInvoices.filter((inv) => inv.createdAt >= sevenDaysAgo).length;
         const totalPaidAmount = allInvoices
-            .filter(inv => inv.status === invoice_entity_1.InvoiceStatus.PAID)
+            .filter((inv) => inv.status === invoice_entity_1.InvoiceStatus.PAID)
             .reduce((sum, inv) => sum + Number(inv.paidAmount || 0), 0);
         const totalPendingAmount = allInvoices
-            .filter(inv => inv.status === invoice_entity_1.InvoiceStatus.PENDING)
+            .filter((inv) => inv.status === invoice_entity_1.InvoiceStatus.PENDING)
             .reduce((sum, inv) => sum + Number(inv.dueAmount || 0), 0);
         return {
             kpis: {

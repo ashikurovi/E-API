@@ -94,7 +94,9 @@ let SaleInvoiceService = class SaleInvoiceService {
         if (!customerEmail) {
             throw new common_1.BadRequestException('Customer has no email address');
         }
-        const fromAddress = process.env.SMTP_FROM ?? process.env.SMTP_USER ?? 'squadlog.studio@gmail.com';
+        const fromAddress = process.env.SMTP_FROM ??
+            process.env.SMTP_USER ??
+            'squadlog.studio@gmail.com';
         let companyName = '';
         try {
             const tenant = await this.systemuserService.findOneByCompanyId(companyId);

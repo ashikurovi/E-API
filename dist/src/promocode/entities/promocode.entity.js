@@ -36,7 +36,7 @@ __decorate([
     __metadata("design:type", String)
 ], PromocodeEntity.prototype, "discountType", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2 }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], PromocodeEntity.prototype, "discountValue", void 0);
 __decorate([
@@ -48,7 +48,7 @@ __decorate([
     __metadata("design:type", Number)
 ], PromocodeEntity.prototype, "currentUses", void 0);
 __decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 10, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
     __metadata("design:type", Number)
 ], PromocodeEntity.prototype, "minOrderAmount", void 0);
 __decorate([
@@ -84,6 +84,6 @@ __decorate([
     __metadata("design:type", Date)
 ], PromocodeEntity.prototype, "deletedAt", void 0);
 exports.PromocodeEntity = PromocodeEntity = __decorate([
-    (0, typeorm_1.Entity)("tbl_promocodes")
+    (0, typeorm_1.Entity)('tbl_promocodes')
 ], PromocodeEntity);
 //# sourceMappingURL=promocode.entity.js.map

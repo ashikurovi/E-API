@@ -33,7 +33,8 @@ let PaymentsController = class PaymentsController {
     async sslCallback(query) {
         if (query?.val_id) {
             const validation = await this.paymentsService.validateSslPayment(query.val_id);
-            if (validation && (validation.status === 'VALID' || validation.status === 'VALIDATED')) {
+            if (validation &&
+                (validation.status === 'VALID' || validation.status === 'VALIDATED')) {
                 await this.paymentsService.processPaymentSuccess(query.val_id, validation);
             }
             return {

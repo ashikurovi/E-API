@@ -63,6 +63,6 @@ __decorate([
     __metadata("design:type", Date)
 ], CategoryEntity.prototype, "deletedAt", void 0);
 exports.CategoryEntity = CategoryEntity = __decorate([
-    (0, typeorm_1.Entity)("tbl_categories")
+    (0, typeorm_1.Entity)('tbl_categories')
 ], CategoryEntity);
 //# sourceMappingURL=category.entity.js.map

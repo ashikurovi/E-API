@@ -29,7 +29,11 @@ let SettingController = class SettingController {
     }
     async findAll() {
         const data = await this.settingService.findAll();
-        return { status: 'success', message: 'Settings fetched successfully', data };
+        return {
+            status: 'success',
+            message: 'Settings fetched successfully',
+            data,
+        };
     }
     async findOne(id) {
         const data = await this.settingService.findOne(+id);

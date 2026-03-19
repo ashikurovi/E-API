@@ -27,7 +27,9 @@ let ActivityLogService = class ActivityLogService {
         const log = this.activityLogRepo.create({
             ...data,
             performedBy: { id: data.performedByUserId },
-            targetUser: data.targetUserId ? { id: data.targetUserId } : undefined,
+            targetUser: data.targetUserId
+                ? { id: data.targetUserId }
+                : undefined,
         });
         return await this.activityLogRepo.save(log);
     }
@@ -57,7 +59,9 @@ let ActivityLogService = class ActivityLogService {
             query.andWhere('log.entity = :entity', { entity: filters.entity });
         }
         if (filters?.startDate) {
-            query.andWhere('log.createdAt >= :startDate', { startDate: filters.startDate });
+            query.andWhere('log.createdAt >= :startDate', {
+                startDate: filters.startDate,
+            });
         }
         if (filters?.endDate) {
             query.andWhere('log.createdAt <= :endDate', { endDate: filters.endDate });

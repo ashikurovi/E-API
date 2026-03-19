@@ -19,7 +19,10 @@ let SaleInvoiceModule = class SaleInvoiceModule {
 exports.SaleInvoiceModule = SaleInvoiceModule;
 exports.SaleInvoiceModule = SaleInvoiceModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([sale_invoice_entity_1.SaleInvoice, sale_invoice_item_entity_1.SaleInvoiceItem]), systemuser_module_1.SystemuserModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([sale_invoice_entity_1.SaleInvoice, sale_invoice_item_entity_1.SaleInvoiceItem]),
+            systemuser_module_1.SystemuserModule,
+        ],
         controllers: [sale_invoice_controller_1.SaleInvoiceController],
         providers: [sale_invoice_service_1.SaleInvoiceService],
         exports: [sale_invoice_service_1.SaleInvoiceService],

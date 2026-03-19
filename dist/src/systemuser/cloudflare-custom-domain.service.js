@@ -19,10 +19,8 @@ let CloudflareCustomDomainService = CloudflareCustomDomainService_1 = class Clou
         this.configService = configService;
         this.logger = new common_1.Logger(CloudflareCustomDomainService_1.name);
         const token = 'ab8b3e2226d54cf643764eb6713a7f4d5e592';
-        this.accountId =
-            'ecb5f1a1ea76c55fbd0f4a96b08cf6cf';
-        this.zoneId =
-            '2c7c6690542308071e74be6b8e7fb632';
+        this.accountId = 'ecb5f1a1ea76c55fbd0f4a96b08cf6cf';
+        this.zoneId = '2c7c6690542308071e74be6b8e7fb632';
         this.useCustomHostnames = Boolean(this.accountId && token);
         if (this.useCustomHostnames) {
             this.client = axios_1.default.create({
@@ -45,7 +43,10 @@ let CloudflareCustomDomainService = CloudflareCustomDomainService_1 = class Clou
         if (!this.client || !this.accountId) {
             return null;
         }
-        const hostnameNorm = hostname.toLowerCase().replace(/^www\./, '').trim();
+        const hostnameNorm = hostname
+            .toLowerCase()
+            .replace(/^www\./, '')
+            .trim();
         try {
             const { data } = await this.client.post(`/accounts/${this.accountId}/custom_hostnames`, {
                 hostname: hostnameNorm,

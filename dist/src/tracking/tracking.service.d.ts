@@ -1,5 +1,5 @@
-import { ConfigService } from "@nestjs/config";
-import { OrderService } from "../orders/orders.service";
+import { ConfigService } from '@nestjs/config';
+import { OrderService } from '../orders/orders.service';
 export interface TrackingItem {
     messageEn: string;
     messageBn: string;

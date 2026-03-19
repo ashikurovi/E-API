@@ -27,7 +27,11 @@ exports.NotificationsModule = NotificationsModule = __decorate([
             (0, common_1.forwardRef)(() => users_module_1.UsersModule),
         ],
         controllers: [notifications_controller_1.NotificationsController],
-        providers: [notifications_service_1.NotificationsService, notifications_scheduler_service_1.NotificationsSchedulerService, request_context_service_1.RequestContextService],
+        providers: [
+            notifications_service_1.NotificationsService,
+            notifications_scheduler_service_1.NotificationsSchedulerService,
+            request_context_service_1.RequestContextService,
+        ],
         exports: [notifications_service_1.NotificationsService],
     })
 ], NotificationsModule);

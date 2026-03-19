@@ -21,7 +21,12 @@ exports.ResellerModule = ResellerModule;
 exports.ResellerModule = ResellerModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([product_entity_1.ProductEntity, sale_invoice_item_entity_1.SaleInvoiceItem, reseller_payout_entity_1.ResellerPayout, systemuser_entity_1.SystemUser]),
+            typeorm_1.TypeOrmModule.forFeature([
+                product_entity_1.ProductEntity,
+                sale_invoice_item_entity_1.SaleInvoiceItem,
+                reseller_payout_entity_1.ResellerPayout,
+                systemuser_entity_1.SystemUser,
+            ]),
         ],
         controllers: [reseller_controller_1.ResellerController],
         providers: [reseller_service_1.ResellerService],

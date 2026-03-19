@@ -109,7 +109,11 @@ let ReviewsService = class ReviewsService {
         const review = await this.findOne(id, companyId);
         if (updateReviewDto.productId) {
             const product = await this.productRepository.findOne({
-                where: { id: updateReviewDto.productId, companyId, deletedAt: (0, typeorm_2.IsNull)() },
+                where: {
+                    id: updateReviewDto.productId,
+                    companyId,
+                    deletedAt: (0, typeorm_2.IsNull)(),
+                },
             });
             if (!product) {
                 throw new common_1.NotFoundException('Product not found');

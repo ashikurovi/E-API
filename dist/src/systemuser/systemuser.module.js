@@ -52,7 +52,13 @@ exports.SystemuserModule = SystemuserModule = __decorate([
             cloudflare_custom_domain_service_1.CloudflareCustomDomainService,
             domain_verification_cron_service_1.DomainVerificationCronService,
         ],
-        exports: [jwt_1.JwtModule, passport_1.PassportModule, company_id_service_1.CompanyIdService, activity_log_service_1.ActivityLogService, systemuser_service_1.SystemuserService],
+        exports: [
+            jwt_1.JwtModule,
+            passport_1.PassportModule,
+            company_id_service_1.CompanyIdService,
+            activity_log_service_1.ActivityLogService,
+            systemuser_service_1.SystemuserService,
+        ],
     })
 ], SystemuserModule);
 //# sourceMappingURL=systemuser.module.js.map

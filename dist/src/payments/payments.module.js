@@ -18,10 +18,7 @@ let PaymentsModule = class PaymentsModule {
 exports.PaymentsModule = PaymentsModule;
 exports.PaymentsModule = PaymentsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            axios_1.HttpModule,
-            typeorm_1.TypeOrmModule.forFeature([systemuser_entity_1.SystemUser]),
-        ],
+        imports: [axios_1.HttpModule, typeorm_1.TypeOrmModule.forFeature([systemuser_entity_1.SystemUser])],
         controllers: [payments_controller_1.PaymentsController],
         providers: [payments_service_1.PaymentsService],
         exports: [payments_service_1.PaymentsService],

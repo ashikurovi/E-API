@@ -55,7 +55,9 @@ let SystemuserController = class SystemuserController {
         const userRole = req?.user?.role;
         const currentUserId = req?.user?.userId || req?.user?.sub;
         const filters = {};
-        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER && userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
+        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER &&
+            userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN &&
+            userRole !== 'SUPER_ADMIN') {
             filters.performedByUserId = currentUserId;
             filters.targetUserId = currentUserId;
         }
@@ -77,19 +79,26 @@ let SystemuserController = class SystemuserController {
             filters.limit = +limit;
         if (offset)
             filters.offset = +offset;
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : (companyId || '');
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId || '';
         return this.activityLogService.getActivityLogs(filterCompanyId, filters);
     }
     async getActivityLogById(id, companyId, req) {
         const userRole = req?.user?.role;
         const currentUserId = req?.user?.userId || req?.user?.sub;
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : (companyId || '');
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId || '';
         const activityLog = await this.activityLogService.getActivityLogById(+id, filterCompanyId);
         if (!activityLog) {
             throw new common_1.NotFoundException('Activity log not found');
         }
-        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER && userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
-            if (activityLog.performedByUserId !== currentUserId && activityLog.targetUserId !== currentUserId) {
+        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER &&
+            userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN &&
+            userRole !== 'SUPER_ADMIN') {
+            if (activityLog.performedByUserId !== currentUserId &&
+                activityLog.targetUserId !== currentUserId) {
                 throw new common_1.BadRequestException('You can only view your own activity logs');
             }
         }
@@ -105,43 +114,59 @@ let SystemuserController = class SystemuserController {
     async revertPackage(id, companyId, req) {
         const performedByUserId = req?.user?.userId || req?.user?.sub;
         const userRole = req?.user?.role;
-        if (performedByUserId !== +id && userRole !== 'SUPER_ADMIN' && userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) {
+        if (performedByUserId !== +id &&
+            userRole !== 'SUPER_ADMIN' &&
+            userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) {
             throw new common_1.BadRequestException('You can only revert your own package');
         }
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId;
         return this.systemuserService.revertToPreviousPackage(+id, filterCompanyId, performedByUserId);
     }
     update(id, updateSystemuserDto, companyId, req) {
         const performedByUserId = req?.user?.userId || req?.user?.sub;
         const userRole = req?.user?.role;
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId;
         return this.systemuserService.update(+id, updateSystemuserDto, filterCompanyId, performedByUserId);
     }
     remove(id, companyId, req) {
         const performedByUserId = req?.user?.userId || req?.user?.sub;
         const userRole = req?.user?.role;
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId;
         return this.systemuserService.remove(+id, filterCompanyId, performedByUserId);
     }
     async assignPermissions(id, dto, companyId, req) {
         const assignerPermissions = req?.user?.permissions || [];
         const performedByUserId = req?.user?.userId || req?.user?.sub;
         const userRole = req?.user?.role;
-        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER && userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
+        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER &&
+            userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN &&
+            userRole !== 'SUPER_ADMIN') {
             throw new common_1.BadRequestException('Only System Owners and Super Admins can assign permissions');
         }
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId;
         return this.systemuserService.assignPermissions(+id, dto.permissions, filterCompanyId, assignerPermissions, performedByUserId);
     }
     async getPermissions(id, companyId, req) {
         const performedByUserId = req?.user?.userId || req?.user?.sub;
         const userRole = req?.user?.role;
-        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER && userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN && userRole !== 'SUPER_ADMIN') {
+        if (userRole !== system_user_role_enum_1.SystemUserRole.SYSTEM_OWNER &&
+            userRole !== system_user_role_enum_1.SystemUserRole.SUPER_ADMIN &&
+            userRole !== 'SUPER_ADMIN') {
             if (performedByUserId !== +id) {
                 throw new common_1.BadRequestException('You can only view your own permissions');
             }
         }
-        const filterCompanyId = (userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN) ? undefined : companyId;
+        const filterCompanyId = userRole === 'SUPER_ADMIN' || userRole === system_user_role_enum_1.SystemUserRole.SUPER_ADMIN
+            ? undefined
+            : companyId;
         const user = await this.systemuserService.findOne(+id, filterCompanyId);
         return {
             statusCode: 200,
