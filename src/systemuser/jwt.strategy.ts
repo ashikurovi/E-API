@@ -3,12 +3,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { SystemuserService } from './systemuser.service';
 import { UsersService } from '../users/users.service';
+import { SuperadminService } from '../superadmin/superadmin.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly systemuserService: SystemuserService,
     private readonly usersService: UsersService,
+    private readonly superadminService: SuperadminService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -25,6 +27,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const role = payload.role;
     const companyId = payload.companyId;
+
+    // Superadmin token (from /auth/superadmin/login) → validate from super_admins table
+    if (role === 'SUPER_ADMIN') {
+      try {
+        const superadmin = await this.superadminService.findOne(Number(userId));
+        if (!superadmin || !superadmin.isActive) {
+          return null;
+        }
+        return {
+          userId: superadmin.id,
+          email: superadmin.email,
+          name: superadmin.name,
+          permissions: superadmin.permissions || [],
+          role: 'SUPER_ADMIN',
+        };
+      } catch {
+        return null;
+      }
+    }
 
     // Customer token (from /users/login) → validate from tbl_users only; /users/me must return user table data
     if (role === 'customer' && companyId) {

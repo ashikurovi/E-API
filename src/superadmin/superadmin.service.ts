@@ -78,7 +78,7 @@ export class SuperadminService {
           <tr>
             <td style="background:radial-gradient(circle at 0% 0%,#4f46e5,#7c3aed);padding:22px 26px 18px;text-align:left;">
               <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:#e0e7ff;opacity:0.9;">
-                InnowaveCart · Super Admin
+                NexoviaSoft · Super Admin
               </div>
               <h1 style="margin:6px 0 0;font-size:22px;font-weight:600;color:#eef2ff;">
                 Your Super Admin account is ready
@@ -92,7 +92,7 @@ export class SuperadminService {
                 Hi <span style="color:#e5e7eb;font-weight:500;">${dto.name}</span>,
               </p>
               <p style="margin:0 0 18px;font-size:14px;line-height:1.7;color:#9ca3af;">
-                Your <span style="color:#a5b4fc;font-weight:500;">InnowaveCart Super Admin</span> account has been created successfully. 
+                Your <span style="color:#a5b4fc;font-weight:500;">NexoviaSoft Super Admin</span> account has been created successfully. 
                 Use the credentials below to sign in to your dashboard.
               </p>
 
@@ -148,10 +148,10 @@ export class SuperadminService {
           <tr>
             <td style="background-color:#020617;padding:14px 26px 18px;text-align:center;border-top:1px solid rgba(55,65,81,0.9);">
               <p style="margin:0 0 4px;font-size:11px;color:#6b7280;">
-                This is an automated message from InnowaveCart.
+                This is an automated message from NexoviaSoft.
               </p>
               <p style="margin:0;font-size:11px;color:#6b7280;">
-                © ${new Date().getFullYear()} InnowaveCart. All rights reserved.
+                © ${new Date().getFullYear()} NexoviaSoft. All rights reserved.
               </p>
             </td>
           </tr>
@@ -165,9 +165,9 @@ export class SuperadminService {
 
       try {
         await this.mailer.sendMail({
-          from: '"InnowaveCart HQ" <innowavecarthq@gmail.com>',
+          from: '"NexoviaSoft HQ" <innowavecarthq@gmail.com>',
           to: dto.email,
-          subject: 'Your InnowaveCart Super Admin account',
+          subject: 'Your NexoviaSoft Super Admin account',
           text: `Your Super Admin account is ready.\nEmail: ${dto.email}\nPassword: ${dto.password}\nLogin: ${loginUrl}`,
           html,
         });
