@@ -131,8 +131,8 @@ import { TopProductsModule } from './top-products/top-products.module';
           port: 587,
           secure: false,
           auth: {
-            user: 'innowavesolutioninfo@gmail.com',
-            pass: 'eydh kgcs wplp avzv',
+            user: 'nexoviasoft@gmail.com',
+    pass: 'ofjw yqfx pllm hzpk',
           },
           tls: {
             rejectUnauthorized: false,
