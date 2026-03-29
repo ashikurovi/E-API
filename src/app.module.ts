@@ -132,7 +132,7 @@ import { TopProductsModule } from './top-products/top-products.module';
           secure: false,
           auth: {
             user: 'nexoviasoft@gmail.com',
-    pass: 'ofjw yqfx pllm hzpk',
+            pass: 'ofjw yqfx pllm hzpk',
           },
           tls: {
             rejectUnauthorized: false,

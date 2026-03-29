@@ -18,25 +18,23 @@ export class EmailTemplates {
               <li><strong>Package Name:</strong> ${user.package.name}</li>
               <li><strong>Description:</strong> ${user.package.description}</li>
               <li><strong>Price:</strong> $${user.package.price}</li>
-              ${
-                user.package.discountPrice
-                  ? `<li><strong>Discount Price:</strong> $${user.package.discountPrice}</li>`
-                  : ''
-              }
-              ${
-                user.package.features && user.package.features.length > 0
-                  ? `<li><strong>Features / Permissions:</strong>
+              ${user.package.discountPrice
+        ? `<li><strong>Discount Price:</strong> $${user.package.discountPrice}</li>`
+        : ''
+      }
+              ${user.package.features && user.package.features.length > 0
+        ? `<li><strong>Features / Permissions:</strong>
                       <ul style="margin: 6px 0 0 14px; padding: 0;">
                         ${user.package.features
-                          .map(
-                            (f: string) =>
-                              `<li style="margin: 2px 0;">${this.formatFeatureName(f)}</li>`,
-                          )
-                          .join('')}
+          .map(
+            (f: string) =>
+              `<li style="margin: 2px 0;">${this.formatFeatureName(f)}</li>`,
+          )
+          .join('')}
                       </ul>
                     </li>`
-                  : ''
-              }
+        : ''
+      }
             </ul>
           `
       : '';
@@ -102,36 +100,33 @@ export class EmailTemplates {
                   <p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Email:</strong> ${user.email}</p>
                   <p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Company ID:</strong> ${user.companyId}</p>
                   <p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Company name:</strong> ${companyName}</p>
-                  ${
-                    user.phone
-                      ? `<p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Phone:</strong> ${user.phone}</p>`
-                      : ''
-                  }
-                  ${
-                    user.branchLocation
-                      ? `<p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Branch location:</strong> ${user.branchLocation}</p>`
-                      : ''
-                  }
+                  ${user.phone
+        ? `<p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Phone:</strong> ${user.phone}</p>`
+        : ''
+      }
+                  ${user.branchLocation
+        ? `<p style="margin: 3px 0; font-size: 13px; color: #374151;"><strong>Branch location:</strong> ${user.branchLocation}</p>`
+        : ''
+      }
                 </div>
 
                 <div style="margin-top: 16px; text-align: center;">
-                  <a href="https://cart-nexoviasoft.vercel.app/" style="display: inline-block; padding: 10px 22px; border-radius: 999px; background: linear-gradient(90deg,#1d4ed8,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
+                  <a href="https://cart-nexoviasoft.com/" style="display: inline-block; padding: 10px 22px; border-radius: 999px; background: linear-gradient(90deg,#1d4ed8,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
                     Login to Console
                   </a>
                   <p style="margin: 8px 0 0; font-size: 11px; color: #6b7280;">
-                    Or open: <span style="color:#1d4ed8;">https://cart-nexoviasoft.vercel.app/</span>
+                    Or open: <span style="color:#1d4ed8;">https://cart-nexoviasoft.com/</span>
                   </p>
                 </div>
 
-                ${
-                  user.package
-                    ? `
+                ${user.package
+        ? `
                 <div style="margin-top: 18px; padding: 15px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background-color: #ffffff;">
                   ${packageInfo}
                 </div>
                 `
-                    : ''
-                }
+        : ''
+      }
 
                 <div style="margin-top: 18px; padding: 14px 16px; border-radius: 12px; border: 1px solid #fbbf24; background-color: #fffbeb;">
                   <p style="margin: 0; font-size: 12px; color: #92400e;">
@@ -171,25 +166,23 @@ export class EmailTemplates {
               <li><strong>Package Name:</strong> ${user.package.name}</li>
               <li><strong>Description:</strong> ${user.package.description}</li>
               <li><strong>Price:</strong> $${user.package.price}</li>
-              ${
-                user.package.discountPrice
-                  ? `<li><strong>Discount Price:</strong> $${user.package.discountPrice}</li>`
-                  : ''
-              }
-              ${
-                user.package.features && user.package.features.length > 0
-                  ? `<li><strong>Features / Permissions:</strong>
+              ${user.package.discountPrice
+        ? `<li><strong>Discount Price:</strong> $${user.package.discountPrice}</li>`
+        : ''
+      }
+              ${user.package.features && user.package.features.length > 0
+        ? `<li><strong>Features / Permissions:</strong>
                       <ul style="margin: 6px 0 0 14px; padding: 0;">
                         ${user.package.features
-                          .map(
-                            (f: string) =>
-                              `<li style="margin: 2px 0;">${this.formatFeatureName(f)}</li>`,
-                          )
-                          .join('')}
+          .map(
+            (f: string) =>
+              `<li style="margin: 2px 0;">${this.formatFeatureName(f)}</li>`,
+          )
+          .join('')}
                       </ul>
                     </li>`
-                  : ''
-              }
+        : ''
+      }
             </ul>
           `
       : '';
@@ -251,11 +244,11 @@ export class EmailTemplates {
                 </table>
 
                 <div style="margin: 16px 0 0; text-align: center;">
-                  <a href="https://cart-nexoviasoft.vercel.app/" style="display: inline-block; padding: 10px 22px; border-radius: 999px; background: linear-gradient(90deg,#1d4ed8,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
+                  <a href="https://cart-nexoviasoft.com/" style="display: inline-block; padding: 10px 22px; border-radius: 999px; background: linear-gradient(90deg,#1d4ed8,#6366f1); color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none;">
                     Login to Console
                   </a>
                   <p style="margin: 8px 0 0; font-size: 11px; color: #9ca3af;">
-                    Or open: <span style="color:#93c5fd;">https://cart-nexoviasoft.vercel.app/</span>
+                    Or open: <span style="color:#93c5fd;">https://cart-nexoviasoft.com/</span>
                   </p>
                 </div>
 
@@ -269,23 +262,20 @@ export class EmailTemplates {
                       <p style="margin: 3px 0; font-size: 13px; color: #e5e7eb;">
                         <strong>Company ID:</strong> ${user.companyId}
                       </p>
-                      ${
-                        user.branchLocation
-                          ? `<p style="margin: 3px 0; font-size: 13px; color: #e5e7eb;"><strong>Branch location:</strong> ${user.branchLocation}</p>`
-                          : ''
-                      }
-                      ${
-                        user.phone
-                          ? `<p style="margin: 3px 0; font-size: 13px; color: #e5e7eb;"><strong>Phone:</strong> ${user.phone}</p>`
-                          : ''
-                      }
+                      ${user.branchLocation
+        ? `<p style="margin: 3px 0; font-size: 13px; color: #e5e7eb;"><strong>Branch location:</strong> ${user.branchLocation}</p>`
+        : ''
+      }
+                      ${user.phone
+        ? `<p style="margin: 3px 0; font-size: 13px; color: #e5e7eb;"><strong>Phone:</strong> ${user.phone}</p>`
+        : ''
+      }
                     </td>
                   </tr>
                 </table>
 
-                ${
-                  user.package
-                    ? `
+                ${user.package
+        ? `
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 18px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(55, 65, 81, 0.7); background-color: #020617;">
                   <tr>
                     <td style="padding: 16px 20px;">
@@ -294,8 +284,8 @@ export class EmailTemplates {
                   </tr>
                 </table>
                 `
-                    : ''
-                }
+        : ''
+      }
 
                 <p style="margin: 20px 0 0; font-size: 13px; color: #9ca3af;">
                   Best regards,<br />
@@ -519,9 +509,8 @@ export class EmailTemplates {
                   Your subscription package has been successfully upgraded. Here’s a quick summary of the change.
                 </p>
 
-                ${
-                  oldPackage
-                    ? `
+                ${oldPackage
+        ? `
                 <div style="margin-top: 8px; padding: 14px 16px; border-radius: 12px; border: 1px solid #fed7aa; background-color: #fffbeb;">
                   <h3 style="margin: 0 0 8px; font-size: 15px; color: #92400e;">Previous package</h3>
                   <p style="margin: 3px 0; font-size: 13px; color: #92400e;">
@@ -529,34 +518,32 @@ export class EmailTemplates {
                   </p>
                 </div>
                 `
-                    : ''
-                }
+        : ''
+      }
 
                 <div style="margin-top: 14px; padding: 14px 16px; border-radius: 12px; border: 1px solid #bbf7d0; background-color: #f0fdf4;">
                   <h3 style="margin: 0 0 8px; font-size: 15px; color: #166534;">New package</h3>
                   <p style="margin: 3px 0; font-size: 13px; color: #166534;">
                     <strong>${newPackage.name}</strong> – $${newPackage.price}
                   </p>
-                  ${
-                    newPackage.discountPrice
-                      ? `<p style="margin: 3px 0; font-size: 13px; color: #166534;"><strong>Discount Price:</strong> $${newPackage.discountPrice}</p>`
-                      : ''
-                  }
-                  ${
-                    newPackage.features && newPackage.features.length > 0
-                      ? `<div style="margin-top: 6px; font-size: 13px; color: #166534;">
+                  ${newPackage.discountPrice
+        ? `<p style="margin: 3px 0; font-size: 13px; color: #166534;"><strong>Discount Price:</strong> $${newPackage.discountPrice}</p>`
+        : ''
+      }
+                  ${newPackage.features && newPackage.features.length > 0
+        ? `<div style="margin-top: 6px; font-size: 13px; color: #166534;">
                           <strong>Features / Permissions:</strong>
                           <ul style="margin: 6px 0 0 16px; padding: 0;">
                             ${newPackage.features
-                              .map(
-                                (f: string) =>
-                                  `<li style="margin: 2px 0;">${this.formatFeatureName(f)}</li>`,
-                              )
-                              .join('')}
+          .map(
+            (f: string) =>
+              `<li style="margin: 2px 0;">${this.formatFeatureName(f)}</li>`,
+          )
+          .join('')}
                           </ul>
                         </div>`
-                      : ''
-                  }
+        : ''
+      }
                 </div>
 
                 <p style="margin: 20px 0 0; font-size: 13px; color: #6b7280;">
